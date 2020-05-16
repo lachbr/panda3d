@@ -1,7 +1,7 @@
 #include "qrad.h"
 
-#include <bsp_material.h>
-#include <keyvalues.h>
+#include "bspMaterial.h"
+#include "keyvalues.h"
 
 #ifdef WORDS_BIGENDIAN
 #error "HLRAD_TEXTURE doesn't support WORDS_BIGENDIAN, because I have no big endian machine to test it"

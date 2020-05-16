@@ -10,14 +10,14 @@
 #   GNS_LIBRARY     - the path to the GNS library
 #
 
-find_path(GNS_INCLUDE_DIR
+find_path(GAMENETWORKINGSOCKETS_INCLUDE_DIR
   NAMES "steam/isteamnetworkingsockets.h"
   PATH_SUFFIXES "gamenetworkingsockets")
 
-find_library(GNS_LIBRARY
+find_library(GAMENETWORKINGSOCKETS_LIBRARY
   NAMES "GameNetworkingSockets_s")
 
-mark_as_advanced(GNS_INCLUDE_DIR GNS_LIBRARY)
+mark_as_advanced(GAMENETWORKINGSOCKETS_INCLUDE_DIR GAMENETWORKINGSOCKETS_LIBRARY)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GameNetworkingSockets DEFAULT_MSG GNS_INCLUDE_DIR GNS_LIBRARY)
+find_package_handle_standard_args(GameNetworkingSockets DEFAULT_MSG GAMENETWORKINGSOCKETS_INCLUDE_DIR GAMENETWORKINGSOCKETS_LIBRARY)

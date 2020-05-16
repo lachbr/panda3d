@@ -2,7 +2,7 @@
 
 #include "csg.h"
 
-#include <bsp_material.h>
+#include "bspMaterial.h"
 
 int             g_nummapbrushes;
 brush_t         g_mapbrushes[MAX_MAP_BRUSHES];

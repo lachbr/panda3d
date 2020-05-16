@@ -6,7 +6,7 @@
 #include "bsptools.h"
 #include "trace.h"
 
-#include <CL/cl.h>
+//#include <CL/cl.h>
 
 #include <clockObject.h>
 
