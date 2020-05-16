@@ -25,6 +25,8 @@ set(INTERROGATE_EXCLUDE_REGEXES
   ".*\\.I$"
   ".*\\.N$"
   ".*\\.c$"
+  ".*\\.cxx$"
+  ".*\\.cpp$"
   ".*\\.lxx$"
   ".*\\.yxx$"
   ".*_src\\..*"
