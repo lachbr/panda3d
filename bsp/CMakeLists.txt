@@ -6,6 +6,8 @@ add_subdirectory(src/bspbase)
 add_subdirectory(src/bsp)
 add_subdirectory(src/networksystem)
 
+add_subdirectory(src/recastnavigation)
+
 add_subdirectory(src/pcsg)
 add_subdirectory(src/pbsp)
 add_subdirectory(src/pvis)
@@ -16,6 +18,8 @@ if(HAVE_PYTHON)
 		IMPORT panda3d.core IMPORT panda3d.bullet COMPONENT BSPPython)
 
   add_python_module(panda3d.networksystem p3networksystem IMPORT panda3d.core COMPONENT BSPPython)
+  
+  add_python_module(panda3d.recastnavigation p3recastnavigation IMPORT panda3d.core COMPONENT BSPPython)
 endif()
 
 #export_targets(BSP COMPONENT BSPDevel)
