@@ -42,7 +42,7 @@ namespace rnsup
 // These are example implementations of various interfaces used in Recast and Detour.
 
 /// Recast build context.
-class EXPCL_P3RECAST BuildContext : public rcContext
+class BuildContext : public rcContext
 {
 	TimeVal m_startTime[RC_MAX_TIMERS];
 	TimeVal m_accTime[RC_MAX_TIMERS];

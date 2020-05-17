@@ -83,7 +83,7 @@ struct BuildSettings
 	float tileSize;
 };
 
-class EXPCL_P3RECAST InputGeom
+class InputGeom
 {
 	rcChunkyTriMesh* m_chunkyMesh;
 	rcMeshLoaderObj* m_mesh;

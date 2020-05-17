@@ -38,7 +38,7 @@
 
 namespace rnsup
 {
-class EXPCL_P3RECAST rcMeshLoaderObj
+class rcMeshLoaderObj
 {
 public:
 	rcMeshLoaderObj();
