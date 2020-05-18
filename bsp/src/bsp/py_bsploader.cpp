@@ -387,6 +387,7 @@ load_entities() {
         if (!ret) {
           PyErr_PrintEx(1);
         } else {
+          std::cout << "Has transitionXform?: " << PyObject_HasAttrString(ret, "transitionXform") << std::endl;
           PT(CBaseEntity) entity;
           if (!strncmp(psz_classname, "func_", 5) ||
               entnum == 0) {
@@ -452,8 +453,8 @@ read(const Filename &filename, bool is_transition) {
           LMatrix4f mat = def.landmark_relative_transform;
           PyObject *py_mat = DTool_CreatePyInstance(&mat, *(Dtool_PyTypedObject *)mat.get_class_type().get_python_type(), true, true);
           Py_INCREF(py_mat);
-
-          PyObject *meth = PyObject_GetAttrString(def.py_entity, "transitionXform");
+          std::cout << "DURING TRANSITION: Has transitionXform?: " << PyObject_HasAttrString(def.py_entity, "transitionXform") << std::endl;
+          PyObject *meth = PyObject_GetAttrString(def.py_entity, (char*)"transitionXform");
           if (meth) {
             PyObject *args = PyTuple_Pack(2, py_dest_landmark_np, py_mat);
             Py_INCREF(args);
