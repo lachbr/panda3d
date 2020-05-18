@@ -145,7 +145,7 @@ set(P3BSP_SOURCES
 composite_sources(p3bsp P3BSP_SOURCES)
 add_library(p3bsp ${P3BSP_SOURCES} ${P3BSP_HEADERS})
 set_target_properties(p3bsp PROPERTIES DEFINE_SYMBOL BUILDING_LIBPANDABSP)
-target_compile_definitions(p3bsp PRIVATE CIO)
+target_compile_definitions(p3bsp PUBLIC CIO)
 if(HAVE_PYTHON)
   target_compile_definitions(p3bsp PUBLIC _PYTHON_VERSION)
 endif()
