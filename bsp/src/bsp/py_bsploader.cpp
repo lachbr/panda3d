@@ -13,16 +13,19 @@ get_entity(int n) const {
 
 CBaseEntity *Py_BSPLoader::
 get_c_entity(const int entnum) const {
+  std::cout << "get_c_entity(" << entnum << ")" << std::endl;
   for (size_t i = 0; i < _entities.size(); i++) {
     const entitydef_t &def = _entities[i];
     if (!def.c_entity)
       continue;
     if (def.c_entity &&
         def.c_entity->get_bsp_entnum() == entnum) {
+      std::cout << "\tFound it" << std::endl;
       return def.c_entity;
     }
   }
 
+  std::cout << "\tDidn't find it" << std::endl;
   return nullptr;
 }
 
@@ -167,7 +170,7 @@ make_pyent(PyObject *py_ent, const string &classname) {
       PyErr_PrintEx(1);
     Py_INCREF(obj);
     // Give the python entity a handle to the c entity.
-    PyObject_SetAttrString(obj, "cEntity", py_ent);
+    PyObject_SetAttrString(obj, (char *)"cEntity", py_ent);
     // Precache all resources the entity will use.
     PyObject_CallMethod(obj, "precache", NULL);
     // Don't call load just yet, we need to have all of the entities created first, because some
@@ -387,7 +390,6 @@ load_entities() {
         if (!ret) {
           PyErr_PrintEx(1);
         } else {
-          std::cout << "Has transitionXform?: " << PyObject_HasAttrString(ret, "transitionXform") << std::endl;
           PT(CBaseEntity) entity;
           if (!strncmp(psz_classname, "func_", 5) ||
               entnum == 0) {
@@ -453,7 +455,6 @@ read(const Filename &filename, bool is_transition) {
           LMatrix4f mat = def.landmark_relative_transform;
           PyObject *py_mat = DTool_CreatePyInstance(&mat, *(Dtool_PyTypedObject *)mat.get_class_type().get_python_type(), true, true);
           Py_INCREF(py_mat);
-          std::cout << "DURING TRANSITION: Has transitionXform?: " << PyObject_HasAttrString(def.py_entity, "transitionXform") << std::endl;
           PyObject *meth = PyObject_GetAttrString(def.py_entity, (char*)"transitionXform");
           if (meth) {
             PyObject *args = PyTuple_Pack(2, py_dest_landmark_np, py_mat);
