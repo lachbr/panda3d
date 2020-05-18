@@ -453,7 +453,16 @@ read(const Filename &filename, bool is_transition) {
           PyObject *py_mat = DTool_CreatePyInstance(&mat, *(Dtool_PyTypedObject *)mat.get_class_type().get_python_type(), true, true);
           Py_INCREF(py_mat);
 
-          PyObject_CallMethod(def.py_entity, "transitionXform", "OO", py_dest_landmark_np, py_mat);
+          PyObject *meth = PyObject_GetAttrString(def.py_entity, "transitionXform");
+          if (meth) {
+            PyObject *args = PyTuple_Pack(2, py_dest_landmark_np, py_mat);
+            Py_INCREF(args);
+            PyObject_CallObject(meth, args);
+            Py_DECREF(args);
+
+          } else {
+            std::cout << "Warning: transitionXform wasn't found on this entity... my fix didn't work" << std::endl;
+          }
 
           Py_DECREF(py_mat);
         }
