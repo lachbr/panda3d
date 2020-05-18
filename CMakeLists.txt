@@ -32,6 +32,13 @@ a CMake < 3.9. Making a guess if this is a multi-config generator.")
   endif()
 endif()
 
+if(WIN32)
+  if(CMAKE_GENERATOR_PLATFORM STREQUAL "")
+    # Assume x64
+    set(CMAKE_GENERATOR_PLATFORM "x64")
+  endif()
+endif()
+
 # Define the type of build we are setting up.
 set(_configs Standard Release RelWithDebInfo Debug MinSizeRel)
 if(CMAKE_CXX_COMPILER_ID MATCHES "(AppleClang|Clang|GCC)")
