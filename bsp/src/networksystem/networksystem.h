@@ -160,6 +160,7 @@ INLINE NetworkCallbacks::NetworkCallbacks() {
 INLINE NetworkCallbacks::~NetworkCallbacks() {
 #ifdef HAVE_PYTHON
   if (m_pPyCallback) {
+    PyMutexHolder holder;
     Py_DECREF(m_pPyCallback);
     m_pPyCallback = nullptr;
   }
@@ -168,6 +169,7 @@ INLINE NetworkCallbacks::~NetworkCallbacks() {
 
 #ifdef HAVE_PYTHON
 INLINE void NetworkCallbacks::set_callback(PyObject *pPyCallback) {
+  PyMutexHolder holder;
   if (m_pPyCallback) {
     Py_DECREF(m_pPyCallback);
   }

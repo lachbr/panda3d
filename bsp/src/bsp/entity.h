@@ -33,7 +33,8 @@ class entity_t;
 class dmodel_t;
 #endif
 
-struct entitydef_t {
+class EntityDef : public ReferenceCount {
+public:
   PT(CBaseEntity) c_entity;
   PyObject *py_entity;
 
@@ -42,8 +43,10 @@ struct entitydef_t {
 
   LMatrix4f landmark_relative_transform;
 
-  entitydef_t(CBaseEntity *cent, PyObject *pent = nullptr, bool dyn = false);
-  ~entitydef_t();
+  EntityDef() = default;
+
+  EntityDef(CBaseEntity *cent, PyObject *pent = nullptr, bool dyn = false);
+  ~EntityDef();
 };
 
 class CBaseEntity : public TypedReferenceCount {

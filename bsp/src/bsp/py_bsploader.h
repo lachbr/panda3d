@@ -40,7 +40,7 @@ PUBLISHED:
   virtual bool read(const Filename &filename, bool is_transition = false);
 
 protected:
-  pvector<entitydef_t> _entities;
+  pvector<PT(EntityDef)> _entities;
 };
 
 class Py_CL_BSPLoader : public Py_BSPLoader {

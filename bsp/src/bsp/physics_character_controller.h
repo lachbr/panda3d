@@ -79,6 +79,8 @@ PUBLISHED:
 
 #ifdef HAVE_PYTHON
   INLINE void set_event_enter_callback(PyObject *callback) {
+    PyMutexHolder py_holder;
+
     if (_event_enter_callback)
       Py_DECREF(_event_enter_callback);
     Py_INCREF(callback);
@@ -86,6 +88,8 @@ PUBLISHED:
   }
 
   INLINE void set_event_exit_callback(PyObject *callback) {
+    PyMutexHolder py_holder;
+
     if (_event_exit_callback)
       Py_DECREF(_event_exit_callback);
     Py_INCREF(callback);
@@ -142,6 +146,8 @@ PUBLISHED:
 
 #ifdef HAVE_PYTHON
   INLINE void set_stand_up_callback(PyObject *callback) {
+    PyMutexHolder py_holder;
+
     if (_stand_up_callback)
       Py_DECREF(_stand_up_callback);
     Py_INCREF(callback);
@@ -149,6 +155,8 @@ PUBLISHED:
   }
 
   INLINE void set_fall_callback(PyObject *callback) {
+    PyMutexHolder holder;
+
     if (_fall_callback)
       Py_DECREF(_fall_callback);
     Py_INCREF(callback);

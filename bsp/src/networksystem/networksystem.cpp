@@ -34,6 +34,7 @@ NetworkSystem::~NetworkSystem() {
 void NetworkCallbacks::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t *pCallback) {
 #ifdef HAVE_PYTHON
   if (m_pPyCallback) {
+    PyMutexHolder holder;
     PyObject *pArgs = PyTuple_Pack(3,
                                    PyLong_FromSize_t(pCallback->m_hConn),
                                    PyLong_FromSize_t(pCallback->m_info.m_eState),

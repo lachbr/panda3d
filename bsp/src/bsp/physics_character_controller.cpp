@@ -371,6 +371,7 @@ void PhysicsCharacterController::update_event_sphere() {
       // The avatar has entered this node.
 #ifdef HAVE_PYTHON
       if (_event_enter_callback) {
+        PyMutexHolder holder;
         // Tell python code about it.
         PyObject *py_np =
           DTool_CreatePyInstance(&np, *(Dtool_PyTypedObject *)np.get_class_type().get_python_type(), true, true);
@@ -390,6 +391,7 @@ void PhysicsCharacterController::update_event_sphere() {
       // The avatar has exited this node.
 #ifdef HAVE_PYTHON
       if (_event_exit_callback) {
+        PyMutexHolder holder;
         // Tell python code about it.
         PyObject *py_np =
           DTool_CreatePyInstance(&np, *(Dtool_PyTypedObject *)np.get_class_type().get_python_type(), true, true);
@@ -577,6 +579,7 @@ void PhysicsCharacterController::stand_up() {
 
 #ifdef HAVE_PYTHON
   if (_stand_up_callback != nullptr) {
+    PyMutexHolder holder;
     PyObject *args = PyTuple_New(0);
     PyObject_CallObject(_stand_up_callback, args);
   }
@@ -623,6 +626,7 @@ void PhysicsCharacterController::process_falling() {
 
 #ifdef HAVE_PYTHON
     if (_fall_callback != nullptr) {
+      PyMutexHolder holder;
       PyObject *args = PyTuple_Pack(1, PyFloat_FromDouble(_fall_start_pos - new_pos[2]));
       PyObject_CallObject(_fall_callback, args);
     }

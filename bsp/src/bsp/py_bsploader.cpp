@@ -6,111 +6,120 @@
 
 PyObject *Py_BSPLoader::
 get_entity(int n) const {
-  PyObject *pent = _entities[n].py_entity;
+  PyMutexHolder holder;
+
+  PyObject *pent = _entities[n]->py_entity;
   Py_INCREF(pent);
   return pent;
 }
 
 CBaseEntity *Py_BSPLoader::
 get_c_entity(const int entnum) const {
-  std::cout << "get_c_entity(" << entnum << ")" << std::endl;
   for (size_t i = 0; i < _entities.size(); i++) {
-    const entitydef_t &def = _entities[i];
-    if (!def.c_entity)
+    const EntityDef *def = _entities[i];
+    if (!def->c_entity)
       continue;
-    if (def.c_entity &&
-        def.c_entity->get_bsp_entnum() == entnum) {
-      std::cout << "\tFound it" << std::endl;
-      return def.c_entity;
+    if (def->c_entity &&
+        def->c_entity->get_bsp_entnum() == entnum) {
+      return def->c_entity;
     }
   }
 
-  std::cout << "\tDidn't find it" << std::endl;
   return nullptr;
 }
 
 PyObject *Py_BSPLoader::
 find_all_entities(const string &classname) {
+  PyMutexHolder holder;
+
   PyObject *list = PyList_New(0);
 
   for (size_t i = 0; i < _entities.size(); i++) {
-    const entitydef_t &def = _entities[i];
-    if (!def.c_entity)
+    const EntityDef *def = _entities[i];
+    if (!def->c_entity)
       continue;
-    std::string cls = def.c_entity->get_entity_value("classname");
+    std::string cls = def->c_entity->get_entity_value("classname");
     if (classname == cls) {
-      PyList_Append(list, def.py_entity);
+      PyList_Append(list, def->py_entity);
     }
   }
 
   Py_INCREF(list);
+
   return list;
 }
 
 void Py_BSPLoader::
 get_entity_keyvalues(PyObject *list, const int entnum) {
+  PyMutexHolder holder;
+
   entity_t *ent = _bspdata->entities + entnum;
   for (epair_t *ep = ent->epairs; ep->next != nullptr; ep = ep->next) {
     PyObject *kv = PyTuple_New(2);
     PyTuple_SetItem(kv, 0, PyUnicode_FromString(ep->key));
     PyTuple_SetItem(kv, 1, PyUnicode_FromString(ep->value));
     PyList_Append(list, kv);
+    Py_DECREF(kv);
   }
 }
 
 void Py_BSPLoader::
 link_cent_to_pyent(int entnum, PyObject *pyent) {
-  entitydef_t *pdef = nullptr;
+  EntityDef *pdef = nullptr;
   bool found_pdef = false;
 
   entity_t *ent = _bspdata->entities + entnum;
   std::string targetname = ValueForKey(ent, "targetname");
 
-  pvector<entitydef_t *> children;
+  pvector<EntityDef *> children;
   children.reserve(32);
 
   for (size_t i = 0; i < _entities.size(); i++) {
-    entitydef_t &def = _entities[i];
-    if (!def.c_entity)
+    EntityDef *def = _entities[i];
+    if (!def->c_entity)
       continue;
 
-    if (!found_pdef && def.c_entity->get_bsp_entnum() == entnum) {
-      pdef = &def;
+    if (!found_pdef && def->c_entity->get_bsp_entnum() == entnum) {
+      pdef = def;
       found_pdef = true;
     }
 
-    if (def.c_entity->get_bsp_entnum() != entnum &&
+    if (def->c_entity->get_bsp_entnum() != entnum &&
         targetname.length() > 0u &&
-        def.py_entity != nullptr) {
-      std::string parentname = def.c_entity->get_entity_value("parent");
+        def->py_entity != nullptr) {
+      std::string parentname = def->c_entity->get_entity_value("parent");
       if (!parentname.compare(targetname)) {
         // This entity is parented to the specified entity.
-        children.push_back(&def);
+        children.push_back(def);
       }
     }
   }
 
   nassertv(pdef != nullptr);
+
+  PyMutexHolder holder;
+
   Py_INCREF(pyent);
   pdef->py_entity = pyent;
 
   for (size_t i = 0; i < children.size(); i++) {
-    entitydef_t *def = children[i];
-    PyObject_CallMethod(def->py_entity, "parentGenerated", NULL);
+    EntityDef *def = children[i];
+    PyObject_CallMethod(def->py_entity, (char *)"parentGenerated", NULL);
   }
 }
 
 PyObject *Py_BSPLoader::
 get_py_entity_by_target_name(const string &targetname) const {
   for (size_t i = 0; i < _entities.size(); i++) {
-    const entitydef_t &def = _entities[i];
-    if (!def.c_entity)
+    const EntityDef *def = _entities[i];
+    if (!def->c_entity)
       continue;
-    PyObject *pyent = def.py_entity;
+    PyObject *pyent = def->py_entity;
     if (!pyent)
       continue;
-    string tname = def.c_entity->get_entity_value("targetname");
+    string tname = def->c_entity->get_entity_value("targetname");
     if (tname == targetname) {
+      PyMutexHolder holder;
       Py_INCREF(pyent);
       return pyent;
     }
@@ -126,10 +135,11 @@ get_py_entity_by_target_name(const string &targetname) const {
 void Py_BSPLoader::
 remove_py_entity(PyObject *obj) {
   for (size_t i = 0; i < _entities.size(); i++) {
-    entitydef_t &ent = _entities[i];
-    if (ent.py_entity == obj) {
-      Py_DECREF(ent.py_entity);
-      ent.py_entity = nullptr;
+    EntityDef *ent = _entities[i];
+    if (ent->py_entity == obj) {
+      PyMutexHolder holder;
+      Py_DECREF(ent->py_entity);
+      ent->py_entity = nullptr;
     }
   }
 }
@@ -147,15 +157,18 @@ read(const Filename &filename, bool is_transition) {
 
 void Py_BSPLoader::
 spawn_entities() {
+
+  PyMutexHolder holder;
+
   // Now load all of the entities at the application level.
   for (size_t i = 0; i < _entities.size(); i++) {
-    entitydef_t &ent = _entities[i];
-    if (ent.py_entity && !ent.dynamic && !ent.preserved) {
+    EntityDef *ent = _entities[i];
+    if (ent->py_entity && !ent->dynamic && !ent->preserved) {
       // This is a newly loaded (not preserved from previous level) entity
       // that is from the BSP file.
-      PyObject_CallMethod(ent.py_entity, "load", NULL);
-    }
 
+      PyObject_CallMethod(ent->py_entity, (char *)"load", NULL);
+    }
   }
 }
 
@@ -164,6 +177,9 @@ spawn_entities() {
 PyObject *Py_CL_BSPLoader::
 make_pyent(PyObject *py_ent, const string &classname) {
   if (_entity_to_class.find(classname) != _entity_to_class.end()) {
+
+    PyMutexHolder holder;
+
     // A python class was linked to this entity!
     PyObject *obj = PyObject_CallObject((PyObject *)_entity_to_class[classname], NULL);
     if (obj == nullptr)
@@ -172,7 +188,8 @@ make_pyent(PyObject *py_ent, const string &classname) {
     // Give the python entity a handle to the c entity.
     PyObject_SetAttrString(obj, (char *)"cEntity", py_ent);
     // Precache all resources the entity will use.
-    PyObject_CallMethod(obj, "precache", NULL);
+    PyObject_CallMethod(obj, (char *)"precache", NULL);
+
     // Don't call load just yet, we need to have all of the entities created first, because some
     // entities rely on others.
     return obj;
@@ -209,18 +226,22 @@ cleanup_entities(bool is_transition) {
   // UNDONE: Client-side only entities are an obsolete feature.
   //         All entities should eventually be networked and client-side
   //         entity functionality should be removed.
+
+  PyMutexHolder holder;
+
   for (auto itr = _entities.begin(); itr != _entities.end(); itr++) {
-    entitydef_t &def = *itr;
-    if (def.py_entity) {
-      if (_entity_to_class.find(def.c_entity->get_classname()) != _entity_to_class.end()) {
+    EntityDef *def = *itr;
+    if (def->py_entity) {
+      if (_entity_to_class.find(def->c_entity->get_classname()) != _entity_to_class.end()) {
         // This is a client-sided entity. Unload it.
-        PyObject_CallMethod(def.py_entity, "unload", NULL);
+        PyObject_CallMethod(def->py_entity, (char *)"unload", NULL);
       }
 
-      Py_DECREF(def.py_entity);
-      def.py_entity = nullptr;
+      Py_DECREF(def->py_entity);
+      def->py_entity = nullptr;
     }
   }
+
   _entities.clear();
 }
 
@@ -262,7 +283,7 @@ load_entities() {
         PyObject *py_ent = DTool_CreatePyInstance<CBoundsEntity>(entity, true);
         PyObject *linked = make_pyent(py_ent, classname);
 
-        _entities.push_back(entitydef_t(entity, linked));
+        _entities.push_back(new EntityDef(entity, linked));
       }
     } else if (!strncmp(classname.c_str(), "func_", 5)) {
       // Brush entites begin with func_, handle those accordingly.
@@ -300,7 +321,7 @@ load_entities() {
         PyObject *py_ent = DTool_CreatePyInstance<CBrushEntity>(entity, true);
         PyObject *linked = make_pyent(py_ent, classname);
 
-        _entities.push_back(entitydef_t(entity, linked));
+        _entities.push_back(new EntityDef(entity, linked));
       }
     } else if (!strncmp(classname.c_str(), "infodecal", 9)) {
       const char *mat = ValueForKey(ent, "texture");
@@ -321,7 +342,7 @@ load_entities() {
       PyObject *py_ent = DTool_CreatePyInstance<CPointEntity>(entity, true);
       PyObject *linked = make_pyent(py_ent, classname);
 
-      _entities.push_back(entitydef_t(entity, linked));
+      _entities.push_back(new EntityDef(entity, linked));
     }
   }
 }
@@ -330,16 +351,25 @@ load_entities() {
 
 void Py_AI_BSPLoader::
 add_dynamic_entity(PyObject *pyent) {
+  PyMutexHolder holder;
+
+  if (std::string(pyent->ob_type->tp_name) == "ModPlayerAI") {
+    PyObject *dir = PyObject_Dir(pyent);
+    PyObject *repr = PyObject_Repr(dir);
+    std::cout << "Add ModPlayerAI: " << std::string(PyUnicode_AsUTF8(repr)) << std::endl;
+  }
+
   Py_INCREF(pyent);
-  _entities.push_back(entitydef_t(nullptr, pyent, true));
+
+  _entities.push_back(new EntityDef(nullptr, pyent, true));
 }
 
 void Py_AI_BSPLoader::
 remove_dynamic_entity(PyObject *pyent) {
   auto itr = _entities.end();
   for (size_t i = 0; i < _entities.size(); i++) {
-    const entitydef_t &def = _entities[i];
-    if (def.py_entity == pyent) {
+    const EntityDef *def = _entities[i];
+    if (def->py_entity == pyent) {
       itr = _entities.begin() + i;
       break;
     }
@@ -347,13 +377,14 @@ remove_dynamic_entity(PyObject *pyent) {
 
   nassertv(itr != _entities.end());
 
+  PyMutexHolder holder;
   Py_DECREF(pyent);
   _entities.erase(itr);
 }
 
 void Py_AI_BSPLoader::
 mark_entity_preserved(int n, bool preserved) {
-  _entities[n].preserved = preserved;
+  _entities[n]->preserved = preserved;
 }
 
 void Py_AI_BSPLoader::
@@ -368,6 +399,9 @@ link_server_entity_to_class(const string &name, PyTypeObject *type) {
 
 void Py_AI_BSPLoader::
 load_entities() {
+
+  PyMutexHolder holder;
+
   for (int entnum = 0; entnum < _bspdata->numentities; entnum++) {
     entity_t *ent = &_bspdata->entities[entnum];
 
@@ -385,11 +419,12 @@ load_entities() {
 
     if (_svent_to_class.find(classname) != _svent_to_class.end()) {
       if (_sv_ent_dispatch != nullptr) {
-        PyObject *ret = PyObject_CallMethod(_sv_ent_dispatch, "createServerEntity",
-                                            "Oi", _svent_to_class[classname], entnum);
+        PyObject *ret = PyObject_CallMethod(_sv_ent_dispatch, (char *)"createServerEntity",
+                                            (char *)"Oi", _svent_to_class[classname], entnum);
         if (!ret) {
           PyErr_PrintEx(1);
         } else {
+
           PT(CBaseEntity) entity;
           if (!strncmp(psz_classname, "func_", 5) ||
               entnum == 0) {
@@ -412,7 +447,7 @@ load_entities() {
           }
 
           Py_INCREF(ret);
-          _entities.push_back(entitydef_t(entity, ret));
+          _entities.push_back(new EntityDef(entity, ret));
         }
       }
     }
@@ -428,19 +463,24 @@ read(const Filename &filename, bool is_transition) {
 
   if (is_transition) {
     // Find the destination landmark
-    entitydef_t *dest_landmark = nullptr;
+    EntityDef *dest_landmark = nullptr;
     for (size_t i = 0; i < _entities.size(); i++) {
-      entitydef_t &def = _entities[i];
-      if (!def.c_entity)
+      EntityDef *def = _entities[i];
+      if (!def->c_entity)
         continue;
-      if (def.c_entity->get_classname() == "info_landmark" &&
-          def.c_entity->get_targetname() == _transition_source_landmark.get_name()) {
-        dest_landmark = &def;
+      if (def->c_entity->get_classname() == "info_landmark" &&
+          def->c_entity->get_targetname() == _transition_source_landmark.get_name()) {
+        dest_landmark = def;
         break;
       }
     }
 
     if (dest_landmark) {
+#if defined(HAVE_THREADS) && !defined(SIMPLE_THREADS)
+      PyGILState_STATE gstate;
+      gstate = PyGILState_Ensure();
+#endif
+
       CPointEntity *dest_ent = DCAST(CPointEntity, dest_landmark->c_entity);
       NodePath dest_landmark_np("destination_landmark");
       dest_landmark_np.set_pos(dest_ent->get_origin());
@@ -450,12 +490,19 @@ read(const Filename &filename, bool is_transition) {
       Py_INCREF(py_dest_landmark_np);
 
       for (size_t i = 0; i < _entities.size(); i++) {
-        entitydef_t &def = _entities[i];
-        if (def.preserved && def.py_entity) {
-          LMatrix4f mat = def.landmark_relative_transform;
+        EntityDef *def = _entities[i];
+        if (def->preserved && def->py_entity) {
+          LMatrix4f mat = def->landmark_relative_transform;
           PyObject *py_mat = DTool_CreatePyInstance(&mat, *(Dtool_PyTypedObject *)mat.get_class_type().get_python_type(), true, true);
           Py_INCREF(py_mat);
-          PyObject *meth = PyObject_GetAttrString(def.py_entity, (char*)"transitionXform");
+
+          if (std::string(def->py_entity->ob_type->tp_name) == "ModPlayerAI") {
+            PyObject *dir = PyObject_Dir(def->py_entity);
+            PyObject *repr = PyObject_Repr(dir);
+            std::cout << "ModPlayerAI: " << std::string(PyUnicode_AsUTF8(repr)) << std::endl;
+          }
+
+          PyObject *meth = PyObject_GetAttrString(def->py_entity, (char*)"transitionXform");
           if (meth) {
             PyObject *args = PyTuple_Pack(2, py_dest_landmark_np, py_mat);
             Py_INCREF(args);
@@ -463,7 +510,7 @@ read(const Filename &filename, bool is_transition) {
             Py_DECREF(args);
 
           } else {
-            std::cout << "Warning: transitionXform wasn't found on this entity... my fix didn't work" << std::endl;
+            PyErr_PrintEx(1);
           }
 
           Py_DECREF(py_mat);
@@ -472,6 +519,10 @@ read(const Filename &filename, bool is_transition) {
 
       Py_DECREF(py_dest_landmark_np);
       dest_landmark_np.remove_node();
+
+#if defined(HAVE_THREADS) && !defined(SIMPLE_THREADS)
+      PyGILState_Release(gstate);
+#endif
     }
 
     clear_transition_landmark();
@@ -487,41 +538,45 @@ load_geometry() {
 
 void Py_AI_BSPLoader::
 cleanup_entities(bool is_transition) {
+
+  PyMutexHolder holder;
+
   // If we are in a transition to another level, unload any entities
   // that aren't being perserved. Or if we are not in a transition,
   // unload all entities.
   for (auto itr = _entities.begin(); itr != _entities.end(); ) {
-    entitydef_t &def = *itr;
-    if ((is_transition && !def.preserved) || !is_transition) {
-      PyObject *py_ent = def.py_entity;
+    EntityDef *def = *itr;
+    if ((is_transition && !def->preserved) || !is_transition) {
+      PyObject *py_ent = def->py_entity;
       if (py_ent) {
-        PyObject_CallMethod(py_ent, "unload", NULL);
+        PyObject_CallMethod(py_ent, (char *)"unload", NULL);
         Py_DECREF(py_ent);
-        def.py_entity = nullptr;
+        def->py_entity = nullptr;
       }
       itr = _entities.erase(itr);
       continue;
-    } else if (def.c_entity) {
+    } else if (def->c_entity) {
       // This entity is being preserved.
       // The entnum is now invalid since the BSP file is changing.
       // This avoids conflicts with future entities from the new BSP file.
-      def.c_entity->_bsp_entnum = -1;
+      def->c_entity->_bsp_entnum = -1;
     }
     itr++;
   }
 
   if (!is_transition) {
     _entities.clear();
+
   } else if (!_transition_source_landmark.is_empty()) {
     // We are in a transition to another level.
     // Store all entity transforms relative to the source landmark.
     for (size_t i = 0; i < _entities.size(); i++) {
-      entitydef_t &ent = _entities[i];
-      if (ent.py_entity && DtoolInstance_Check(ent.py_entity)) {
+      EntityDef *ent = _entities[i];
+      if (ent->py_entity && DtoolInstance_Check(ent->py_entity)) {
         NodePath *pyent_np = (NodePath *)
-          DtoolInstance_VOID_PTR(ent.py_entity);
+          DtoolInstance_VOID_PTR(ent->py_entity);
         if (pyent_np) {
-          ent.landmark_relative_transform =
+          ent->landmark_relative_transform =
             pyent_np->get_mat(_transition_source_landmark);
         }
       }
