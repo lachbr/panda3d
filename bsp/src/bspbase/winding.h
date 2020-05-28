@@ -17,86 +17,70 @@
 
 #define BASE_WINDING_DISTANCE 9000
 
-#define	SIDE_FRONT		0
-#define	SIDE_ON			2
-#define	SIDE_BACK		1
-#define	SIDE_CROSS		-2
+#define SIDE_FRONT 0
+#define SIDE_ON 2
+#define SIDE_BACK 1
+#define SIDE_CROSS -2
 
 class _BSPEXPORT Winding
 {
 public:
         // General Functions
-        void            Print() const;
-        void            getPlane( dplane_t& plane ) const;
-        void            getPlane( vec3_t& normal, vec_t& dist ) const;
-        vec_t           getArea() const;
-        vec_t           getAreaAndBalancePoint( vec3_t &center ) const;
-        void            getBounds( BSPBoundingBox& bounds ) const;
-        void            getBounds( vec3_t& mins, vec3_t& maxs ) const;
-        void            getCenter( vec3_t& center ) const;
-        Winding*        Copy() const;
-        void            Check(
-                vec_t epsilon = ON_EPSILON
-        ) const;  // Developer check for validity
-        bool            Valid() const;  // Runtime/user/normal check for validity
-        void            addPoint( const vec3_t newpoint );
-        void            insertPoint( const vec3_t newpoint, const unsigned int offset );
+        void Print() const;
+        void getPlane(dplane_t &plane) const;
+        void getPlane(vec3_t &normal, vec_t &dist) const;
+        vec_t getArea() const;
+        vec_t getAreaAndBalancePoint(vec3_t &center) const;
+        void getBounds(BSPBoundingBox &bounds) const;
+        void getBounds(vec3_t &mins, vec3_t &maxs) const;
+        void getCenter(vec3_t &center) const;
+        Winding *Copy() const;
+        void Check(
+            vec_t epsilon = ON_EPSILON) const; // Developer check for validity
+        bool Valid() const;                    // Runtime/user/normal check for validity
+        void addPoint(const vec3_t newpoint);
+        void insertPoint(const vec3_t newpoint, const unsigned int offset);
 
         // Specialized Functions
-        void            RemoveColinearPoints(
-                vec_t epsilon = ON_EPSILON
-        );
-        bool            Clip( const dplane_t& split, bool keepon
-                              , vec_t epsilon = ON_EPSILON
-        ); // For hlbsp
-        void            Clip( const dplane_t& split, Winding** front, Winding** back
-                              , vec_t epsilon = ON_EPSILON
-        );
-        void            Clip( const vec3_t normal, const vec_t dist, Winding** front, Winding** back
-                              , vec_t epsilon = ON_EPSILON
-        );
-        bool            Chop( const vec3_t normal, const vec_t dist
-                              , vec_t epsilon = ON_EPSILON
-        );
-        void            Divide( const dplane_t& split, Winding** front, Winding** back
-                                , vec_t epsilon = ON_EPSILON
-        );
-        int             WindingOnPlaneSide( const vec3_t normal, const vec_t dist
-                                            , vec_t epsilon = ON_EPSILON
-        );
-        void			CopyPoints( vec3_t *points, int &numpoints );
+        void RemoveColinearPoints(
+            vec_t epsilon = ON_EPSILON);
+        bool Clip(const dplane_t &split, bool keepon, vec_t epsilon = ON_EPSILON); // For hlbsp
+        void Clip(const dplane_t &split, Winding **front, Winding **back, vec_t epsilon = ON_EPSILON);
+        void Clip(const vec3_t normal, const vec_t dist, Winding **front, Winding **back, vec_t epsilon = ON_EPSILON);
+        bool Chop(const vec3_t normal, const vec_t dist, vec_t epsilon = ON_EPSILON);
+        void Divide(const dplane_t &split, Winding **front, Winding **back, vec_t epsilon = ON_EPSILON);
+        int WindingOnPlaneSide(const vec3_t normal, const vec_t dist, vec_t epsilon = ON_EPSILON);
+        void CopyPoints(vec3_t *points, int &numpoints);
 
-        void			initFromPoints( vec3_t *points, UINT32 numpoints );
-        void			Reset( void );	// Resets the structure
+        void initFromPoints(vec3_t *points, uint32_t numpoints);
+        void Reset(void); // Resets the structure
 
 protected:
-        void            resize( UINT32 newsize );
+        void resize(uint32_t newsize);
 
 public:
         // Construction
-        Winding();										// Do nothing :)
-        Winding( vec3_t *points, UINT32 numpoints );		// Create from raw points
-        Winding( const dface_t& face
-                 , bspdata_t *data
-                 , vec_t epsilon = ON_EPSILON
-        );
-        Winding( const dplane_t& face );
-        Winding( const vec3_t normal, const vec_t dist );
-        Winding( UINT32 points );
-        Winding( const Winding& other );
+        Winding();                                   // Do nothing :)
+        Winding(vec3_t *points, uint32_t numpoints); // Create from raw points
+        Winding(const dface_t &face, bspdata_t *data, vec_t epsilon = ON_EPSILON);
+        Winding(const dplane_t &face);
+        Winding(const vec3_t normal, const vec_t dist);
+        Winding(uint32_t points);
+        Winding(const Winding &other);
         virtual ~Winding();
-        Winding& operator=( const Winding& other );
+        Winding &operator=(const Winding &other);
 
         // Misc
 private:
-        void initFromPlane( const vec3_t normal, const vec_t dist );
+        void initFromPlane(const vec3_t normal, const vec_t dist);
 
 public:
         // Data
-        UINT32  m_NumPoints;
-        vec3_t* m_Points;
+        uint32_t m_NumPoints;
+        vec3_t *m_Points;
+
 protected:
-        UINT32  m_MaxPoints;
+        uint32_t m_MaxPoints;
 };
 
 #endif

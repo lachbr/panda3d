@@ -14,22 +14,22 @@
 // =====================================================================================
 //  AllocBlock
 // =====================================================================================
-void*           AllocBlock( const unsigned long size )
+void *AllocBlock(const unsigned long size)
 {
-        void*           pointer;
-        HANDLE          h;
+        void *pointer;
+        HANDLE h;
 
-        if ( !size )
+        if (!size)
         {
-                Warning( "Attempting to allocate 0 bytes" );
+                Warning("Attempting to allocate 0 bytes");
         }
 
-        h = GlobalAlloc( GMEM_FIXED | GMEM_ZEROINIT, size );
-        hlassume( h != NULL, assume_NoMemory );
+        h = GlobalAlloc(GMEM_FIXED | GMEM_ZEROINIT, size);
+        hlassume(h != NULL, assume_NoMemory);
 
-        if ( h )
+        if (h)
         {
-                pointer = GlobalLock( h );
+                pointer = GlobalLock(h);
         }
         else
         {
@@ -42,26 +42,26 @@ void*           AllocBlock( const unsigned long size )
 // =====================================================================================
 //  FreeBlock
 // =====================================================================================
-bool            FreeBlock( void* pointer )
+bool FreeBlock(void *pointer)
 {
-        HANDLE          h;
+        HANDLE h;
 
-        if ( !pointer )
+        if (!pointer)
         {
-                Warning( "Freeing a null pointer" );
+                Warning("Freeing a null pointer");
         }
 
-        h = GlobalHandle( pointer );
+        h = GlobalHandle(pointer);
 
-        if ( h )
+        if (h)
         {
-                GlobalUnlock( h );
-                GlobalFree( h );
+                GlobalUnlock(h);
+                GlobalFree(h);
                 return true;
         }
         else
         {
-                Warning( "Could not translate pointer into handle" );
+                Warning("Could not translate pointer into handle");
                 return false;
         }
 }
@@ -70,10 +70,10 @@ bool            FreeBlock( void* pointer )
 // =====================================================================================
 //  HeapCheck
 // =====================================================================================
-void            HeapCheck()
+void HeapCheck()
 {
-        if ( _heapchk() != _HEAPOK )
-                hlassert( false );
+        if (_heapchk() != _HEAPOK)
+                hlassert(false);
 }
 #endif
 
@@ -81,36 +81,31 @@ void            HeapCheck()
 //  AllocBlock
 // =====================================================================================
 // HeapAlloc/HeapFree is thread safe by default
-void*           Alloc( const unsigned long size )
+void *Alloc(const unsigned long size)
 {
         HeapCheck();
-        return calloc( 1, size );
+        return calloc(1, size);
 }
 
 // =====================================================================================
 //  AllocBlock
 // =====================================================================================
-bool            Free( void* pointer )
+bool Free(void *pointer)
 {
         HeapCheck();
-        free( pointer );
+        free(pointer);
         return true;
 }
 
 #endif /// ********* WIN32 **********
 
-
-
-
 /// ********* POSIX **********
 
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#ifdef STDC_HEADERS
 #include <stdlib.h>
-#endif
 #include "cmdlib.h"
 #include "messages.h"
 #include "log.h"
@@ -118,42 +113,42 @@ bool            Free( void* pointer )
 // =====================================================================================
 //  AllocBlock
 // =====================================================================================
-void*           AllocBlock( const unsigned long size )
+void *AllocBlock(const unsigned long size)
 {
-        if ( !size )
+        if (!size)
         {
-                Warning( "Attempting to allocate 0 bytes" );
+                Warning("Attempting to allocate 0 bytes");
         }
-        return calloc( 1, size );
+        return calloc(1, size);
 }
 
 // =====================================================================================
 //  FreeBlock
 // =====================================================================================
-bool            FreeBlock( void* pointer )
+bool FreeBlock(void *pointer)
 {
-        if ( !pointer )
+        if (!pointer)
         {
-                Warning( "Freeing a null pointer" );
+                Warning("Freeing a null pointer");
         }
-        free( pointer );
+        free(pointer);
         return true;
 }
 
 // =====================================================================================
 //  Alloc
 // =====================================================================================
-void*           Alloc( const unsigned long size )
+void *Alloc(const unsigned long size)
 {
-        return AllocBlock( size );
+        return AllocBlock(size);
 }
 
 // =====================================================================================
 //  Free
 // =====================================================================================
-bool            Free( void* pointer )
+bool Free(void *pointer)
 {
-        return FreeBlock( pointer );
+        return FreeBlock(pointer);
 }
 
 #endif /// ********* POSIX **********

@@ -51,18 +51,6 @@ set(P3BSPBASE_SOURCES
 
 composite_sources(p3bspbase P3BSPBASE_SOURCES)
 add_library(p3bspbase STATIC ${P3BSPBASE_HEADERS} ${P3BSPBASE_SOURCES})
-if (WIN32)
-  if (CMAKE_GENERATOR_PLATFORM MATCHES "x64")
-    target_compile_definitions(p3bspbase PUBLIC VERSION_64BIT)
-  else()
-    target_compile_definitions(p3bspbase PUBLIC VERSION_32BIT)
-  endif()
-elseif (IS_LINUX)
-  target_compile_definitions(p3bspbase PUBLIC VERSION_LINUX)
-  target_compile_definitions(p3bspbase PUBLIC SYSTEM_POSIX)
-else()
-  target_compile_definitions(p3bspbase PUBLIC VERSION_OTHER)
-endif()
 target_compile_definitions(p3bspbase PUBLIC NOMINMAX)
 target_link_libraries(p3bspbase panda)
 

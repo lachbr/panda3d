@@ -10,7 +10,7 @@
 #include "log.h"
 #include "mathlib.h"
 
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -30,84 +30,84 @@
 * ================
 */
 
-double          I_FloatTime()
+double I_FloatTime()
 {
 #ifdef _WIN32
-        FILETIME        ftime;
+        FILETIME ftime;
         double rval;
 
-        GetSystemTimeAsFileTime( &ftime );
+        GetSystemTimeAsFileTime(&ftime);
 
         rval = ftime.dwLowDateTime;
-        rval += ( (__int64)ftime.dwHighDateTime ) << 32;
+        rval += ((__int64)ftime.dwHighDateTime) << 32;
 
-        return ( rval / 10000000.0 );
+        return (rval / 10000000.0);
 #endif
 
-#ifdef SYSTEM_POSIX
-        struct timeval  tp;
+#ifdef __GNUC__
+        struct timeval tp;
         struct timezone tzp;
-        static int      secbase;
+        static int secbase;
 
-        gettimeofday( &tp, &tzp );
+        gettimeofday(&tp, &tzp);
 
-        if ( !secbase )
+        if (!secbase)
         {
                 secbase = tp.tv_sec;
                 return tp.tv_usec / 1000000.0;
         }
 
-        return ( tp.tv_sec - secbase ) + tp.tv_usec / 1000000.0;
+        return (tp.tv_sec - secbase) + tp.tv_usec / 1000000.0;
 #endif
 }
 
-#ifdef SYSTEM_POSIX
-char*           strupr( char* string )
+#ifdef __GNUC__
+char *strupr(char *string)
 {
-        int             i;
-        int             len = strlen( string );
+        int i;
+        int len = strlen(string);
 
-        for ( i = 0; i < len; i++ )
+        for (i = 0; i < len; i++)
         {
-                string[i] = toupper( string[i] );
+                string[i] = toupper(string[i]);
         }
         return string;
 }
 
-char*           strlwr( char* string )
+char *strlwr(char *string)
 {
-        int             i;
-        int             len = strlen( string );
+        int i;
+        int len = strlen(string);
 
-        for ( i = 0; i < len; i++ )
+        for (i = 0; i < len; i++)
         {
-                string[i] = tolower( string[i] );
+                string[i] = tolower(string[i]);
         }
         return string;
 }
 #endif
 
 // Case Insensitive substring matching
-const char*     stristr( const char* const string, const char* const substring )
+const char *stristr(const char *const string, const char *const substring)
 {
-        char*           string_copy;
-        char*           substring_copy;
-        const char*     match;
+        char *string_copy;
+        char *substring_copy;
+        const char *match;
 
-        string_copy = _strdup( string );
-        _strlwr( string_copy );
+        string_copy = _strdup(string);
+        _strlwr(string_copy);
 
-        substring_copy = _strdup( substring );
-        _strlwr( substring_copy );
+        substring_copy = _strdup(substring);
+        _strlwr(substring_copy);
 
-        match = strstr( string_copy, substring_copy );
-        if ( match )
+        match = strstr(string_copy, substring_copy);
+        if (match)
         {
-                match = ( string + ( match - string_copy ) );
+                match = (string + (match - string_copy));
         }
 
-        free( string_copy );
-        free( substring_copy );
+        free(string_copy);
+        free(substring_copy);
         return match;
 }
 
@@ -116,14 +116,14 @@ const char*     stristr( const char* const string, const char* const substring )
 // StripExtension, ExtractFilePath, ExtractFile, ExtractFileBase, etc.
 ----------------------------------------------------------------------*/
 
-//Since all of these functions operate around either the extension 
+//Since all of these functions operate around either the extension
 //or the directory path, centralize getting both numbers here so we
 //can just reference them everywhere else.  Use strrchr to give a
 //speed boost while we're at it.
-inline void getFilePositions( const char* path, int* extension_position, int* directory_position )
+inline void getFilePositions(const char *path, int *extension_position, int *directory_position)
 {
-        const char* ptr = strrchr( path, '.' );
-        if ( ptr == 0 )
+        const char *ptr = strrchr(path, '.');
+        if (ptr == 0)
         {
                 *extension_position = -1;
         }
@@ -132,43 +132,43 @@ inline void getFilePositions( const char* path, int* extension_position, int* di
                 *extension_position = ptr - path;
         }
 
-        ptr = qmax( strrchr( path, '/' ), strrchr( path, '\\' ) );
-        if ( ptr == 0 )
+        ptr = qmax(strrchr(path, '/'), strrchr(path, '\\'));
+        if (ptr == 0)
         {
                 *directory_position = -1;
         }
         else
         {
                 *directory_position = ptr - path;
-                if ( *directory_position > *extension_position )
+                if (*directory_position > *extension_position)
                 {
                         *extension_position = -1;
                 }
 
                 //cover the case where we were passed a directory - get 2nd-to-last slash
-                if ( *directory_position == (int)strlen( path ) - 1 )
+                if (*directory_position == (int)strlen(path) - 1)
                 {
                         do
                         {
-                                --( *directory_position );
-                        } while ( *directory_position > -1 && path[*directory_position] != '/' && path[*directory_position] != '\\' );
+                                --(*directory_position);
+                        } while (*directory_position > -1 && path[*directory_position] != '/' && path[*directory_position] != '\\');
                 }
         }
 }
 
-char* FlipSlashes( char* string )
+char *FlipSlashes(char *string)
 {
-        char* ptr = string;
-        if ( SYSTEM_SLASH_CHAR == '\\' )
+        char *ptr = string;
+        if (SYSTEM_SLASH_CHAR == '\\')
         {
-                while ( ptr = strchr( ptr, '/' ) )
+                while (ptr = strchr(ptr, '/'))
                 {
                         *ptr = SYSTEM_SLASH_CHAR;
                 }
         }
         else
         {
-                while ( ptr = strchr( ptr, '\\' ) )
+                while (ptr = strchr(ptr, '\\'))
                 {
                         *ptr = SYSTEM_SLASH_CHAR;
                 }
@@ -176,21 +176,21 @@ char* FlipSlashes( char* string )
         return string;
 }
 
-void DefaultExtension( char* path, const char* extension )
+void DefaultExtension(char *path, const char *extension)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
-        if ( extension_pos == -1 )
+        getFilePositions(path, &extension_pos, &directory_pos);
+        if (extension_pos == -1)
         {
-                strcat( path, extension );
+                strcat(path, extension);
         }
 }
 
-void StripFilename( char* path )
+void StripFilename(char *path)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
-        if ( directory_pos == -1 )
+        getFilePositions(path, &extension_pos, &directory_pos);
+        if (directory_pos == -1)
         {
                 path[0] = 0;
         }
@@ -200,23 +200,23 @@ void StripFilename( char* path )
         }
 }
 
-void StripExtension( char* path )
+void StripExtension(char *path)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
-        if ( extension_pos != -1 )
+        getFilePositions(path, &extension_pos, &directory_pos);
+        if (extension_pos != -1)
         {
                 path[extension_pos] = 0;
         }
 }
 
-void ExtractFilePath( const char* const path, char* dest )
+void ExtractFilePath(const char *const path, char *dest)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
-        if ( directory_pos != -1 )
+        getFilePositions(path, &extension_pos, &directory_pos);
+        if (directory_pos != -1)
         {
-                memcpy( dest, path, directory_pos + 1 ); //include directory slash
+                memcpy(dest, path, directory_pos + 1); //include directory slash
                 dest[directory_pos + 1] = 0;
         }
         else
@@ -225,39 +225,39 @@ void ExtractFilePath( const char* const path, char* dest )
         }
 }
 
-void ExtractFile( const char* const path, char* dest )
+void ExtractFile(const char *const path, char *dest)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
+        getFilePositions(path, &extension_pos, &directory_pos);
 
-        size_t length = strlen( path );
+        size_t length = strlen(path);
 
         length -= directory_pos + 1;
 
-        memcpy( dest, path + directory_pos + 1, length ); //exclude directory slash
+        memcpy(dest, path + directory_pos + 1, length); //exclude directory slash
         dest[length] = 0;
 }
 
-void ExtractFileBase( const char* const path, char* dest )
+void ExtractFileBase(const char *const path, char *dest)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
-        int length = extension_pos == -1 ? strlen( path ) : extension_pos;
+        getFilePositions(path, &extension_pos, &directory_pos);
+        int length = extension_pos == -1 ? strlen(path) : extension_pos;
 
         length -= directory_pos + 1;
 
-        memcpy( dest, path + directory_pos + 1, length ); //exclude directory slash
+        memcpy(dest, path + directory_pos + 1, length); //exclude directory slash
         dest[length] = 0;
 }
 
-void ExtractFileExtension( const char* const path, char* dest )
+void ExtractFileExtension(const char *const path, char *dest)
 {
         int extension_pos, directory_pos;
-        getFilePositions( path, &extension_pos, &directory_pos );
-        if ( extension_pos != -1 )
+        getFilePositions(path, &extension_pos, &directory_pos);
+        if (extension_pos != -1)
         {
-                int length = strlen( path ) - extension_pos;
-                memcpy( dest, path + extension_pos, length ); //include extension '.'
+                int length = strlen(path) - extension_pos;
+                memcpy(dest, path + extension_pos, length); //include extension '.'
                 dest[length] = 0;
         }
         else
@@ -277,46 +277,44 @@ void ExtractFileExtension( const char* const path, char* dest )
 
 #ifdef WORDS_BIGENDIAN
 
-short           LittleShort( const short l )
+short LittleShort(const short l)
 {
-        byte            b1, b2;
+        byte b1, b2;
 
         b1 = l & 255;
-        b2 = ( l >> 8 ) & 255;
+        b2 = (l >> 8) & 255;
 
-        return ( b1 << 8 ) + b2;
+        return (b1 << 8) + b2;
 }
 
-short           BigShort( const short l )
+short BigShort(const short l)
 {
         return l;
 }
 
-int             LittleLong( const int l )
+int LittleLong(const int l)
 {
-        byte            b1, b2, b3, b4;
+        byte b1, b2, b3, b4;
 
         b1 = l & 255;
-        b2 = ( l >> 8 ) & 255;
-        b3 = ( l >> 16 ) & 255;
-        b4 = ( l >> 24 ) & 255;
+        b2 = (l >> 8) & 255;
+        b3 = (l >> 16) & 255;
+        b4 = (l >> 24) & 255;
 
-        return ( (int)b1 << 24 ) + ( (int)b2 << 16 ) + ( (int)b3 << 8 ) + b4;
+        return ((int)b1 << 24) + ((int)b2 << 16) + ((int)b3 << 8) + b4;
 }
 
-int             BigLong( const int l )
+int BigLong(const int l)
 {
         return l;
 }
 
-float           LittleFloat( const float l )
+float LittleFloat(const float l)
 {
-        union
-        {
-                byte            b[4];
-                float           f;
-        }
-        in, out;
+        union {
+                byte b[4];
+                float f;
+        } in, out;
 
         in.f = l;
         out.b[0] = in.b[3];
@@ -327,53 +325,51 @@ float           LittleFloat( const float l )
         return out.f;
 }
 
-float           BigFloat( const float l )
+float BigFloat(const float l)
 {
         return l;
 }
 
 #else // Little endian (Intel, etc)
 
-short           BigShort( const short l )
+short BigShort(const short l)
 {
-        byte            b1, b2;
+        byte b1, b2;
 
-        b1 = (byte)( l & 255 );
-        b2 = (byte)( ( l >> 8 ) & 255 );
+        b1 = (byte)(l & 255);
+        b2 = (byte)((l >> 8) & 255);
 
-        return (short)( ( b1 << 8 ) + b2 );
+        return (short)((b1 << 8) + b2);
 }
 
-short           LittleShort( const short l )
+short LittleShort(const short l)
 {
         return l;
 }
 
-int             BigLong( const int l )
+int BigLong(const int l)
 {
-        byte            b1, b2, b3, b4;
+        byte b1, b2, b3, b4;
 
-        b1 = (byte)( l & 255 );
-        b2 = (byte)( ( l >> 8 ) & 255 );
-        b3 = (byte)( ( l >> 16 ) & 255 );
-        b4 = (byte)( ( l >> 24 ) & 255 );
+        b1 = (byte)(l & 255);
+        b2 = (byte)((l >> 8) & 255);
+        b3 = (byte)((l >> 16) & 255);
+        b4 = (byte)((l >> 24) & 255);
 
-        return ( (int)b1 << 24 ) + ( (int)b2 << 16 ) + ( (int)b3 << 8 ) + b4;
+        return ((int)b1 << 24) + ((int)b2 << 16) + ((int)b3 << 8) + b4;
 }
 
-int             LittleLong( const int l )
+int LittleLong(const int l)
 {
         return l;
 }
 
-float           BigFloat( const float l )
+float BigFloat(const float l)
 {
-        union
-        {
-                byte            b[4];
-                float           f;
-        }
-        in, out;
+        union {
+                byte b[4];
+                float f;
+        } in, out;
 
         in.f = l;
         out.b[0] = in.b[3];
@@ -384,7 +380,7 @@ float           BigFloat( const float l )
         return out.f;
 }
 
-float           LittleFloat( const float l )
+float LittleFloat(const float l)
 {
         return l;
 }
@@ -393,19 +389,19 @@ float           LittleFloat( const float l )
 
 //=============================================================================
 
-bool CDECL FORMAT_PRINTF( 3, 4 )      safe_snprintf( char* const dest, const size_t count, const char* const args, ... )
+bool CDECL FORMAT_PRINTF(3, 4) safe_snprintf(char *const dest, const size_t count, const char *const args, ...)
 {
-        size_t          amt;
-        va_list         argptr;
+        size_t amt;
+        va_list argptr;
 
-        hlassert( count > 0 );
+        hlassert(count > 0);
 
-        va_start( argptr, args );
-        amt = vsnprintf( dest, count, args, argptr );
-        va_end( argptr );
+        va_start(argptr, args);
+        amt = vsnprintf(dest, count, args, argptr);
+        va_end(argptr);
 
         // truncated (bad!, snprintf doesn't null terminate the string when this happens)
-        if ( amt == count )
+        if (amt == count)
         {
                 dest[count - 1] = 0;
                 return false;
@@ -414,34 +410,34 @@ bool CDECL FORMAT_PRINTF( 3, 4 )      safe_snprintf( char* const dest, const siz
         return true;
 }
 
-bool            safe_strncpy( char* const dest, const char* const src, const size_t count )
+bool safe_strncpy(char *const dest, const char *const src, const size_t count)
 {
-        return safe_snprintf( dest, count, "%s", src );
+        return safe_snprintf(dest, count, "%s", src);
 }
 
-bool            safe_strncat( char* const dest, const char* const src, const size_t count )
+bool safe_strncat(char *const dest, const char *const src, const size_t count)
 {
-        if ( count )
+        if (count)
         {
-                strncat( dest, src, count );
+                strncat(dest, src, count);
 
-                dest[count - 1] = 0;                               // Ensure it is null terminated
+                dest[count - 1] = 0; // Ensure it is null terminated
                 return true;
         }
         else
         {
-                Warning( "safe_strncat passed empty count" );
+                Warning("safe_strncat passed empty count");
                 return false;
         }
 }
 
-bool            TerminatedString( const char* buffer, const int size )
+bool TerminatedString(const char *buffer, const int size)
 {
-        int             x;
+        int x;
 
-        for ( x = 0; x < size; x++, buffer++ )
+        for (x = 0; x < size; x++, buffer++)
         {
-                if ( ( *buffer ) == 0 )
+                if ((*buffer) == 0)
                 {
                         return true;
                 }
@@ -449,32 +445,32 @@ bool            TerminatedString( const char* buffer, const int size )
         return false;
 }
 
-bool strcontains( const string &str, const string &keyword )
+bool strcontains(const string &str, const string &keyword)
 {
         string strl = str;
-        transform( strl.begin(), strl.end(), strl.begin(), tolower );
-        return strl.find( keyword ) != strl.npos;
+        transform(strl.begin(), strl.end(), strl.begin(), tolower);
+        return strl.find(keyword) != strl.npos;
 }
 
-vector<string> explode( const string &delimiter, const string &str )
+vector<string> explode(const string &delimiter, const string &str)
 {
         vector<string> arr;
 
         int strleng = str.length();
         int delleng = delimiter.length();
-        if ( delleng == 0 )
-                return arr;//no change
+        if (delleng == 0)
+                return arr; //no change
 
         int i = 0;
         int k = 0;
-        while ( i<strleng )
+        while (i < strleng)
         {
                 int j = 0;
-                while ( i + j<strleng && j<delleng && str[i + j] == delimiter[j] )
+                while (i + j < strleng && j < delleng && str[i + j] == delimiter[j])
                         j++;
-                if ( j == delleng )//found delimiter
+                if (j == delleng) //found delimiter
                 {
-                        arr.push_back( str.substr( k, i - k ) );
+                        arr.push_back(str.substr(k, i - k));
                         i += delleng;
                         k = i;
                 }
@@ -483,6 +479,6 @@ vector<string> explode( const string &delimiter, const string &str )
                         i++;
                 }
         }
-        arr.push_back( str.substr( k, i - k ) );
+        arr.push_back(str.substr(k, i - k));
         return arr;
 }
