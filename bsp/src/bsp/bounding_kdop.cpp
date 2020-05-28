@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -296,7 +296,7 @@ int BoundingKDOP::contains_hexahedron( const BoundingHexahedron *hexahedron ) co
 
 void BoundingKDOP::set_points()
 {
-        
+
 }
 
 void BoundingKDOP::set_centroid()

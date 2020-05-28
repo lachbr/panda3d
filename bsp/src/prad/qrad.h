@@ -143,7 +143,7 @@
 #ifdef _WIN32
 #define DEFAULT_ESTIMATE    false
 #endif
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
 #define DEFAULT_ESTIMATE    true
 #endif
 

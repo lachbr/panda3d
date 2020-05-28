@@ -51,15 +51,13 @@ int getPerfTimeUsec(const TimeVal duration)
 
 // Linux, BSD, OSX
 
-#include <sys/time.h>
+//#include <sys/time.h>
 
 namespace rnsup
 {
 TimeVal getPerfTime()
 {
-	timeval now;
-	gettimeofday(&now, 0);
-	return (TimeVal)now.tv_sec*1000000L + (TimeVal)now.tv_usec;
+	return 0;
 }
 
 int getPerfTimeUsec(const TimeVal duration)

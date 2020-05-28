@@ -95,8 +95,8 @@ volatile bool   g_bsp_downloaded = false;       // Client variable
 volatile bool   g_prt_downloaded = false;       // Client variable
 volatile bool   g_mightsee_downloaded = false;  // Client variable
 
-char*           g_bsp_image = NULL;         // Client/Server variable : Server uses it for cache for connecting clients, clients download it to memory to not require filesystem usage 
-char*           g_prt_image = NULL;         // Client/Server variable : Server uses it for cache for connecting clients, clients download it to memory to not require filesystem usage 
+char*           g_bsp_image = NULL;         // Client/Server variable : Server uses it for cache for connecting clients, clients download it to memory to not require filesystem usage
+char*           g_prt_image = NULL;         // Client/Server variable : Server uses it for cache for connecting clients, clients download it to memory to not require filesystem usage
 unsigned long   g_bsp_compressed_size = 0;  // Server variable
 unsigned long   g_prt_compressed_size = 0;  // Server variable
 unsigned long   g_bsp_size = 0;             // Server variable
@@ -106,7 +106,7 @@ unsigned long   g_prt_size = 0;             // Server variable
                                             // AJM: addded in
                                             // =====================================================================================
                                             //  GetParamsFromEnt
-                                            //      this function is called from parseentity when it encounters the 
+                                            //      this function is called from parseentity when it encounters the
                                             //      info_compile_parameters entity. each tool should have its own version of this
                                             //      to handle its own specific settings.
                                             // =====================================================================================
@@ -820,7 +820,7 @@ static void     CalcVis()
 
                 vismap_p = g_bspdata->dvisdata;
 
-                // We don't need to run BasePortalVis again			
+                // We don't need to run BasePortalVis again
                 NamedRunThreadsOn( g_portalleafs, g_estimate, MaxDistVis );
 
                 // No need to run this - MaxDistVis now writes directly to visbits after the initial VIS
@@ -1057,22 +1057,22 @@ static void     AssignPortalsToZones()
 {
         hlassert( g_Zones != NULL );
 
-        UINT32 count = 0;
+        uint32_t count = 0;
 
         portal_t* p;
-        UINT32 x;
+        uint32_t x;
 
-        UINT32 tmp[20];
+        uint32_t tmp[20];
         memset( tmp, 0, sizeof( tmp ) );
 
-        UINT32 numportals = g_numportals * 2;
+        uint32_t numportals = g_numportals * 2;
         for ( x = 0, p = g_portals; x<numportals; x++, p++ )
         {
                 BSPBoundingBox bounds;
                 winding_t* w = p->winding;
-                UINT32 numpoints = w->numpoints;
+                uint32_t numpoints = w->numpoints;
 
-                UINT32 y;
+                uint32_t y;
 
                 for ( y = 0; y<numpoints; y++ )
                 {
@@ -1121,7 +1121,7 @@ static void     Usage()
 #ifdef _WIN32
         Log( "    -estimate       : display estimated time during compile\n" );
 #endif
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
         Log( "    -noestimate     : do not display continuous compile time estimates\n" );
 #endif
         Log( "    -maxdistance #  : Alter the maximum distance for visibility\n" );
@@ -1294,7 +1294,7 @@ int             main( const int argc, char** argv )
                                         g_estimate = true;
                                 }
 #endif
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
                                 else if ( !strcasecmp( argv[i], "-noestimate" ) )
                                 {
                                         g_estimate = false;
@@ -1719,7 +1719,7 @@ int             main( const int argc, char** argv )
                         {
 
 #ifndef _WIN32
-                                // Dont ask  . . 
+                                // Dont ask  . .
                                 DisconnectFromServer();
 #endif
 

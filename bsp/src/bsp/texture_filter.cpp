@@ -1,8 +1,7 @@
 #include "texture_filter.h"
 
-IMPLEMENT_CLASS( BSPTextureFilter );
+IMPLEMENT_CLASS(BSPTextureFilter);
 
-PT( Texture ) BSPTextureFilter::post_load( Texture *tex )
-{
-	return tex;
+PT(Texture) BSPTextureFilter::post_load(Texture *tex) {
+    return tex;
 }

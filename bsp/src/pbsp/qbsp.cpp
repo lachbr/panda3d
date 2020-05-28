@@ -1121,7 +1121,7 @@ brush_t *MakeBrushListFromSurfs(surfchain_t *surfs)
                                 for ( int i = 0; i < db->numsides; i++ )
                                 {
                                         dbrushside_t *dbs = &g_bspdata->dbrushsides[db->firstside + i];
-                                        
+
                                         side_t *s;
                                         s = AllocSide();
                                         s->plane = g_bspdata->dplanes[dbs->planenum ^ 1];
@@ -1140,7 +1140,7 @@ brush_t *MakeBrushListFromSurfs(surfchain_t *surfs)
                                                 {
                                                         break;
                                                 }
-                                                        
+
                                         }
 
                                         s->w->RemoveColinearPoints();
@@ -1369,7 +1369,7 @@ static void     Usage()
 #ifdef _WIN32
         Log( "    -estimate      : display estimated time during compile\n" );
 #endif
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
         Log( "    -noestimate    : do not display continuous compile time estimates\n" );
 #endif
 
@@ -1608,7 +1608,7 @@ int             main( const int argc, char** argv )
                                 }
 #endif
 
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
                                 else if ( !strcasecmp( argv[i], "-noestimate" ) )
                                 {
                                         g_estimate = false;

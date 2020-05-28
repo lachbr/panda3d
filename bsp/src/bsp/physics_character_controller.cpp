@@ -134,7 +134,7 @@ void PhysicsCharacterController::add_elements() {
 }
 
 void PhysicsCharacterController::set_max_slope(float degs, bool affects_speed) {
-  _min_slope_dot = std::cosf(deg_2_rad(degs));
+  _min_slope_dot = cosf(deg_2_rad(degs));
   _slope_affects_speed = affects_speed;
 }
 
@@ -337,7 +337,7 @@ bool PhysicsCharacterController::check_future_space(const LVector3 &gv) {
   if (up_node->get_mass() > 0.0f)
     return true;
 
-  float space = std::fabsf(up_test.get_hit_pos()[2] - down_test.get_hit_pos()[2]);
+  float space = fabsf(up_test.get_hit_pos()[2] - down_test.get_hit_pos()[2]);
 
   if (space < _capsule_data->levitation + _capsule_data->height + _capsule_data->radius)
     return false;
@@ -442,7 +442,7 @@ void PhysicsCharacterController::update_foot_contact() {
     sorted_hits.push_back(hit);
   }
 
-  std::sort(sorted_hits.begin(), sorted_hits.end(), [](const BulletRayHit &a, const BulletRayHit &b) {
+  sort(sorted_hits.begin(), sorted_hits.end(), [](const BulletRayHit &a, const BulletRayHit &b) {
     return (a.get_hit_fraction() < b.get_hit_fraction());
   });
 
@@ -548,7 +548,7 @@ void PhysicsCharacterController::jump(float max_height) {
   _jump_start_pos = _target_pos[2];
   _jump_time = 0.0f;
   float bsq = -4.0f * _gravity * (max_height - _jump_start_pos);
-  float b = std::sqrtf(bsq);
+  float b = sqrtf(bsq);
   _jump_speed = b;
   _jump_max_height = max_height;
 
@@ -611,7 +611,7 @@ void PhysicsCharacterController::process_falling() {
   }
 
   _fall_time += _timestep;
-  _fall_delta = _gravity * std::powf(_fall_time, 2.0f);
+  _fall_delta = _gravity * powf(_fall_time, 2.0f);
 
   LPoint3 new_pos(_target_pos);
   new_pos[2] = _fall_start_pos + _fall_delta;
@@ -649,7 +649,7 @@ void PhysicsCharacterController::process_jumping() {
 
   float old_pos = _target_pos[2];
   _jump_time += _timestep;
-  _target_pos[2] = (_gravity * std::powf(_jump_time, 2.0f)) + (_jump_speed * _jump_time) + _jump_start_pos;
+  _target_pos[2] = (_gravity * powf(_jump_time, 2.0f)) + (_jump_speed * _jump_time) + _jump_start_pos;
 
   if (old_pos > _target_pos[2]) {
     fall();

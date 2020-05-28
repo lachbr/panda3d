@@ -1,7 +1,7 @@
 #include "qrad.h"
 
 #include "bspMaterial.h"
-#include "keyvalues.h"
+#include "keyValues.h"
 
 #ifdef WORDS_BIGENDIAN
 #error "HLRAD_TEXTURE doesn't support WORDS_BIGENDIAN, because I have no big endian machine to test it"
@@ -95,7 +95,7 @@ void LoadTextures()
                                         Log( "Loaded RAD texture from %s.\n", tref->name );
                                         delete bump;
                                 }
-                                
+
                         }
                         else
                         {
@@ -148,4 +148,3 @@ void LoadTextures()
                 Log( "%i textures referenced\n", g_numtextures );
         }
 }
-

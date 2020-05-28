@@ -27,7 +27,7 @@
 #ifdef _WIN32
 #define DEFAULT_ESTIMATE    false
 #endif
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
 #define DEFAULT_ESTIMATE    true
 #endif
 #define DEFAULT_FASTVIS     false
@@ -77,7 +77,7 @@ typedef struct
 #ifdef ZHLT_NETVIS
         int             fromclient;                            // which client did this come from
 #endif
-        UINT32          zone;                                  // Which zone is this portal a member of
+        uint32_t          zone;                                  // Which zone is this portal a member of
 } portal_t;
 
 typedef struct seperating_plane_s

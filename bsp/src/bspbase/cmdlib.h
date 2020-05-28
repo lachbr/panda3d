@@ -127,7 +127,7 @@ using std::vector;
 
 #include <stdint.h> //--vluzacn
 
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
 #include <sys/time.h>
 #include <unistd.h>
 #endif
@@ -141,8 +141,7 @@ using std::vector;
 #ifdef _WIN32
 #define SYSTEM_SLASH_CHAR '\\'
 #define SYSTEM_SLASH_STR "\\"
-#endif
-#ifdef SYSTEM_POSIX
+#else
 #define SYSTEM_SLASH_CHAR '/'
 #define SYSTEM_SLASH_STR "/"
 #endif
@@ -151,7 +150,7 @@ using std::vector;
 #define myoffsetof(type, identifier) ((size_t) & ((type *)0)->identifier)
 #define sizeofElement(type, identifier) (sizeof((type *)0)->identifier)
 
-#ifdef SYSTEM_POSIX
+#ifdef __GNUC__
 extern _BSPEXPORT char *strupr(char *string);
 extern _BSPEXPORT char *strlwr(char *string);
 #endif

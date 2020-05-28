@@ -53,5 +53,6 @@ composite_sources(p3bspbase P3BSPBASE_SOURCES)
 add_library(p3bspbase STATIC ${P3BSPBASE_HEADERS} ${P3BSPBASE_SOURCES})
 target_compile_definitions(p3bspbase PUBLIC NOMINMAX)
 target_link_libraries(p3bspbase panda)
+set_target_properties(p3bspbase PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # NOTE: This package is not installed.

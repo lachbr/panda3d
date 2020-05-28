@@ -245,7 +245,7 @@ inline static winding_t* ClipToSeperators(
 
         const unsigned int numpoints = source->numpoints;
 
-        // check all combinations       
+        // check all combinations
         for ( i = 0, l = 1; i < numpoints; i++, l++ )
         {
                 if ( l == numpoints )
@@ -405,7 +405,7 @@ inline static void     RecursiveLeafFlow( const int leafnum, const threaddata_t*
         stack.clipPlane = NULL;
 #endif
 
-        // check all portals for flowing into other leafs       
+        // check all portals for flowing into other leafs
         unsigned i;
         portal_t** plist = leaf->portals;
 
@@ -702,7 +702,7 @@ void            BasePortalVis( int unused )
                 memset( portalsee, 0, portalsize );
 
 #if ZHLT_ZONES
-                UINT32 zone = p->zone;
+                uint32_t zone = p->zone;
 #endif
 
                 for ( j = 0, tp = g_portals; j < portalsize; j++, tp++ )

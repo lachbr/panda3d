@@ -38,13 +38,13 @@ set(P3RECAST_LIB_HEADERS
   library/DetourStatus.h
   library/DetourTileCache.h
   library/DetourTileCacheBuilder.h
-  
+
   library/Recast.h
   library/RecastAlloc.h
   library/RecastAssert.h
   library/RecastDebugDraw.h
   library/RecastDump.h
-  
+
   support/ChunkyTriMesh.h
   support/common.h
   support/ConvexVolumeTool.h
@@ -81,7 +81,7 @@ set(P3RECAST_LIB_SOURCES
   library/DetourProximityGrid.cpp
   library/DetourTileCache.cpp
   library/DetourTileCacheBuilder.cpp
-  
+
   library/Recast.cpp
   library/RecastAlloc.cpp
   library/RecastArea.cpp
@@ -95,7 +95,7 @@ set(P3RECAST_LIB_SOURCES
   library/RecastMeshDetail.cpp
   library/RecastRasterization.cpp
   library/RecastRegion.cpp
-  
+
   support/ChunkyTriMesh.cpp
   support/ConvexVolumeTool.cpp
   support/CrowdTool.cpp
@@ -121,6 +121,8 @@ target_compile_definitions(p3recastnavigation PRIVATE BUILDING_P3RECAST)
 target_include_directories(p3recastnavigation PUBLIC ./library ./support)
 target_link_libraries(p3recastnavigation panda PKG::PYTHON)
 target_interrogate(p3recastnavigation ${P3RECAST_HEADERS} EXTENSIONS ${P3RECAST_IGATEEXT})
+
+set_target_properties(p3recastnavigation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 #install(TARGETS p3recastnavigation
 #  EXPORT BSP COMPONENT BSP

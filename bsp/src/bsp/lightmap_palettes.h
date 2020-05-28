@@ -16,6 +16,7 @@
 #include "pvector.h"
 #include "notifyCategoryProxy.h"
 #include "aa_luse.h"
+#include "texture.h"
 
 #include "TexturePacker.h"
 #ifndef CPPPARSER
@@ -31,12 +32,12 @@ struct colorrgbexp32_t;
 class BSPLoader;
 class TexturePacker;
 
-
 struct LightmapPaletteDirectory
 {
         struct LightmapPaletteEntry : public ReferenceCount
         {
-                PT( Texture ) palette_tex; // array texture with up to 4 entries (1 flat palette, 3 bumped palettes)
+                PT(Texture)
+                palette_tex; // array texture with up to 4 entries (1 flat palette, 3 bumped palettes)
         };
 
         struct LightmapFacePaletteEntry : public ReferenceCount
@@ -59,9 +60,9 @@ struct LightmapSource
 
         LightmapSource()
         {
-                for ( int i = 0; i < NUM_LIGHTMAPS; i++ )
+                for (int i = 0; i < NUM_LIGHTMAPS; i++)
                 {
-                        lightmap_img[i] = PNMImage( 1, 1 );
+                        lightmap_img[i] = PNMImage(1, 1);
                 }
         }
 };
@@ -73,34 +74,34 @@ struct Palette
         TexturePacker *packer;
         Palette()
         {
-                for ( int i = 0; i < NUM_LIGHTMAPS; i++ )
+                for (int i = 0; i < NUM_LIGHTMAPS; i++)
                 {
-                        palette_img[i] = PNMImage( 1, 1 );
+                        palette_img[i] = PNMImage(1, 1);
                 }
         }
 };
 
 NotifyCategoryDeclNoExport(lightmapPalettizer);
 
-INLINE PN_stdfloat gamma_encode( PN_stdfloat linear, PN_stdfloat gamma )
+INLINE PN_stdfloat gamma_encode(PN_stdfloat linear, PN_stdfloat gamma)
 {
-        return pow( linear, 1.0 / gamma );
+        return pow(linear, 1.0 / gamma);
 }
 
-INLINE LRGBColor color_shift_pixel( colorrgbexp32_t *colsample, PN_stdfloat gamma )
+INLINE LRGBColor color_shift_pixel(colorrgbexp32_t *colsample, PN_stdfloat gamma)
 {
-        LVector3 sample( 0 );
-        ColorRGBExp32ToVector( *colsample, sample );
+        LVector3 sample(0);
+        ColorRGBExp32ToVector(*colsample, sample);
 
-        return LRGBColor( gamma_encode( sample[0] / 255.0, gamma ),
-                          gamma_encode( sample[1] / 255.0, gamma ),
-                          gamma_encode( sample[2] / 255.0, gamma ) );
+        return LRGBColor(gamma_encode(sample[0] / 255.0, gamma),
+                         gamma_encode(sample[1] / 255.0, gamma),
+                         gamma_encode(sample[2] / 255.0, gamma));
 }
 
 class EXPCL_PANDABSP LightmapPalettizer
 {
 public:
-        LightmapPalettizer( const BSPLoader *loader );
+        LightmapPalettizer(const BSPLoader *loader);
         LightmapPaletteDirectory palettize_lightmaps();
 
 private:

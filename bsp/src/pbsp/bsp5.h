@@ -53,9 +53,7 @@
 
 #ifdef _WIN32
 #define DEFAULT_ESTIMATE        false
-#endif
-
-#ifdef SYSTEM_POSIX
+#else
 #define DEFAULT_ESTIMATE        true
 #endif
 
