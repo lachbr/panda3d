@@ -12,10 +12,11 @@
 
 find_path(GAMENETWORKINGSOCKETS_INCLUDE_DIR
   NAMES "steam/isteamnetworkingsockets.h"
-  PATH_SUFFIXES "gamenetworkingsockets")
+  PATH_SUFFIXES "gamenetworkingsockets/include")
 
 find_library(GAMENETWORKINGSOCKETS_LIBRARY
-  NAMES "GameNetworkingSockets_s")
+  NAMES "GameNetworkingSockets_s"
+  PATH_SUFFIXES "gamenetworkingsockets/lib")
 
 mark_as_advanced(GAMENETWORKINGSOCKETS_INCLUDE_DIR GAMENETWORKINGSOCKETS_LIBRARY)
 
