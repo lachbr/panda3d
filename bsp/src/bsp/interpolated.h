@@ -54,10 +54,7 @@ PUBLISHED:
 	//
 	// Add/remove var mappings for interpolation.
 	//
-	template <typename Type>
-	void add_var( Type *data, IInterpolatedVar *watcher, int type );
-	template <typename Type>
-	void remove_var( Type *data, bool assert = true );
+	void remove_var( IInterpolatedVar *watcher, bool assert = true );
 
 	void add_float( float *data, IInterpolatedVar *watcher, int type );
 	void add_vec2( LVector2f *data, IInterpolatedVar *watcher, int type );
@@ -74,6 +71,8 @@ PUBLISHED:
 
 private:
 	bool interp_interpolate( VarMapping_t *map, float curr_time );
+
+	void internal_add_var(void *data, IInterpolatedVar *watcher, int type);
 
 public:
 	VarMapping_t *get_var_mapping();
@@ -94,22 +93,22 @@ INLINE CInterpolatedGroup::CInterpolatedGroup() :
 
 INLINE void CInterpolatedGroup::add_float( float *data, IInterpolatedVar *watcher, int type )
 {
-	add_var( data, watcher, type );
+	internal_add_var( data, watcher, type );
 }
 
 INLINE void CInterpolatedGroup::add_vec2( LVector2f *data, IInterpolatedVar *watcher, int type )
 {
-	add_var( data, watcher, type );
+	internal_add_var( data, watcher, type );
 }
 
 INLINE void CInterpolatedGroup::add_vec3( LVector3f *data, IInterpolatedVar *watcher, int type )
 {
-	add_var( data, watcher, type );
+	internal_add_var( data, watcher, type );
 }
 
 INLINE void CInterpolatedGroup::add_vec4( LVector4f *data, IInterpolatedVar *watcher, int type )
 {
-	add_var( data, watcher, type );
+	internal_add_var( data, watcher, type );
 }
 
 INLINE void CInterpolatedGroup::interpolate( float now )

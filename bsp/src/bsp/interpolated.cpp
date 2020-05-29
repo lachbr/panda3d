@@ -15,9 +15,8 @@
 
 static ConfigVariableDouble interp_amount("smooth-lag", 0.1);
 
-template<typename Type>
-void CInterpolatedGroup::add_var(Type *data, IInterpolatedVar *watcher,
-                                 int type) {
+void CInterpolatedGroup::
+internal_add_var(void *data, IInterpolatedVar *watcher, int type) {
   // Only add it if it hasn't been added yet.
   bool bAddIt = true;
   for (size_t i = 0; i < _var_map.m_Entries.size(); i++) {
@@ -25,7 +24,7 @@ void CInterpolatedGroup::add_var(Type *data, IInterpolatedVar *watcher,
       if ((type & EXCLUDE_AUTO_INTERPOLATE)
           != (watcher->GetType() & EXCLUDE_AUTO_INTERPOLATE)) {
         // Its interpolation mode changed, so get rid of it and re-add it.
-        remove_var(_var_map.m_Entries[i].data, true);
+        remove_var(_var_map.m_Entries[i].watcher, true);
       } else {
         // They're adding something that's already there. No need to re-add it.
         bAddIt = false;
@@ -40,7 +39,7 @@ void CInterpolatedGroup::add_var(Type *data, IInterpolatedVar *watcher,
     nassertv(watcher->GetDebugName() != NULL);
 
     VarMapEntry_t map;
-    map.data = (void*)data;
+    map.data = data;
     map.watcher = watcher;
     map.type = type;
     map.m_bNeedsToInterpolate = true;
@@ -52,14 +51,13 @@ void CInterpolatedGroup::add_var(Type *data, IInterpolatedVar *watcher,
     }
   }
 
-  watcher->_Setup((void*)data, type);
+  watcher->_Setup(data, type);
   watcher->SetInterpolationAmount(interp_amount);
 }
 
-template<typename Type>
-void CInterpolatedGroup::remove_var(Type *data, bool assert) {
+void CInterpolatedGroup::remove_var(IInterpolatedVar *watcher, bool assert) {
   for (size_t i = 0; i < _var_map.m_Entries.size(); i++) {
-    if (_var_map.m_Entries[i].data == data) {
+    if (_var_map.m_Entries[i].watcher == watcher) {
       if (!(_var_map.m_Entries[i].type & EXCLUDE_AUTO_INTERPOLATE))
         --_var_map.m_nInterpolatedEntries;
 
