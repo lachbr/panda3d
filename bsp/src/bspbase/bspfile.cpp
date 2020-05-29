@@ -1569,14 +1569,14 @@ LRGBColor dface_AvgLightColor(bspdata_t *data, dface_t *face, int style)
         return avg;
 }
 
-INLINE colorrgbexp32_t *SampleLightData(pvector<colorrgbexp32_t> &data, const dface_t *face, int ofs, int luxel, int style, int bump)
+colorrgbexp32_t *SampleLightData(pvector<colorrgbexp32_t> &data, const dface_t *face, int ofs, int luxel, int style, int bump)
 {
         int luxels = (face->lightmap_size[0] + 1) * (face->lightmap_size[1] + 1);
         int bump_count = face->bumped_lightmap ? NUM_BUMP_VECTS + 1 : 1;
         return &data[ofs + ((style * bump_count + bump) * luxels) + luxel];
 }
 
-INLINE colorrgbexp32_t *SampleLightmap(bspdata_t *data, const dface_t *face, int luxel, int style, int bump)
+colorrgbexp32_t *SampleLightmap(bspdata_t *data, const dface_t *face, int luxel, int style, int bump)
 {
         return SampleLightData(data->lightdata, face, face->lightofs, luxel, style, bump);
 }

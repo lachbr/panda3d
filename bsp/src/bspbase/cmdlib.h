@@ -47,6 +47,12 @@ using std::vector;
 #define PLATFORM_CAN_CALC_EXTENT 1
 #define PLATFORM_VERSIONSTRING DTOOL_PLATFORM
 
+#ifndef ARRAYSIZE
+#define ARRAYSIZE(a) \
+  ((sizeof(a) / sizeof(*(a))) / \
+  static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
+#endif
+
 //=====================================================================
 // AJM: Different features of the tools can be undefined here
 //      these are not officially beta tested, but seem to work okay

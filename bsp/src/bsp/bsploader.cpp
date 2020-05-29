@@ -49,7 +49,6 @@
 #include <spotlight.h>
 #include <fog.h>
 #include <lineSegs.h>
-#include <nodePath_ext.h>
 #include <graphicsEngine.h>
 #include <boundingBox.h>
 #include <pStatCollector.h>

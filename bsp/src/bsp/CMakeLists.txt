@@ -149,7 +149,7 @@ target_compile_definitions(p3bsp PUBLIC CIO)
 if(HAVE_PYTHON)
   target_compile_definitions(p3bsp PUBLIC _PYTHON_VERSION)
 endif()
-target_link_libraries(p3bsp panda pandaegg p3eggbase p3bullet p3bspbase p3interrogatedb PKG::EMBREE PKG::PYTHON)
+target_link_libraries(p3bsp panda pandaegg p3eggbase p3bullet p3bspbase p3interrogatedb PKG::EMBREE)
 target_interrogate(p3bsp ALL EXTENSIONS ${P3BSP_IGATE_EXTENSIONS})
 
 install(TARGETS p3bsp

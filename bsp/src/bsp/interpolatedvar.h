@@ -38,8 +38,8 @@ enum InterpLatchFlags
 
 
 static const float EXTRA_INTERPOLATION_HISTORY_STORED = 0.05f; // It stores this much extra interpolation history,
-	    // so you can always call Interpolate() this far      
-	    // in the past from your last call and be able to     
+	    // so you can always call Interpolate() this far
+	    // in the past from your last call and be able to
 	    // get an interpolated value.
 
 END_PUBLISH
@@ -653,7 +653,7 @@ template <typename Type, bool IS_ARRAY>
 inline void CInterpolatedVarArrayBase<Type, IS_ARRAY>::Setup( Type *pValue,
 							      int type )
 {
-	_Setup( (void *)pValue, type );	
+	_Setup( (void *)pValue, type );
 }
 
 template <typename Type, bool IS_ARRAY>
@@ -1244,7 +1244,7 @@ inline void CInterpolatedVarArrayBase<Type, IS_ARRAY>::Copy(
 	IInterpolatedVar *pInSrc )
 {
 	CInterpolatedVarArrayBase<Type, IS_ARRAY> *pSrc =
-		dynamic_cast<CInterpolatedVarArrayBase<Type, IS_ARRAY> *>( pInSrc );
+		(CInterpolatedVarArrayBase<Type, IS_ARRAY> *)( pInSrc );
 
 	if ( !pSrc || pSrc->m_nMaxCount != m_nMaxCount )
 	{

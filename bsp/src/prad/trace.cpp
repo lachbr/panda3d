@@ -116,9 +116,9 @@ void RADTrace::test_four_lines( const FourVectors &start, const FourVectors &end
         {
                 frac_vis = 0.0;
 
-                if ( result.hit_fraction.m128_f32[i] < 1.0 - EQUAL_EPSILON )
+                if ( SubFloat(result.hit_fraction, i) < 1.0 - EQUAL_EPSILON )
                 {
-                        RayTraceGeometry *geom = scene->get_geometry( result.geom_id.m128_u32[i] );
+                        RayTraceGeometry *geom = scene->get_geometry( SubInt(result.geom_id, i) );
                         //if ( geom == nullptr )
                         //{
                         //        std::cout << "Null trace geom:\n"
@@ -135,7 +135,7 @@ void RADTrace::test_four_lines( const FourVectors &start, const FourVectors &end
                 {
                         frac_vis = 1.0;
                 }
-                
+
                 *fraction4 = SetComponentSIMD( *fraction4, i, frac_vis );
         }
 }

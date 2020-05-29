@@ -92,7 +92,7 @@ void AddDLightToActiveList( directlight_t *dl )
         Lights::activelights = dl;
 }
 
-directlight_t *AllocDLight( LVector3 &origin, bool add_to_list )
+directlight_t *AllocDLight( const LVector3 &origin, bool add_to_list )
 {
         directlight_t *dl = (directlight_t *)calloc( 1, sizeof( directlight_t ) );
         dl->index = Lights::numdlights++;
@@ -298,7 +298,7 @@ static char *ValueForKeyWithDefault( entity_t *ent, char *key, char *default_val
                 if ( !strcmp( ep->key, key ) )
                         return ep->value;
         }
-                
+
         return default_value;
 }
 
@@ -376,7 +376,7 @@ void BuildVisForLightEnvironment()
                         {
                                 // leaf doesn't contain sky
                                 continue;
-                        } 
+                        }
 
                         // Can this leaf see into the leaf with the sky in it?
                         if ( !PVSCheck( pvs, ileaf2 ) )
@@ -384,14 +384,14 @@ void BuildVisForLightEnvironment()
                                 // nope, we can't see the sky leaf
                                 continue;
                         }
-                                
+
 
                         if ( dleafs[ileaf2].flags & LEAF_FLAGS_SKY2D )
                         {
                                 // we can see a leaf with a 2d sky in it
                                 leaf2dbits[nbyte] |= nbit;
                         }
-                                
+
                         if ( dleafs[ileaf2].flags & LEAF_FLAGS_SKY )
                         {
                                 leafbits[nbyte] |= nbit;
@@ -416,7 +416,7 @@ void BuildVisForLightEnvironment()
                         // mark this leaf as seeing the sky
                         dleafs[ileaf].flags |= LEAF_FLAGS_SKY2D;
                 }
-                        
+
 
                 // todo 3d skyboxes
         }

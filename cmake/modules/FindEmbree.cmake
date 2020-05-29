@@ -25,3 +25,9 @@ mark_as_advanced(EMBREE_INCLUDE_DIR EMBREE_LIBRARY EMBREE_TBB_LIBRARY)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Embree DEFAULT_MSG EMBREE_INCLUDE_DIR EMBREE_LIBRARY EMBREE_TBB_LIBRARY)
+
+message("${EMBREE_FOUND}")
+if(EMBREE_FOUND)
+  set(EMBREE_LIBRARIES ${EMBREE_LIBRARY} ${EMBREE_TBB_LIBRARY})
+  mark_as_advanced(EMBREE_LIBRARY EMBREE_TBB_LIBRARY)
+endif()

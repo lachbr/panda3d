@@ -255,8 +255,8 @@ void compute_ambient_from_surface( dface_t *face, directlight_t *skylight,
         }
 }
 
-static void compute_lightmap_color_from_average( dface_t *face, directlight_t *skylight,
-                                                 float scale, LVector3 *colors )
+void compute_lightmap_color_from_average( dface_t *face, directlight_t *skylight,
+                                          float scale, LVector3 *colors )
 {
         texinfo_t *tex = &g_bspdata->texinfo[face->texinfo];
         if ( tex->flags & TEX_SKY )
@@ -276,7 +276,7 @@ static void compute_lightmap_color_from_average( dface_t *face, directlight_t *s
                 ThreadUnlock();
                 LRGBColor color = avg_color;
 
-                compute_ambient_from_surface( face, skylight, color );  
+                compute_ambient_from_surface( face, skylight, color );
                 colors[style] += color * scale;
         }
 }
@@ -396,9 +396,9 @@ static void lightsurface_findintersection_SSE( const FourVectors &start, const F
         for ( int i = 0; i < 4; i++ )
         {
 
-                if ( surf->hit_fraction.m128_f32[i] < 1.0 - EQUAL_EPSILON ) // did we hit something?
+                if ( SubFloat(surf->hit_fraction, i) < 1.0 - EQUAL_EPSILON ) // did we hit something?
                 {
-                        int geomidx = RADTrace::dface_lookup.find( result.geom_id.m128_u32[i] );
+                        int geomidx = RADTrace::dface_lookup.find( SubInt(result.geom_id, i) );
                         if ( geomidx != -1 )
                         {
                                 surf->surface[i] = RADTrace::dface_lookup.get_data( geomidx );
@@ -445,26 +445,26 @@ void calc_ray_ambient_lighting_SSE( int thread, const FourVectors &start,
 
         // until 20" we use the point sample, then blend in the average until we're covering 40"
         // This is attempting to model the ray as a cone - in the ideal case we'd simply sample all
-        // luxels in the intersection of the cone with the surface.  Since we don't have surface 
+        // luxels in the intersection of the cone with the surface.  Since we don't have surface
         // neighbor information computed we'll just approximate that sampling with a blend between
         // a point sample and the face average.
-        // This yields results that are similar in that aliasing is reduced at distance while 
+        // This yields results that are similar in that aliasing is reduced at distance while
         // point samples provide accuracy for intersections with near geometry
         fltx4 scale_avg;
         for ( int i = 0; i < 4; i++ )
         {
                 if ( !surf.surface[i] )
                         continue;
-                
-                if ( surf.has_luxel.m128_u32[i] == 0 )
+
+                if ( SubInt(surf.has_luxel, i) == 0 )
                 {
                         scale_avg = SetComponentSIMD( scale_avg, i, 1.0 );
                 }
                 else
                 {
-                        scale_avg = SetComponentSIMD( scale_avg, i, RemapValClamped( scale_avg.m128_f32[i], 20, 40, 0.0, 1.0 ) );
+                        scale_avg = SetComponentSIMD( scale_avg, i, RemapValClamped( SubFloat(scale_avg, i), 20, 40, 0.0, 1.0 ) );
                 }
-                
+
         }
 
         fltx4 scale_sample = SubSIMD( Four_Ones, scale_avg );
@@ -474,19 +474,19 @@ void calc_ray_ambient_lighting_SSE( int thread, const FourVectors &start,
                 if ( !surf.surface[i] )
                         continue;
 
-                if ( scale_avg.m128_f32[i] != 0 )
+                if ( SubFloat(scale_avg, i) != 0 )
                 {
-                        compute_lightmap_color_from_average( surf.surface[i], skylight, scale_avg.m128_f32[i], color[i] );
+                        compute_lightmap_color_from_average( surf.surface[i], skylight, SubFloat(scale_avg, i), color[i] );
                 }
-                if ( scale_sample.m128_f32[i] != 0 )
+                if ( SubFloat(scale_sample, i) != 0 )
                 {
-                        LTexCoordf coord( surf.luxel_coord.x.m128_f32[i],
-                                          surf.luxel_coord.y.m128_f32[i] );
-                        compute_lightmap_color_point_sample( surf.surface[i], skylight, coord, scale_sample.m128_f32[i], color[i] );
+                        LTexCoordf coord( SubFloat(surf.luxel_coord.x, i),
+                                          SubFloat(surf.luxel_coord.y, i) );
+                        compute_lightmap_color_point_sample( surf.surface[i], skylight, coord, SubFloat(scale_sample, i), color[i] );
                 }
 
         }
-        
+
 }
 
 void calc_ray_ambient_lighting( int thread, const LVector3 &start,
@@ -504,10 +504,10 @@ void calc_ray_ambient_lighting( int thread, const LVector3 &start,
 
         // until 20" we use the point sample, then blend in the average until we're covering 40"
         // This is attempting to model the ray as a cone - in the ideal case we'd simply sample all
-        // luxels in the intersection of the cone with the surface.  Since we don't have surface 
+        // luxels in the intersection of the cone with the surface.  Since we don't have surface
         // neighbor information computed we'll just approximate that sampling with a blend between
         // a point sample and the face average.
-        // This yields results that are similar in that aliasing is reduced at distance while 
+        // This yields results that are similar in that aliasing is reduced at distance while
         // point samples provide accuracy for intersections with near geometry
         float scale_avg = RemapValClamped( dist, 20, 40, 0.0f, 1.0f );
 
@@ -549,7 +549,7 @@ void ComputeIndirectLightingAtPoint( const LVector3 &vpos, const LNormalf &vnorm
         {
                 int nsample = 4 * j;
                 int group_samples = std::min( 4, samples - nsample );
-                
+
                 memset( dots, 0, sizeof( float ) * 4 );
                 memset( n, 0, sizeof( LVector3 ) * 4 );
                 for ( int i = 0; i < group_samples; i++ )
@@ -573,7 +573,7 @@ void ComputeIndirectLightingAtPoint( const LVector3 &vpos, const LNormalf &vnorm
                         n[i] = sampling_normal;
                         total_dot += dot;
                 }
-                
+
                 FourVectors normal;
                 normal.LoadAndSwizzle( n[0], n[1], n[2], n[3] );
 
@@ -612,7 +612,7 @@ void ComputeIndirectLightingAtPoint( const LVector3 &vpos, const LNormalf &vnorm
                         }
 
                         LVector3 lightmap_col;
-                        if ( surf.has_luxel.m128_u32[i] == 0 )
+                        if ( SubInt(surf.has_luxel, i) == 0 )
                         {
                                 ThreadLock();
                                 lightmap_col = dface_AvgLightColor( g_bspdata, surf.surface[i], 0 );
@@ -626,8 +626,8 @@ void ComputeIndirectLightingAtPoint( const LVector3 &vpos, const LNormalf &vnorm
 
                                 // luxelcoord is in the space of the accumulated lightmap page; we need to convert
                                 // it to be in the space of the surface
-                                int ds = clamp( (int)surf.luxel_coord.x.m128_f32[i], 0, smax - 1 );
-                                int dt = clamp( (int)surf.luxel_coord.y.m128_f32[i], 0, tmax - 1 );
+                                int ds = clamp( (int)SubFloat(surf.luxel_coord.x, i), 0, smax - 1 );
+                                int dt = clamp( (int)SubFloat(surf.luxel_coord.y, i), 0, tmax - 1 );
 
                                 colorrgbexp32_t *lightmap = &g_bspdata->lightdata[surf.surface[i]->lightofs];
                                 lightmap += dt * smax + ds;
@@ -638,7 +638,7 @@ void ComputeIndirectLightingAtPoint( const LVector3 &vpos, const LNormalf &vnorm
                         VectorMultiply( lightmap_col, g_textures[tex->texref].reflectivity, lightmap_col );
                         VectorAdd( color, lightmap_col, color );
                 }
-                
+
         }
 
         if ( total_dot )
@@ -692,6 +692,6 @@ void ComputeDirectLightingAtPoint( const LVector3 &vpos, const LNormalf &vnormal
 
                 GatherSampleLightSSE( output, dl, -1, adjusted4, &normal4, 1, 0, 0, epsilon );
 
-                VectorMA( color, output.falloff.m128_f32[0] * output.dot[0].m128_f32[0], dl->intensity, color );
+                VectorMA( color, SubFloat(output.falloff, 0) * SubFloat(output.dot[0], 0), dl->intensity, color );
         }
 }
