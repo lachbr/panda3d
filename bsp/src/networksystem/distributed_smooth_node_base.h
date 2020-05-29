@@ -23,7 +23,7 @@
 #include "clockObject.h"
 #include "dcClass.h"
 
-class NetworkPeer;
+class NetworkSystem;
 
 /**
  * This class defines some basic methods of DistributedSmoothNodeBase which
@@ -35,7 +35,7 @@ PUBLISHED:
   ~CDistributedSmoothNodeBase();
 
   INLINE void
-    set_repository(NetworkPeer *repository,
+    set_repository(NetworkSystem *repository,
                    bool is_ai, CHANNEL_TYPE ai_id);
 
 #ifdef HAVE_PYTHON
@@ -86,7 +86,7 @@ private:
   DCClass *_dclass;
   CHANNEL_TYPE _do_id;
 
-  NetworkPeer *_repository;
+  NetworkSystem *_repository;
   bool _is_ai;
   CHANNEL_TYPE _ai_id;
 #ifdef HAVE_PYTHON
@@ -106,7 +106,7 @@ private:
  * for sending datagrams.
  */
 INLINE void CDistributedSmoothNodeBase::
-set_repository(NetworkPeer *repository,
+set_repository(NetworkSystem *repository,
                bool is_ai, CHANNEL_TYPE ai_id) {
   _repository = repository;
   _is_ai = is_ai;

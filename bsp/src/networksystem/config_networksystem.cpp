@@ -1,7 +1,5 @@
 #include "config_networksystem.h"
 
-#include "enet/enet.h"
-
 NotifyCategoryDef(networksystem, "")
 
 ConfigureDef(config_networksystem)
@@ -16,10 +14,12 @@ void init_libnetworksystem() {
     return;
 
   // Initialize the network library
-  if (enet_initialize() != 0) {
-    std::cout << "Failed to initialize ENet!" << std::endl;
-    return;
-  }
+  //SteamNetworkingErrMsg err;
+  //if ( !GameNetworkingSockets_Init( nullptr, err ) )
+  //{
+  //	networksystem_cat.fatal()
+  //		<< "Unable to initialize GameNetworkingSockets!\n";
+  //}
 
   initialized = true;
 }
