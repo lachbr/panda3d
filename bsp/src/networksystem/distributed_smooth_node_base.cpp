@@ -14,7 +14,7 @@
 #include "distributed_smooth_node_base.h"
 #include "dcField.h"
 #include "dcmsgtypes.h"
-#include "networksystem.h"
+#include "network_peer.h"
 
 #ifdef HAVE_PYTHON
 #include "py_panda.h"
@@ -322,7 +322,7 @@ finish_send_update(DCPacker &packer) {
   if (pack_ok) {
     Datagram dg(packer.get_data(), packer.get_length());
     nassertv(_repository != nullptr);
-    _repository->send_datagram(dg);
+    _repository->send(dg);
 
   } else {
 #ifndef NDEBUG
