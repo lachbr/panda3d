@@ -167,7 +167,13 @@ spawn_entities() {
       // This is a newly loaded (not preserved from previous level) entity
       // that is from the BSP file.
 
-      PyObject_CallMethod(ent->py_entity, (char *)"load", NULL);
+      PyObject *meth = PyObject_GetAttrString(ent->py_entity, (char *)"load");
+      if (meth) {
+        PyObject_CallObject(meth, NULL);
+      } else {
+        PyErr_PrintEx(1);
+      }
+      //PyObject_CallMethod(ent->py_entity, (char *)"load", NULL);
     }
   }
 }
@@ -181,7 +187,7 @@ make_pyent(PyObject *py_ent, const string &classname) {
     PyMutexHolder holder;
 
     // A python class was linked to this entity!
-    PyObject *obj = PyObject_CallObject((PyObject *)_entity_to_class[classname], NULL);
+    PyObject *obj = PyObject_CallObject(_entity_to_class[classname], NULL);
     if (obj == nullptr)
       PyErr_PrintEx(1);
     Py_INCREF(obj);
@@ -198,7 +204,8 @@ make_pyent(PyObject *py_ent, const string &classname) {
 }
 
 void Py_CL_BSPLoader::
-link_entity_to_class(const string &entname, PyTypeObject *type) {
+link_entity_to_class(const string &entname, PyObject *type) {
+  Py_INCREF(type);
   _entity_to_class[entname] = type;
 }
 
@@ -393,7 +400,8 @@ set_server_entity_dispatcher(PyObject *dispatch) {
 }
 
 void Py_AI_BSPLoader::
-link_server_entity_to_class(const string &name, PyTypeObject *type) {
+link_server_entity_to_class(const string &name, PyObject *type) {
+  Py_INCREF(type);
   _svent_to_class[name] = type;
 }
 

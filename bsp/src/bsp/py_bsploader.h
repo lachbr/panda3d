@@ -47,7 +47,7 @@ class Py_CL_BSPLoader : public Py_BSPLoader {
 PUBLISHED:
   Py_CL_BSPLoader();
 
-  void link_entity_to_class(const string &entname, PyTypeObject *type);
+  void link_entity_to_class(const string &entname, PyObject *cls);
   PyObject *make_pyent(PyObject *pyent, const string &classname);
 
 protected:
@@ -59,7 +59,7 @@ private:
   // for purely client-sided, non networked entities
   //
   // utilized only by the client
-  pmap<string, PyTypeObject *> _entity_to_class;
+  pmap<string, PyObject *> _entity_to_class;
 };
 
 class Py_AI_BSPLoader : public Py_BSPLoader {
@@ -71,7 +71,7 @@ PUBLISHED:
   void mark_entity_preserved(int n, bool preserved = true);
 
   void set_server_entity_dispatcher(PyObject *dispatcher);
-  void link_server_entity_to_class(const string &name, PyTypeObject *type);
+  void link_server_entity_to_class(const string &name, PyObject *cls);
 
   INLINE void set_transition_landmark(const std::string &name,
                                       const LVector3 &origin,
@@ -100,7 +100,7 @@ private:
   //
   // utilized only by the AI
   PyObject *_sv_ent_dispatch;
-  pmap<string, PyTypeObject *> _svent_to_class;
+  pmap<string, PyObject *> _svent_to_class;
 
   NodePath _transition_source_landmark;
   NodePath _transition_dest_landmark;
