@@ -70,6 +70,7 @@ PSSMCameraRig::PSSMCameraRig( size_t num_splits, BSPShaderGenerator *gen )
         _num_splits = num_splits;
         _pssm_distance = 100.0;
         _sun_distance = 500.0;
+        _is_setup = false;
         _use_fixed_film_size = false;
         _use_stable_csm = true;
         _logarithmic_factor = 1.0;
@@ -137,10 +138,15 @@ void PSSMCameraRig::reparent_to( NodePath parent )
                 _cam_nodes[i].reparent_to( parent );
         }
         _parent = parent;
-        dbg_draw.set_budget( 1000 );
-        dbg_root = dbg_draw.get_root();
-        dbg_root.reparent_to( _gen->_render );
-        dbg_root.set_two_sided( true );
+        if (parent.is_empty()) {
+                _is_setup = false;
+        } else {
+                _is_setup = true;
+        }
+        //dbg_draw.set_budget( 1000 );
+        //dbg_root = dbg_draw.get_root();
+        //dbg_root.reparent_to( _gen->_render );
+        //dbg_root.set_two_sided( true );
 }
 
 /**

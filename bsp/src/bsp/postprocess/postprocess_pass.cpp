@@ -114,7 +114,7 @@ void PostProcessPass::add_aux_output( int n )
 	nassertv( _buffer != nullptr );
 	if ( !_aux_textures[n] )
 	{
-		char name[4];
+		char name[10];
 		sprintf( name, "aux%i", n );
 		_aux_textures[n] = make_texture( Texture::F_rgb, name );
 		_buffer->add_render_texture( _aux_textures[n], GraphicsOutput::RTM_bind_or_copy,
