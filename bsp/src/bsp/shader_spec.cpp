@@ -202,7 +202,7 @@ bool ShaderSpec::add_csm( const RenderState *rs, ShaderPermutations &result, BSP
 
                 BSPLoader *loader = BSPLoader::get_global_ptr();
                 result.add_input( ShaderInput( "sunVector", generator->get_pssm_rig()->get_sun_vector() ) );
-                if ( loader->get_ambient_probe_mgr()->get_sunlight() )
+                if ( loader && loader->get_ambient_probe_mgr()->get_sunlight() )
                         result.add_input( ShaderInput( "sunColor", loader->get_ambient_probe_mgr()->get_sunlight()->color ) );
                 else
                         result.add_input( ShaderInput( "sunColor", LVector3( 1, 1, 1 ) ) );
