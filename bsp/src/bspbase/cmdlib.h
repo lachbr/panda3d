@@ -42,6 +42,14 @@ using std::vector;
 #define VERSION_32BIT 1
 #endif
 
+#elif defined(_WIN64)
+#define VERSION_64BIT 1
+
+#elif defined(_WIN32)
+#define VERSION_32BIT 1
+
+#else
+#error Unsupported platform! Current support is only for Linux and Windows.
 #endif
 
 #define PLATFORM_CAN_CALC_EXTENT 1
