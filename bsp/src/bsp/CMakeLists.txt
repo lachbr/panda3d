@@ -13,6 +13,8 @@ set(P3BSP_HEADERS
   ciolib.h
   cubemaps.h
   decals.h
+  dynamic_render.h
+  dynamic_vertex_buffer.h
   glow_node.h
   interpolated.h
   interpolatedvar.h
@@ -77,6 +79,7 @@ set(P3BSP_IGATE_HEADERS
   bloom_attrib.h
   interpolatedvar.h
   interpolated.h
+  dynamic_render.h
 
   postprocess/postprocess.h
   postprocess/hdr.h
@@ -107,6 +110,8 @@ set(P3BSP_SOURCES
   bsploader.cpp
   ciolib.cpp
   decals.cpp
+  dynamic_render.cpp
+  dynamic_vertex_buffer.cpp
   glow_node.cpp
   interpolated.cpp
   interpolatedvar.cpp
