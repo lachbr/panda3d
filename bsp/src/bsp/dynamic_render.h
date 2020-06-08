@@ -45,12 +45,31 @@ PUBLISHED:
       state = RenderState::make_empty();
       format = GeomVertexFormat::get_v3();
       prim_type = PrimitiveType::PT_triangles;
+      draw_color = LColor(1);
       calc_hash();
+
+      default_state = state;
+      default_prim_type = prim_type;
+      default_format = format;
+      default_draw_color = draw_color;
     }
     const RenderState *state;
     DynamicRender::PrimitiveType prim_type;
     const GeomVertexFormat *format;
+    LColor draw_color;
     size_t hash;
+
+    void set_default() {
+      state = default_state;
+      prim_type = default_prim_type;
+      format = default_format;
+      draw_color = default_draw_color;
+    }
+
+    const RenderState *default_state;
+    DynamicRender::PrimitiveType default_prim_type;
+    const GeomVertexFormat *default_format;
+    LColor default_draw_color;
 
     void calc_hash() {
       hash = 0u;
@@ -65,6 +84,7 @@ PUBLISHED:
   void render_state(const RenderState *rs);
   void primitive_type(PrimitiveType type);
   void vertex_format(const GeomVertexFormat *format);
+  void color(const LColor &color);
 
   void draw_rect(const LVector3 &mins, const LVector3 &maxs);
 

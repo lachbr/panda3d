@@ -14,6 +14,7 @@ PUBLISHED:
   bool lock(int num_vertices, int &first_index);
   void unlock();
 
+  GeomVertexWriter get_writer(InternalName *name);
   GeomVertexWriter get_writer(const std::string &column_name);
 
   GeomVertexData *get_vdata() const;

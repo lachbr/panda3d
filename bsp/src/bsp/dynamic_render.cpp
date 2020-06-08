@@ -43,6 +43,12 @@ vertex_format(const GeomVertexFormat *format) {
 }
 
 void DynamicRender::
+color(const LColor &color) {
+  nassertv(!_drawing);
+  _context.draw_color = color;
+}
+
+void DynamicRender::
 begin() {
   nassertv(!_drawing);
 
@@ -59,6 +65,7 @@ draw() {
   nassertv(_drawing);
   _gn->add_geom(_geom->geom, _geom->state);
   _drawing = false;
+  _context.set_default();
 }
 
 DynamicRender::DynamicGeomEntry *DynamicRender::
@@ -164,11 +171,16 @@ draw_rect(const LVector3 &mins, const LVector3 &maxs) {
   int first_index;
   _geom->vertices->lock(4, first_index);
 
-  GeomVertexWriter vwriter = _geom->vertices->get_writer("vertex");
-  vwriter.set_data3f(mins[0], mins[1], 0);
-  vwriter.set_data3f(mins[0], maxs[1], 0);
-  vwriter.set_data3f(maxs[0], maxs[1], 0);
-  vwriter.set_data3f(maxs[0], mins[1], 0);
+  GeomVertexWriter vwriter = _geom->vertices->get_writer(InternalName::get_vertex());
+  GeomVertexWriter cwriter = _geom->vertices->get_writer(InternalName::get_color());
+  vwriter.set_data3f(mins[0], 0, mins[2]);
+  cwriter.set_data4f(_context.draw_color);
+  vwriter.set_data3f(mins[0], 0, maxs[2]);
+  cwriter.set_data4f(_context.draw_color);
+  vwriter.set_data3f(maxs[0], 0, maxs[2]);
+  cwriter.set_data4f(_context.draw_color);
+  vwriter.set_data3f(maxs[0], 0, mins[2]);
+  cwriter.set_data4f(_context.draw_color);
 
   _geom->vertices->unlock();
 

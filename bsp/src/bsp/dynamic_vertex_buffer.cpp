@@ -18,6 +18,13 @@ get_writer(const std::string &name) {
   return writer;
 }
 
+GeomVertexWriter DynamicVertexBuffer::
+get_writer(InternalName *name) {
+  GeomVertexWriter writer(_vdata, name);
+  writer.set_row(_position);
+  return writer;
+}
+
 bool DynamicVertexBuffer::
 lock(int num_vertices, int &first_index) {
   if (_position + num_vertices > _max_vertices) {
