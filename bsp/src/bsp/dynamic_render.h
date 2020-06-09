@@ -36,7 +36,7 @@ PUBLISHED:
     PT(GeomPrimitive) indices; // not shared
     DynamicVertexBuffer *vertices; // shared
     PT(Geom) geom;
-    bool was_reset;
+    bool added;
   };
 
   class DynamicRenderContext {
@@ -87,6 +87,9 @@ PUBLISHED:
   void color(const LColor &color);
 
   void draw_rect(const LVector3 &mins, const LVector3 &maxs);
+
+  void draw_filled_rect(LVector3 &ul, LVector3 &lr, bool border = false, float border_size = 0.1);
+  void draw_filled_rect_radius(LVector3 &origin, float radius, float zoom = 1.0, bool border = false);
 
   void begin();
   void draw();

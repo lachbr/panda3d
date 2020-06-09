@@ -63,7 +63,11 @@ begin() {
 void DynamicRender::
 draw() {
   nassertv(_drawing);
-  _gn->add_geom(_geom->geom, _geom->state);
+  if (!_geom->added) {
+    _gn->add_geom(_geom->geom, _geom->state);
+    _geom->added = true;
+  }
+  
   _drawing = false;
   _context.set_default();
 }
@@ -77,6 +81,7 @@ find_or_create_geom_entry() {
 
   // Haven't encountered this render context yet
   PT(DynamicGeomEntry) entry = new DynamicGeomEntry;
+  entry->added = false;
   entry->state = _context.state;
   entry->indices = create_indices();
   entry->vertices = find_or_create_vertex_buffer();
@@ -153,6 +158,7 @@ reset() {
     }
     for (auto itr = _geoms.begin(); itr != _geoms.end(); itr++) {
       itr->second->indices->clear_vertices();
+      itr->second->added = false;
     }
 
     _modified = false;
@@ -187,6 +193,81 @@ draw_rect(const LVector3 &mins, const LVector3 &maxs) {
   _geom->indices->add_consecutive_vertices(first_index, 4);
   _geom->indices->add_vertex(first_index);
   _geom->indices->close_primitive();
+
+  draw();
+}
+
+void DynamicRender::
+draw_filled_rect_radius(LVector3 &origin, float radius, float zoom, bool border) {
+  radius /= zoom;
+  float add = radius * 0.08;
+  LVector3 ul(origin[0] - radius, 0, origin[2] - radius);
+  LVector3 lr(origin[0] + radius + add, 0, origin[2] + radius + add);
+
+  if (dynamicrender_cat.is_debug()) {
+    dynamicrender_cat.debug()
+      << "ul: " << ul << "\n"
+      << "lr: " << lr << "\n";
+  }
+
+  draw_filled_rect(ul, lr, border, add);
+}
+
+void DynamicRender::
+draw_filled_rect(LVector3 &ul, LVector3 &lr, bool border, float border_size) {
+  static LColor black(0, 0, 0, 1);
+
+  primitive_type(PT_triangles);
+  vertex_format(GeomVertexFormat::get_v3c4());
+
+  begin();
+
+  int first_index;
+  _geom->vertices->lock(border ? 8 : 4, first_index);
+
+  GeomVertexWriter vwriter = _geom->vertices->get_writer(InternalName::get_vertex());
+  GeomVertexWriter cwriter = _geom->vertices->get_writer(InternalName::get_color());
+
+  GeomPrimitive *indices = _geom->indices;
+
+  if (border) {
+    vwriter.set_data3f(ul[0], 0.1, ul[2]);
+    cwriter.set_data4f(black);
+    vwriter.set_data3f(lr[0], 0.1, ul[2]);
+    cwriter.set_data4f(black);
+    vwriter.set_data3f(lr[0], 0.1, lr[2]);
+    cwriter.set_data4f(black);
+    vwriter.set_data3f(ul[0], 0.1, lr[2]);
+    cwriter.set_data4f(black);
+
+    indices->add_vertices(first_index, first_index + 1, first_index + 2);
+    indices->close_primitive();
+    indices->add_vertices(first_index, first_index + 2, first_index + 3);
+    indices->close_primitive();
+
+    ul[0] += border_size;
+    ul[2] += border_size;
+    lr[0] -= border_size;
+    lr[2] -= border_size;
+
+    first_index += 4;
+  }
+
+  vwriter.set_data3f(ul[0], 0, ul[2]);
+  cwriter.set_data4f(_context.draw_color);
+  vwriter.set_data3f(lr[0], 0, ul[2]);
+  cwriter.set_data4f(_context.draw_color);
+  vwriter.set_data3f(lr[0], 0, lr[2]);
+  cwriter.set_data4f(_context.draw_color);
+  vwriter.set_data3f(ul[0], 0, lr[2]);
+  cwriter.set_data4f(_context.draw_color);
+
+  indices->add_vertices(first_index, first_index + 1, first_index + 2);
+  indices->close_primitive();
+  indices->add_vertices(first_index, first_index + 2, first_index + 3);
+  indices->close_primitive();
+
+  _geom->vertices->unlock();
 
   draw();
 }
