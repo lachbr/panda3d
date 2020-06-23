@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -162,10 +162,9 @@ bool ShaderSpec::add_fog( const RenderState *rs, ShaderPermutations &perms,
 	const FogAttrib *fa;
 	rs->get_attrib_def( fa );
         // Check for fog.
-        if ( generator->get_fog() && !fa->is_off() )
+        if ( !fa->is_off() )
         {
-                perms.add_permutation( "FOG", (int)generator->get_fog()->get_mode() );
-		perms.add_input( ShaderInput( "fogData", generator->get_fog_data() ) );
+                perms.add_permutation( "FOG", (int)fa->get_fog()->get_mode() );
 		return true;
         }
 
@@ -308,7 +307,7 @@ void ShaderSpec::r_precache( ShaderPrecacheCombos &combos )
 			delete[] indices;
 			return;
 		}
-			
+
 
 		indices[next]++;
 

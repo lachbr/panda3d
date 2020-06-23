@@ -26,7 +26,6 @@
 #include <directionalLight.h>
 #include <spotlight.h>
 #include <sphereLight.h>
-#include <fog.h>
 #include <asyncTaskManager.h>
 #include <configVariableInt.h>
 #include <graphicsStateGuardian.h>
@@ -90,9 +89,7 @@ BSPShaderGenerator::BSPShaderGenerator(GraphicsOutput *output, GraphicsStateGuar
   _pssm_layered_buffer(nullptr),
   _sunlight(NodePath()),
   _has_shadow_sunlight(false),
-  _shader_quality(SHADERQUALITY_HIGH),
-  _fog(nullptr) {
-  _pta_fogdata = PTA_LVecBase4f::empty_array(2);
+  _shader_quality(SHADERQUALITY_HIGH) {
   _exposure_adjustment = PTA_float::empty_array(1);
   _exposure_adjustment[0] = 1.0f;
 
@@ -245,20 +242,7 @@ void BSPShaderGenerator::update() {
     if (_has_shadow_sunlight) {
       _pssm_rig->update(_camera.get_child(0), _sun_vector);
     }
-      
-  }
 
-  if (_fog) {
-    _pta_fogdata[0] = _fog->get_color();
-
-    _pta_fogdata[1][0] = _fog->get_exp_density();
-
-    float start, stop;
-    _fog->get_linear_range(start, stop);
-    _pta_fogdata[1][1] = start;
-    _pta_fogdata[1][2] = stop;
-
-    _pta_fogdata[1][3] = 1.0f;//self->_fog->get_linear
   }
 }
 

@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -8,6 +8,8 @@
  * @author Brian Lach
  * @date October 22, 2018
  */
+
+ // TODO: make this a lot cleaner and flexible
 
 #ifndef BSP_SHADERGENERATOR_H
 #define BSP_SHADERGENERATOR_H
@@ -111,25 +113,6 @@ PUBLISHED:
                 return _shader_quality;
         }
 
-	INLINE void set_fog( Fog *fog )
-	{
-		_fog = fog;
-		_render.set_fog( _fog );
-	}
-	INLINE void clear_fog()
-	{
-		_fog = nullptr;
-		_render.clear_fog();
-	}
-	INLINE Fog *get_fog() const
-	{
-		return _fog;
-	}
-	INLINE PTA_LVecBase4f get_fog_data() const
-	{
-		return _pta_fogdata;
-	}
-
 	INLINE void set_exposure_adustment( float exposure )
 	{
 		_exposure_adjustment[0] = exposure;
@@ -174,9 +157,6 @@ private:
         pvector<SplitShadowMap> _split_maps;
 
         PSSMCameraRig *_pssm_rig;
-
-	PT( Fog ) _fog;
-	PTA_LVecBase4f _pta_fogdata;
 
 	PTA_float _exposure_adjustment;
 
