@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -51,7 +51,7 @@ bool BSPCullTraverser::is_in_view( CullTraverserData &data )
 {
         BSPLoader *loader = _loader;
 
-        // First test view frustum.	
+        // First test view frustum.
         if ( !data.is_in_view( get_camera_mask() ) )
         {
                 return false;
@@ -81,28 +81,25 @@ bool BSPCullTraverser::is_in_view( CullTraverserData &data )
 		pvs_test_node_collector.stop();
 		return ret;
 	}
-        
+
 	return true;
 }
 
 INLINE bool geom_cull_test( CPT( Geom ) geom, CPT( RenderState ) state, CullTraverserData &data,
-	const GeometricBoundingVolume *&geom_gbv, bool needs_culling )
+	const GeometricBoundingVolume *&geom_gbv, Thread *current_thread, bool needs_culling )
 {
         CPT( BoundingVolume ) geom_volume = geom->get_bounds();
         geom_gbv = DCAST( GeometricBoundingVolume, geom_volume );
 
 	if ( needs_culling )
 	{
-		if ( data._view_frustum != nullptr )
+		if ( data._view_frustum != nullptr &&
+                     !geom->is_in_view(data._view_frustum, current_thread) )
 		{
-			int result = data._view_frustum->contains( geom_gbv );
-			if ( result == BoundingVolume::IF_no_intersection )
-			{
-				// Cull this Geom.
-				return false;
-			}
+			// Cull this Geom.
+                        return false;
 		}
-		if ( !data._cull_planes->is_empty() )
+		if ( data._cull_planes != nullptr )
 		{
 			// Also cull the Geom against the cull planes.
 			int result;
@@ -124,85 +121,37 @@ INLINE void BSPCullTraverser::add_geomnode_for_draw( GeomNode *node, CullTravers
 
         _geom_nodes_pcollector.add_level( 1 );
 
+        Thread *current_thread = get_current_thread();
+
         // Get all the Geoms, with no decalling.
-        GeomNode::Geoms geoms = node->get_geoms( get_current_thread() );
+        GeomNode::Geoms geoms = node->get_geoms( current_thread );
         int num_geoms = geoms.get_num_geoms();
         CPT( TransformState ) internal_transform = data.get_internal_transform( this );
         CPT( TransformState ) net_transform = data.get_net_transform( this );
 
-        for ( int i = 0; i < num_geoms; i++ )
+        if (num_geoms == 1)
         {
-                CPT( Geom ) geom = geoms.get_geom( i );
-                if ( geom->is_empty() )
+                CPT(Geom) geom = geoms.get_geom(0);
+                if (geom->is_empty())
                 {
-                        continue;
+                        return;
+                }
+                if (has_camera_bits(CAMERA_SHADOW))
+                {
+                        if (geom->get_primitive_type() != Geom::PT_polygons)
+                        {
+                                // We can only render triangles to the shadow maps.
+                                return;
+                        }
                 }
 
-		if ( has_camera_bits( CAMERA_SHADOW ) )
-		{
-			if ( geom->get_primitive_type() != Geom::PT_polygons )
-			{
-				// We can only render triangles to the shadow maps.
-				continue;
-			}
-		}
-
-                CPT( RenderState ) state = data._state->compose( geoms.get_geom_state( i ) );
+                CPT( RenderState ) state = data._state->compose( geoms.get_geom_state( 0 ) );
                 if ( needs_culling() && state->has_cull_callback() && !state->cull_callback( this, data ) )
                 {
                         // Cull.
-                        continue;
+                        return;
                 }
 
-                // Cull the Geom bounding volume against the view frustum andor the cull
-                // planes.  Don't bother unless we've got more than one Geom, since
-                // otherwise the bounding volume of the GeomNode is (probably) the same as
-                // that of the one Geom, and we've already culled against that.
-                if ( num_geoms > 1 )
-                {
-                        // Cull the individual Geom against the view frustum/leaf AABBs/cull planes.
-                        const GeometricBoundingVolume *geom_gbv;
-			if ( !geom_cull_test( geom, state, data, geom_gbv, needs_culling() ) )
-                        {
-                                continue;
-                        }
-
-			if ( _loader->has_active_level() )
-			{
-				CPT( BSPFaceAttrib ) bfa;
-				data._state->get_attrib_def( bfa );
-				if ( !bfa->get_ignore_pvs() )
-				{
-					pvs_xform_collector.start();
-					CPT( GeometricBoundingVolume ) net_geom_volume =
-						loader->make_net_bounds( net_transform, geom_gbv );
-					pvs_xform_collector.stop();
-
-					pvs_test_geom_collector.start();
-					// Test geom bounds against visible leaf bounding boxes.
-					// Always test against PVS even if camera's bit isn't set in CAMERA_MASK_CULLING.
-					if ( !loader->pvs_bounds_test( net_geom_volume, get_required_leaf_flags() ) )
-					{
-						// Didn't intersect any, cull.
-						pvs_test_geom_collector.stop();
-						continue;
-					}
-					pvs_test_geom_collector.stop();
-				}
-			}     
-                }
-
-		if ( _loader->get_wireframe() && has_camera_bits( CAMERA_MAIN | CAMERA_VIEWMODEL ) )
-                {
-                        CPT( RenderAttrib ) wfattr = RenderModeAttrib::make( RenderModeAttrib::M_wireframe,
-                                                                             0.5, true, dynamic_wf_color );
-                        CPT( RenderAttrib ) tattr = TextureAttrib::make_all_off();
-                        CPT( RenderAttrib ) cattr = ColorAttrib::make_flat( dynamic_wf_color );
-                        CPT( RenderState ) wfstate = RenderState::make( wfattr, tattr, cattr, 10 );
-                        state = state->compose( wfstate );
-                }
-
-                makecullable_geomnode_collector.start();
                 CullableObject *object =
                         new CullableObject( std::move( geom ), std::move( state ), internal_transform );
 		if ( has_camera_bits( CAMERA_MASK_LIGHTING ) && node->is_of_type( GlowNode::get_class_type() ) )
@@ -210,8 +159,48 @@ INLINE void BSPCullTraverser::add_geomnode_for_draw( GeomNode *node, CullTravers
 			object->set_draw_callback( new GlowNodeDrawCallback( DCAST( GlowNode, node ) ) );
 		}
                 get_cull_handler()->record_object( object, this );
-                makecullable_geomnode_collector.stop();
-                _geoms_pcollector.add_level( 1 );
+        }
+        else
+        {
+                for ( int i = 0; i < num_geoms; i++ )
+                {
+                        CPT( Geom ) geom = geoms.get_geom( i );
+                        if ( geom->is_empty() )
+                        {
+                                continue;
+                        }
+
+                        if ( has_camera_bits( CAMERA_SHADOW ) )
+                        {
+                                if ( geom->get_primitive_type() != Geom::PT_polygons )
+                                {
+                                        // We can only render triangles to the shadow maps.
+                                        continue;
+                                }
+                        }
+
+                        CPT( RenderState ) state = data._state->compose( geoms.get_geom_state( i ) );
+                        if ( needs_culling() && state->has_cull_callback() && !state->cull_callback( this, data ) )
+                        {
+                                // Cull.
+                                continue;
+                        }
+
+                        // Cull the individual Geom against the view frustum/cull planes.
+                        const GeometricBoundingVolume *geom_gbv;
+                        if ( !geom_cull_test( geom, state, data, geom_gbv, current_thread, needs_culling() ) )
+                        {
+                                continue;
+                        }
+
+                        CullableObject *object =
+                                new CullableObject( std::move( geom ), std::move( state ), internal_transform );
+                        if ( has_camera_bits( CAMERA_MASK_LIGHTING ) && node->is_of_type( GlowNode::get_class_type() ) )
+                        {
+                                object->set_draw_callback( new GlowNodeDrawCallback( DCAST( GlowNode, node ) ) );
+                        }
+                        get_cull_handler()->record_object( object, this );
+                }
         }
 }
 
@@ -228,6 +217,8 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
         _nodes_pcollector.add_level( 1 );
         PandaNodePipelineReader *node_reader = data.node_reader();
         PandaNode *node = data.node();
+
+        Thread *current_thread = get_current_thread();
 
         bool keep_going = true;
 
@@ -286,23 +277,13 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
 
 					wsp_ctest_collector.start();
 					const GeometricBoundingVolume *geom_gbv;
-					if ( !geom_cull_test( world_geom, world_state, data, geom_gbv, needs_culling() ) )
+					if ( !geom_cull_test( world_geom, world_state, data, geom_gbv, current_thread, needs_culling() ) )
 					{
 						// Geom culled away by view frustum or clip planes.
 						wsp_ctest_collector.stop();
 						continue;
 					}
 					wsp_ctest_collector.stop();
-
-					//if ( _loader->get_wireframe() && has_camera_bits( CAMERA_MAIN ) )
-					//{
-					//	//std::cout << "Composing world wireframe" << std::endl;
-					//	CPT( RenderAttrib ) wfattr = RenderModeAttrib::make( RenderModeAttrib::M_filled_wireframe,
-					//		0.5, true, brush_wf_color );
-					//	CPT( RenderState ) wfstate = RenderState::make_empty();
-					//	wfstate = wfstate->set_attrib( wfattr, 10 );
-					//	world_state = world_state->compose( wfstate );
-					//}
 
 					wsp_make_cullableobject_collector.start();
 					// Go ahead and render this worldspawn Geom.
@@ -378,8 +359,8 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
         {
                 for ( int i = 0; i < num_children; ++i )
                 {
-                        CullTraverserData next_data( data, children.get_child( i ) );
-                        do_traverse( next_data );
+                        const PandaNode::DownConnection &child = children.get_child_connection(i);
+                        traverse_child( data, child, data._state );
                 }
         }
         else
@@ -387,8 +368,8 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
                 int i = node->get_first_visible_child();
                 while ( i < num_children )
                 {
-                        CullTraverserData next_data( data, children.get_child( i ) );
-                        do_traverse( next_data );
+                        const PandaNode::DownConnection &child = children.get_child_connection(i);
+                        traverse_child(data, child, data._state);
                         i = node->get_next_visible_child( i );
                 }
         }
