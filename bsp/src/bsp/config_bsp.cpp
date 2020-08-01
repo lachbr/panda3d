@@ -26,6 +26,7 @@
 #include "postprocess/fxaa.h"
 #include "static_props.h"
 #include "bloom_attrib.h"
+#include "plane_culled_geom_node.h"
 
 #include <texturePool.h>
 #include "texture_filter.h"
@@ -69,6 +70,7 @@ init_libbsp() {
   BSPModel::init_type();
   BSPShaderGenerator::init_type();
   GlowNode::init_type();
+  PlaneCulledGeomNode::init_type();
 
   AmbientBoostEffect::init_type();
   AmbientBoostEffect::register_with_read_factory();

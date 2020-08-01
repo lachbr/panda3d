@@ -36,6 +36,7 @@ set(P3BSP_HEADERS
   static_props.h
   texture_filter.h
   TexturePacker.h
+  plane_culled_geom_node.h
 
   kdtree/KDTree.h
   kdtree/utils.h
@@ -77,6 +78,7 @@ set(P3BSP_IGATE_HEADERS
   bloom_attrib.h
   interpolatedvar.h
   interpolated.h
+  plane_culled_geom_node.h
 
   postprocess/postprocess.h
   postprocess/hdr.h
@@ -129,6 +131,7 @@ set(P3BSP_SOURCES
   static_props.cpp
   texture_filter.cpp
   TexturePacker.cpp
+  plane_culled_geom_node.cpp
 
   kdtree/KDTree.cpp
 
