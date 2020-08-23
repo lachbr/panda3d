@@ -37,6 +37,7 @@ set(P3BSP_HEADERS
   texture_filter.h
   TexturePacker.h
   plane_culled_geom_node.h
+  dynamicRender.h
 
   kdtree/KDTree.h
   kdtree/utils.h
@@ -132,6 +133,7 @@ set(P3BSP_SOURCES
   texture_filter.cpp
   TexturePacker.cpp
   plane_culled_geom_node.cpp
+  dynamicRender.cxx
 
   kdtree/KDTree.cpp
 

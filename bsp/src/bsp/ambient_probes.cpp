@@ -804,16 +804,6 @@ void AmbientProbeManager::xform_lights(const TransformState *cam_trans) {
   if (_sunlight != nullptr) { xform_light(_sunlight, cam_mat); }
 }
 
-template<class T>
-T AmbientProbeManager::find_closest_in_kdtree(KDTree *tree, const LPoint3 &pos,
-                                              const pvector<T> &items) {
-  if (!tree) return nullptr;
-
-  std::vector<double> data = { pos[0], pos[1], pos[2] };
-  auto res = tree->query(data);
-  return items[res.first];
-}
-
 void AmbientProbeManager::cleanup() {
   MutexHolder holder(_cache_mutex);
 

@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -12,10 +12,11 @@
 #ifndef BSP_CUBEMAPS_H
 #define BSP_CUBEMAPS_H
 
+#include "config_bsp.h"
 #include "aa_luse.h"
 #include "texture.h"
 
-class cubemap_t : public ReferenceCount
+class EXPCL_PANDABSP cubemap_t : public ReferenceCount
 {
 public:
         LVector3 pos;

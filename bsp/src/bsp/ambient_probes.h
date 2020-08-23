@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -22,6 +22,7 @@
 #include "cullableObject.h"
 #include "shaderAttrib.h"
 #include "updateSeq.h"
+#include "cubemaps.h"
 
 #include <unordered_map>
 #include <bitset>
@@ -33,7 +34,6 @@
 class BSPLoader;
 struct dleafambientindex_t;
 struct dleafambientlighting_t;
-class cubemap_t;
 
 enum
 {
@@ -43,16 +43,18 @@ enum
         LIGHTTYPE_SPOT          = 3,
 };
 
-struct ambientprobe_t : public ReferenceCount
+class EXPCL_PANDABSP ambientprobe_t : public ReferenceCount
 {
+public:
         int leaf;
         LPoint3 pos;
         PTA_LVecBase3 cube;
         NodePath visnode;
 };
 
-struct light_t : public ReferenceCount
+class EXPCL_PANDABSP light_t : public ReferenceCount
 {
+public:
         int id;
         int leaf;
         int type;
@@ -206,10 +208,6 @@ public:
         T find_closest_in_kdtree( KDTree *tree, const LPoint3 &pos,
                                   const pvector<T> &items );
 
-        template<class T>
-        T find_closest_n_in_kdtree( KDTree *tree, const LPoint3 &pos,
-                                  const pvector<T> &items, int n );
-
         void cleanup();
 
         //INLINE KDTree *get_light_kdtree() const
@@ -271,5 +269,15 @@ private:
 public:
         friend class NodeWeakCallback;
 };
+
+template<class T>
+T AmbientProbeManager::find_closest_in_kdtree(KDTree *tree, const LPoint3 &pos,
+                                              const pvector<T> &items) {
+  if (!tree) return nullptr;
+
+  std::vector<double> data = { pos[0], pos[1], pos[2] };
+  auto res = tree->query(data);
+  return items[res.first];
+}
 
 #endif // AMBIENT_PROBES_H

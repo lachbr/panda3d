@@ -27,6 +27,7 @@
 #include "static_props.h"
 #include "bloom_attrib.h"
 #include "plane_culled_geom_node.h"
+#include "dynamicRender.h"
 
 #include <texturePool.h>
 #include "texture_filter.h"
@@ -96,4 +97,7 @@ init_libbsp() {
 
   BSPTextureFilter::init_type();
   TexturePool::get_global_ptr()->register_filter(new BSPTextureFilter);
+
+  DynamicRender::init_type();
+  DynamicCullTraverser::init_type();
 }
