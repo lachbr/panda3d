@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -149,13 +149,6 @@ bool PostProcessPass::setup_buffer()
 		flags |= GraphicsPipe::BF_resizeable;
 	}
 
-	std::cout << "Setup buffer " << get_name() << std::endl;
-	fbprops.output( std::cout );
-	std::cout << std::endl;
-	winprops.output( std::cout );
-	std::cout << std::endl;
-	std::cout << "Flags: " << flags << std::endl;
-
 	PT( GraphicsOutput ) output = window->get_engine()->make_output(
 		window->get_pipe(), get_name(), -1,
 		fbprops, winprops, flags, window->get_gsg(),
@@ -208,7 +201,10 @@ void PostProcessPass::setup_region()
 
 void PostProcessPass::setup()
 {
-	nassertv( setup_buffer() );
+	if (!setup_buffer()) {
+		return;
+	}
+
 	setup_quad();
 	setup_camera();
 	setup_region();

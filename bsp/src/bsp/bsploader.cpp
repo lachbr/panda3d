@@ -23,6 +23,7 @@
 #include "postprocess/hdr.h"
 #include "static_props.h"
 #include "planar_reflections.h"
+#include "dSearchPath.h"
 
 #include <array>
 #include <bitset>
@@ -1420,18 +1421,41 @@ bool BSPLoader::read(const Filename &file, bool is_transition) {
 
   VirtualFileSystem *vfs = VirtualFileSystem::get_global_ptr();
 
+  Filename load_filename;
+  if (file.is_local()) {
+    // Look along the model path for the file
+    DSearchPath search_path(get_model_path());
+    for (int i = 0; i < search_path.get_num_directories(); i++) {
+      Filename search(search_path.get_directory(i), file);
+      if (vfs->exists(search)) {
+        load_filename = search;
+        break;
+      }
+    }
+
+  } else {
+    // This is an absolute filename. Use it as-is
+    load_filename = file;
+  }
+
+  if (load_filename.empty()) {
+    bspfile_cat.error()
+      << "Could not find BSP `" << file << "` on model-path " << get_model_path()
+      << "\n";
+      return false;
+  }
+
   bspfile_cat.info()
-    << "Reading " << file.get_fullpath() << "...\n";
-  nassertr(vfs->exists(file), false);
+    << "Reading " << load_filename.get_fullpath() << "...\n";
 
   string data;
-  nassertr(vfs->read_file(file, data, true), false);
+  vfs->read_file(load_filename, data, true);
   int length = data.length();
   char *buffer = new char[length + 1];
   memcpy(buffer, data.c_str(), length);
   _bspdata = LoadBSPImage((dheader_t *)buffer);
 
-  _map_file = file;
+  _map_file = load_filename;
 
   ParseEntities(_bspdata);
 

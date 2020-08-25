@@ -240,7 +240,7 @@ void BSPShaderGenerator::update() {
     }
 
     if (_has_shadow_sunlight) {
-      _pssm_rig->update(_camera.get_child(0), _sun_vector);
+      _pssm_rig->update(_camera, _sun_vector);
     }
 
   }

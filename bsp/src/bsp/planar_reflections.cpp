@@ -47,7 +47,7 @@ PlanarReflections::PlanarReflections( BSPShaderGenerator *shgen ) :
 	_reflection_buffer->set_sort( -100000 );
 	_reflection_buffer->disable_clears();
 
-	Camera* cam = DCAST( Camera, _shgen->get_camera().get_child( 0 ).node() );
+	Camera* cam = DCAST( Camera, _shgen->get_camera().node() );
 	_camera = new Camera( "planar-reflection-camera", cam->get_lens() );
 	_camera->set_camera_mask( CAMERA_REFLECTION );
 	_camera_np = NodePath( _camera );
@@ -92,5 +92,5 @@ void PlanarReflections::shutdown()
 void PlanarReflections::update()
 {
 	if ( _is_setup )
-		_camera_np.set_mat( _shgen->get_camera().get_child( 0 ).get_mat( _shgen->get_render() ) * _plane.get_reflection_mat() );
+		_camera_np.set_mat( _shgen->get_camera().get_mat( _shgen->get_render() ) * _plane.get_reflection_mat() );
 }
