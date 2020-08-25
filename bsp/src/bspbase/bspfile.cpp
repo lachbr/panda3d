@@ -6,6 +6,7 @@
 #include "log.h"
 #include "scriplib.h"
 #include "blockmem.h"
+#include "keyValues.h"
 #include <string>
 
 //=============================================================================
@@ -1004,22 +1005,24 @@ void PrintBSPFileSizes(bspdata_t *data)
 //  ParseEpair
 //      entity key/value pairs
 // =====================================================================================
-epair_t *ParseEpair()
+epair_t *ParseEpair(CKeyValues *kv, size_t n)
 {
         epair_t *e;
 
         e = (epair_t *)Alloc(sizeof(epair_t));
 
-        if (strlen(g_token) >= MAX_KEY - 1)
-                Error("ParseEpair: Key token too long (%i > MAX_KEY)", (int)strlen(g_token));
+        std::string key = kv->get_key(n);
+        std::string value = kv->get_value(n);
 
-        e->key = _strdup(g_token);
-        GetToken(false);
+        if (key.size() >= MAX_KEY - 1)
+                Error("ParseEpair: Key token too long (%i > MAX_KEY)", (int)key.size());
 
-        if (strlen(g_token) >= MAX_VAL - 1) //MAX_VALUE //vluzacn
-                Error("ParseEpar: Value token too long (%i > MAX_VALUE)", (int)strlen(g_token));
+        e->key = _strdup(key.c_str());
 
-        e->value = _strdup(g_token);
+        if (value.size() >= MAX_VAL - 1) //MAX_VALUE //vluzacn
+                Error("ParseEpar: Value token too long (%i > MAX_VALUE)", (int)value.size());
+
+        e->value = _strdup(value.c_str());
 
         return e;
 }
@@ -1030,20 +1033,10 @@ epair_t *ParseEpair()
 * ================
 */
 
-bool ParseEntity(bspdata_t *data)
+bool ParseEntity(bspdata_t *data, CKeyValues *kv)
 {
         epair_t *e;
         entity_t *mapent;
-
-        if (!GetToken(true))
-        {
-                return false;
-        }
-
-        if (strcmp(g_token, "{"))
-        {
-                Error("ParseEntity: { not found");
-        }
 
         if (data->numentities == MAX_MAP_ENTITIES)
         {
@@ -1053,17 +1046,10 @@ bool ParseEntity(bspdata_t *data)
         mapent = &data->entities[data->numentities];
         data->numentities++;
 
-        while (1)
+        size_t count = kv->get_num_keys();
+        for (size_t i = 0; i < count; i++)
         {
-                if (!GetToken(true))
-                {
-                        Error("ParseEntity: EOF without closing brace");
-                }
-                if (!strcmp(g_token, "}"))
-                {
-                        break;
-                }
-                e = ParseEpair();
+                e = ParseEpair(kv, i);
                 e->next = mapent->epairs;
                 mapent->epairs = e;
         }
@@ -1107,10 +1093,12 @@ bool ParseEntity(bspdata_t *data)
 void ParseEntities(bspdata_t *data)
 {
         data->numentities = 0;
-        ParseFromMemory(data->dentdata, data->entdatasize);
-
-        while (ParseEntity(data))
+        std::string buffer(data->dentdata, data->entdatasize);
+        PT(CKeyValues) kv = CKeyValues::from_string(buffer);
+        size_t count = kv->get_num_children();
+        for (size_t i = 0; i < count; i++)
         {
+                ParseEntity(data, kv->get_child(i));
         }
 }
 

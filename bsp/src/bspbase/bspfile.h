@@ -9,6 +9,8 @@
 #pragma once
 #endif
 
+class CKeyValues;
+
 #define PBSP_MAGIC (('P' << 24) + ('S' << 16) + ('B' << 8) + 'P')
 
 #define DEFAULT_LIGHTMAP_SIZE 16.0
@@ -549,7 +551,7 @@ extern _BSPEXPORT void GetVectorForKey(const entity_t *const ent, const char *co
 extern _BSPEXPORT void GetVectorDForKey(const entity_t *const ent, const char *const key, double *vec);
 
 extern _BSPEXPORT entity_t *FindTargetEntity(bspdata_t *data, const char *const target);
-extern _BSPEXPORT epair_t *ParseEpair();
+extern _BSPEXPORT epair_t *ParseEpair(CKeyValues *kv, size_t n);
 extern _BSPEXPORT entity_t *EntityForModel(bspdata_t *data, int modnum);
 
 extern _BSPEXPORT int FastChecksum(const void *const buffer, int bytes);

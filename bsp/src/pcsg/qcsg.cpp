@@ -10,7 +10,7 @@ Modified by Tony "Merl" Moore (merlinis@bigpond.net.au) [AJM]
 
 */
 
-#include "csg.h" 
+#include "csg.h"
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h> //--vluzacn
@@ -28,7 +28,7 @@ NOTES
 
 */
 
-static FILE*    out[NUM_HULLS]; // pointer to each of the hull out files (.p0, .p1, ect.)  
+static FILE*    out[NUM_HULLS]; // pointer to each of the hull out files (.p0, .p1, ect.)
 static FILE*    out_view[NUM_HULLS];
 static FILE*    out_detailbrush[NUM_HULLS];
 static int      c_tiny;
@@ -275,9 +275,9 @@ void WriteDetailBrush( int hull, const bface_t *faces )
 
 // =====================================================================================
 //  SaveOutside
-//      The faces remaining on the outside list are final polygons.  Write them to the 
+//      The faces remaining on the outside list are final polygons.  Write them to the
 //      output file.
-//      Passable contents (water, lava, etc) will generate a mirrored copy of the face 
+//      Passable contents (water, lava, etc) will generate a mirrored copy of the face
 //      to be seen from the inside.
 // =====================================================================================
 static void     SaveOutside( const brush_t* const b, const int hull, bface_t* outside, const int mirrorcontents )
@@ -504,11 +504,11 @@ void            FreeFaceList( bface_t* f )
 
 // =====================================================================================
 //  CopyFacesToOutside
-//      Make a copy of all the faces of the brush, so they can be chewed up by other 
+//      Make a copy of all the faces of the brush, so they can be chewed up by other
 //      brushes.
 //      All of the faces start on the outside list.
-//      As other brushes take bites out of the faces, the fragments are moved to the 
-//      inside list, so they can be freed when they are determined to be completely 
+//      As other brushes take bites out of the faces, the fragments are moved to the
+//      inside list, so they can be freed when they are determined to be completely
 //      enclosed in solid.
 // =====================================================================================
 static bface_t* CopyFacesToOutside( brushhull_t* bh )
@@ -975,7 +975,7 @@ void     ReuseModel()
 // =====================================================================================
 //  SetLightStyles
 // =====================================================================================
-#define	MAX_SWITCHED_LIGHTS	    32 
+#define	MAX_SWITCHED_LIGHTS	    32
 #define MAX_LIGHTTARGETS_NAME   64
 
 static void     SetLightStyles()
@@ -1078,59 +1078,7 @@ static void     ConvertHintToEmpty()
 // =====================================================================================
 //  WriteBSP
 // =====================================================================================
-void LoadWadValue()
-{
-        char *wadvalue;
-        ParseFromMemory( g_bspdata->dentdata, g_bspdata->entdatasize );
-        epair_t *e;
-        entity_t ent0;
-        entity_t *mapent = &ent0;
-        memset( mapent, 0, sizeof( entity_t ) );
-        if ( !GetToken( true ) )
-        {
-                wadvalue = strdup( "" );
-        }
-        else
-        {
-                if ( strcmp( g_token, "{" ) )
-                {
-                        Error( "ParseEntity: { not found" );
-                }
-                while ( 1 )
-                {
-                        if ( !GetToken( true ) )
-                        {
-                                Error( "ParseEntity: EOF without closing brace" );
-                        }
-                        if ( !strcmp( g_token, "}" ) )
-                        {
-                                break;
-                        }
-                        e = ParseEpair();
-                        e->next = mapent->epairs;
-                        mapent->epairs = e;
-                }
-                wadvalue = strdup( ValueForKey( mapent, "wad" ) );
-                epair_t *next;
-                for ( e = mapent->epairs; e; e = next )
-                {
-                        next = e->next;
-                        free( e->key );
-                        free( e->value );
-                        free( e );
-                }
-        }
-        if ( *wadvalue )
-        {
-                Log( "Wad files required to run the map: \"%s\"\n", wadvalue );
-        }
-        else
-        {
-                Log( "Wad files required to run the map: (None)\n" );
-        }
-        SetKeyValue( &g_bspdata->entities[0], "wad", wadvalue );
-        free( wadvalue );
-}
+
 void WriteBSP( const char* const name )
 {
         char path[_MAX_PATH];
@@ -1140,13 +1088,6 @@ void WriteBSP( const char* const name )
         SetModelNumbers();
         ReuseModel();
         SetLightStyles();
-
-        //if (!g_onlyents)
-        //    WriteMiptex();
-        if ( g_onlyents )
-        {
-                LoadWadValue();
-        }
 
         UnparseEntities(g_bspdata);
         ConvertHintToEmpty(); // this is ridiculous. --vluzacn
@@ -1306,7 +1247,7 @@ static void     BoundWorld()
 // =====================================================================================
 static void     Usage()
 {
-        Banner(); // TODO: Call banner from main CSG process? 
+        Banner(); // TODO: Call banner from main CSG process?
 
         Log( "\n-= %s Options =-\n\n", g_Program );
         Log( "    -lang file       : localization file\n" );
@@ -1491,7 +1432,7 @@ void            CSGCleanup()
 int             main( const int argc, char** argv )
 {
         int             i;
-        char            name[_MAX_PATH];            // mapanme 
+        char            name[_MAX_PATH];            // mapanme
         double          start, end;                 // start/end time log
         const char*     mapname_from_arg = NULL;    // mapname path from passed argvar
 
@@ -1510,7 +1451,7 @@ int             main( const int argc, char** argv )
                                 Usage();
 
                         // Hard coded list of -wadinclude files, used for HINT texture brushes so lazy
-                        // mapmakers wont cause beta testers (or possibly end users) to get a wad 
+                        // mapmakers wont cause beta testers (or possibly end users) to get a wad
                         // error on zhlt.wad etc
                         //g_WadInclude.push_back("zhlt.wad");
 
@@ -1755,7 +1696,10 @@ int             main( const int argc, char** argv )
                                         {
                                                 VirtualFileSystem *vfs = VirtualFileSystem::get_global_ptr();
 
-                                                PT( VirtualFileList ) list = vfs->scan_directory( argv[++i] );
+                                                std::string dir(argv[++i]);
+                                                load_prc_file_data("", "model-path " + dir);
+
+                                                PT( VirtualFileList ) list = vfs->scan_directory( dir );
 
                                                 if ( !list )
                                                 {
@@ -1799,7 +1743,7 @@ int             main( const int argc, char** argv )
                                 {
                                         g_nullifytrigger = false;
                                 }
-                               
+
                                 else if ( argv[i][0] == '-' )
                                 {
                                         Log( "Unknown option \"%s\"\n", argv[i] );
@@ -2155,7 +2099,7 @@ int             main( const int argc, char** argv )
                         Verbose( "%5i tiny faces\n", c_tiny );
                         Verbose( "%5i tiny clips\n", c_tiny_clip );
 
-                        // close hull files 
+                        // close hull files
                         for ( i = 0; i < NUM_HULLS; i++ )
                         {
                                 fclose( out[i] );

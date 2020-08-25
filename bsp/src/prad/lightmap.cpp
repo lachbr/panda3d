@@ -485,7 +485,7 @@ void InitLightInfo( lightinfo_t &l, int facenum )
         const dplane_t *plane = getPlaneFromFace( f );
 
         facelight_t *fl = &facelight[facenum];
-        
+
         if ( g_face_patches[facenum] != -1 )
                 l.bumped = g_patches[g_face_patches[facenum]].bumped;
         else
@@ -1004,7 +1004,7 @@ void GatherSampleSkyLightSSE( SSE_sampleLightInput_t &input, SSE_sampleLightOutp
                         ofs *= MAX_TRACE_LENGTH * Lights::sun_angular_extent;
                         delta += ofs;
                 }
-                
+
 
                 FourVectors delta4;
                 delta4.DuplicateVector( delta );
@@ -1131,7 +1131,7 @@ void GatherSampleLightStandardSSE( SSE_sampleLightInput_t &input, SSE_sampleLigh
         {
                 src.DuplicateVector( input.dl->origin );
         }
-        
+
         // Find light vector
         FourVectors delta;
         delta = src;
@@ -1358,6 +1358,7 @@ void GatherSampleLightAt4Points( SSE_SampleInfo_t &info, int sample_idx, int num
 {
         SSE_sampleLightOutput_t out;
 
+
         // iterate over all direct lights and add them to the particular sapmle
         for ( directlight_t *dl = Lights::activelights; dl != nullptr; dl = dl->next )
         {
@@ -1377,7 +1378,7 @@ void GatherSampleLightAt4Points( SSE_SampleInfo_t &info, int sample_idx, int num
                 {
                         continue;
                 }
-                        
+
 
                 GatherSampleLightSSE( out, dl, info.facenum, info.points,
                                       info.point_normals, info.normal_count, info.thread );
@@ -1397,7 +1398,7 @@ void GatherSampleLightAt4Points( SSE_SampleInfo_t &info, int sample_idx, int num
                 {
                         continue;
                 }
-                        
+
 
                 // figure out the lightstyle for this particular sample
                 int lightstyleidx = FindOrAllocateLightstyleSamples( info.face, info.facelight, dl->style, info.normal_count );
@@ -1425,6 +1426,7 @@ void GatherSampleLightAt4Points( SSE_SampleInfo_t &info, int sample_idx, int num
 				light->AddLight( SubFloat( fxdot[n], i ),
 					dl->intensity,
 					SubFloat( out.sun_amount, i ) );
+
                         }
                 }
         }
@@ -1480,13 +1482,13 @@ void ComputeLightmapGradients( SSE_SampleInfo_t &info, bool *has_processed_sampl
                                 {
                                         gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j - 1 - w] ) );
                                 }
-                                        
+
                                 gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j - w] ) );
                                 if ( sample.s < w - 1 )
                                 {
                                         gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j + 1 - w] ) );
                                 }
-                                        
+
                         }
                         if ( sample.t < h - 1 )
                         {
@@ -1494,19 +1496,19 @@ void ComputeLightmapGradients( SSE_SampleInfo_t &info, bool *has_processed_sampl
                                 {
                                         gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j - 1 + w] ) );
                                 }
-                                        
+
                                 gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j + w] ) );
                                 if ( sample.s < w - 1 )
                                 {
                                         gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j + 1 + w] ) );
                                 }
-                                        
+
                         }
                         if ( sample.s > 0 )
                         {
                                 gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j - 1] ) );
                         }
-                                
+
                         if ( sample.s < w - 1 )
                         {
                                 gradient[i] = std::max( gradient[i], fabs( sample_intensity[j] - sample_intensity[j + 1] ) );
@@ -1705,7 +1707,7 @@ int SupersampleLightAtPoint( lightinfo_t &l, SSE_SampleInfo_t &info, int samplei
                                         for ( int n = 0; n < info.normal_count; ++n )
                                         {
                                                 light[n].AddLight( result[i][n] );
-						
+
                                         }
                                         ++subsamplecnt;
                                 }
@@ -1835,7 +1837,7 @@ void AddSampleToPatch( sample_t *sample, lightvalue_t &light, int facenum )
         if ( VectorAvg( light.light ) < 1 )
         {
                 return;
-        }    
+        }
 
         //
         // fixed the sample position and normal -- need to find the equiv pos, etc to set up
@@ -2049,7 +2051,6 @@ void DetermineLightmapMemory()
  */
 void BuildFacelights( const int facenum )
 {
-        
         dface_t*                f;
         lightinfo_t             l;
         int                     i;
@@ -2074,7 +2075,7 @@ void BuildFacelights( const int facenum )
         {
                 return;                                            // non-lit texture
         }
-        
+
         memset( &l, 0, sizeof( l ) );
 
         plane = getPlaneFromFace( f );
@@ -2102,7 +2103,7 @@ void BuildFacelights( const int facenum )
 
                 FourVectors positions;
                 FourVectors normals;
-                
+
                 for ( int i = 0; i < 4; i++ )
                 {
                         v[i] = ( i < num_samples ) ? GetLVector3( sample[i].pos ) : GetLVector3( sample[num_samples - 1].pos );
@@ -2143,7 +2144,7 @@ void BuildFacelights( const int facenum )
         BuildPatchLights( facenum );
 
         lightinfo[facenum] = l;
-        
+
 }
 
 // =====================================================================================
@@ -2388,7 +2389,6 @@ void ScaleDirectLights()
                                 }
                         }
                 }
-                
+
         }
 }
-

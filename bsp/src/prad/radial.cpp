@@ -1,4 +1,5 @@
 #include "radial.h"
+#include "threads.h"
 
 radial_t *AllocRadial( int facenum )
 {
@@ -180,7 +181,7 @@ radial_t *BuildLuxelRadial( int facenum, int style )
                                    needs_bumpmap );
         }
 
-        
+
         for ( int i = 0; i < fn->numneighbors; i++ )
         {
                 fl = &facelight[fn->neighbor[i]];
@@ -243,7 +244,7 @@ radial_t *BuildLuxelRadial( int facenum, int style )
                                            &light, neighbor_bump, neighbor_bump );
                 }
         }
-        
+
 
         return rad;
 }
@@ -369,7 +370,7 @@ radial_t *BuildPatchRadial( int facenum )
         {
                 for ( patch_t *patch = &g_patches[g_face_patches[facenum]]; patch; patch = nextpatch )
                 {
-                        
+
                         nextpatch = nullptr;
                         if ( patch->next != -1 )
                         {
@@ -387,7 +388,7 @@ radial_t *BuildPatchRadial( int facenum )
                 }
         }
 
-        
+
         for ( int i = 0; i < fn->numneighbors; i++ )
         {
                 int fn_idx = fn->neighbor[i];
@@ -414,7 +415,7 @@ radial_t *BuildPatchRadial( int facenum )
                         }
                 }
         }
-        
+
 
         return rad;
 }
@@ -467,7 +468,7 @@ bool SampleRadial( radial_t *rad, const LVector3 &pos,
                         }
                 }
 
-               
+
         }
 
         return base_sample_ok;
@@ -511,7 +512,7 @@ void FinalLightFace( const int facenum )
         {
                 return;
         }
-        
+
         //
         // sample the triangulation
         //
@@ -526,7 +527,7 @@ void FinalLightFace( const int facenum )
                 {
                         rad = BuildLuxelRadial( facenum, k );
                 }
-                
+
                 if ( g_numbounce > 0 && k == 0 )
                 {
                         prad = BuildPatchRadial( facenum );

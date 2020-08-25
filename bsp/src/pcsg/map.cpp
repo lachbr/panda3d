@@ -3,6 +3,8 @@
 #include "csg.h"
 
 #include "bspMaterial.h"
+#include "keyValues.h"
+#include "transformState.h"
 
 int             g_nummapbrushes;
 brush_t         g_mapbrushes[MAX_MAP_BRUSHES];
@@ -10,7 +12,7 @@ brush_t         g_mapbrushes[MAX_MAP_BRUSHES];
 int             g_numbrushsides;
 side_t          g_brushsides[MAX_MAP_SIDES];
 
-int             g_nMapFileVersion;
+int             g_nMapFileVersion = 220;
 
 static const vec3_t   s_baseaxis[18] = {
         { 0, 0, 1 },{ 1, 0, 0 },{ 0, -1, 0 },                      // floor
@@ -25,6 +27,34 @@ int				g_numparsedentities;
 int				g_numparsedbrushes;
 
 static pmap<std::string, int> propname_to_propnum;
+
+CPT(TransformState) GetMyTransform(CKeyValues *kv, CPT(TransformState) transform)
+{
+        CPT(TransformState) my_transform = TransformState::make_identity();
+        if (kv->has_key("origin"))
+        {
+                LPoint3 origin = CKeyValues::to_3f(kv->get_value("origin"));
+                my_transform = my_transform->set_pos(origin);
+        }
+        if (kv->has_key("angles"))
+        {
+                LVector3 angles = CKeyValues::to_3f(kv->get_value("angles"));
+                my_transform = my_transform->set_hpr(angles);
+        }
+        if (kv->has_key("scale"))
+        {
+                LVector3 scale = CKeyValues::to_3f(kv->get_value("scale"));
+                my_transform = my_transform->set_scale(scale);
+        }
+        if (kv->has_key("shear"))
+        {
+                LVector3 shear = CKeyValues::to_3f(kv->get_value("shear"));
+                my_transform = my_transform->set_shear(shear);
+        }
+
+        my_transform = transform->compose(my_transform);
+        return my_transform;
+}
 
 brush_t *CopyCurrentBrush( entity_t *entity, const brush_t *brush )
 {
@@ -156,7 +186,7 @@ static bool CheckForInvisible( entity_t* mapent )
 //  ParseBrush
 //      parse a brush from script
 // =====================================================================================
-static void ParseBrush( entity_t* mapent )
+static void ParseBrush( entity_t* mapent, CKeyValues *kv )
 {
         brush_t*        b;
         int             i, j;
@@ -220,227 +250,91 @@ static void ParseBrush( entity_t* mapent )
 
         mapent->numbrushes++;
 
-        ok = GetToken( true );
-        while ( ok )
+        g_TXcommand = 0;
+
+        size_t num_children = kv->get_num_children();
+        for (size_t i = 0; i < num_children; i++)
         {
-                g_TXcommand = 0;
-                if ( !strcmp( g_token, "</solid>" ) )
+                CKeyValues *child = kv->get_child(i);
+                const std::string &name = child->get_name();
+
+                if (name == "side")
                 {
-                        break;
-                }
+                        hlassume( g_numbrushsides < MAX_MAP_SIDES, assume_MAX_MAP_SIDES );
+                        side = &g_brushsides[g_numbrushsides];
+                        g_numbrushsides++;
 
-                hlassume( g_numbrushsides < MAX_MAP_SIDES, assume_MAX_MAP_SIDES );
-                side = &g_brushsides[g_numbrushsides];
-                g_numbrushsides++;
+                        b->numsides++;
+                        side->brushnum = b->brushnum;
 
-                b->numsides++;
-                side->brushnum = b->brushnum;
+                        side->bevel = false;
 
-                side->bevel = false;
-                // read the three point plane definition
-                for ( i = 0; i < 3; i++ )
-                {
-                        if ( i != 0 )
+                        // read the three point plane definition
+                        LPoint3 pt1, pt2, pt3;
+                        CKeyValues::parse_plane_points(child->get_value("plane"), pt1, pt2, pt3);
+                        VectorCopy(pt1, side->planepts[0]);
+                        VectorCopy(pt2, side->planepts[1]);
+                        VectorCopy(pt3, side->planepts[2]);
+
+                        // Read the material
+                        std::string material = child->get_value("material");
+                        const char *cmaterial = material.c_str();
+
+                        const BSPMaterial *mat = BSPMaterial::get_from_file( material );
+                        if ( !mat )
                         {
-                                GetToken( true );
+                                Error( "Material %s not found!", cmaterial );
                         }
-                        if ( strcmp( g_token, "(" ) )
+                        if ( g_tex_contents.find( material ) == g_tex_contents.end() )
                         {
-                                Error( "Parsing Entity %i, Brush %i, Side %i : Expecting '(' got '%s'",
-                                       b->originalentitynum, b->originalbrushnum,
-                                       b->numsides, g_token );
-                        }
-
-                        for ( j = 0; j < 3; j++ )
-                        {
-                                GetToken( false );
-                                side->planepts[i][j] = atof( g_token );
-                        }
-
-                        GetToken( false );
-                        if ( strcmp( g_token, ")" ) )
-                        {
-                                Error( "Parsing	Entity %i, Brush %i, Side %i : Expecting ')' got '%s'",
-                                       b->originalentitynum, b->originalbrushnum,
-                                       b->numsides, g_token );
-                        }
-                }
-
-                // read the     texturedef
-                GetToken( false );
-                //_strupr(g_token);
-                string strtoken = g_token;
-
-                const BSPMaterial *mat = BSPMaterial::get_from_file( strtoken );
-                if ( !mat )
-                {
-                        Error( "Material %s not found!", g_token );
-                }
-                if ( g_tex_contents.find( strtoken ) == g_tex_contents.end() )
-                {
-                        SetTextureContents( g_token, mat->get_contents().c_str() );
-                }
-
-                {
-                        if ( !strncasecmp( g_token, "BEVELBRUSH", 10 ) )
-                        {
-                                strcpy( g_token, "NULL" );
-                                b->bevel = true;
-                        }
-                        if ( !strncasecmp( g_token, "BEVEL", 5 ) )
-                        {
-                                strcpy( g_token, "NULL" );
-                                side->bevel = true;
-                        }
-                        if ( GetTextureContents( g_token ) == CONTENTS_NULL )
-                        {
-                                strcpy( g_token, "NULL" );
-                        }
-                }
-                safe_strncpy( side->td.name, g_token, sizeof( side->td.name ) );
-
-                if ( g_nMapFileVersion < 220 )                       // Worldcraft 2.1-, Radiant
-                {
-                        GetToken( false );
-                        side->td.vects.valve.shift[0] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.shift[1] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.rotate = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.scale[0] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.scale[1] = atof( g_token );
-                }
-                else                                               // Worldcraft 2.2+
-                {
-                        // texture U axis
-                        GetToken( false );
-                        if ( strcmp( g_token, "[" ) )
-                        {
-                                hlassume( false, assume_MISSING_BRACKET_IN_TEXTUREDEF );
+                                SetTextureContents( cmaterial, mat->get_contents().c_str() );
                         }
 
-                        GetToken( false );
-                        side->td.vects.valve.UAxis[0] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.UAxis[1] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.UAxis[2] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.shift[0] = atof( g_token );
-
-                        GetToken( false );
-                        if ( strcmp( g_token, "]" ) )
                         {
-                                Error( "missing ']' in texturedef (U)" );
-                        }
-
-                        // texture V axis
-                        GetToken( false );
-                        if ( strcmp( g_token, "[" ) )
-                        {
-                                Error( "missing '[' in texturedef (V)" );
-                        }
-
-                        GetToken( false );
-                        side->td.vects.valve.VAxis[0] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.VAxis[1] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.VAxis[2] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.shift[1] = atof( g_token );
-
-                        GetToken( false );
-                        if ( strcmp( g_token, "]" ) )
-                        {
-                                Error( "missing ']' in texturedef (V)" );
-                        }
-
-                        // Texture rotation is implicit in U/V axes.
-                        GetToken( false );
-                        side->td.vects.valve.rotate = 0;
-
-                        // texure scale
-                        GetToken( false );
-                        side->td.vects.valve.scale[0] = atof( g_token );
-                        GetToken( false );
-                        side->td.vects.valve.scale[1] = atof( g_token );
-
-                        // lightmap scale
-                        GetToken( false );
-                        side->td.vects.valve.lightmap_scale = atof( g_token );
-
-                        // num verts
-                        GetToken( false );
-                        int numverts = atoi( g_token );
-                        for ( int vert = 0; vert < numverts; vert++ )
-                        {
-                                // 5 tokens per vert (open and close braces, 3 points)
-                                for ( int i = 0; i < 5; i++ )
+                                if ( !strncasecmp( cmaterial, "BEVELBRUSH", 10 ) )
                                 {
-                                        GetToken( false );
+                                        material = "NULL";
+                                        b->bevel = true;
+                                }
+                                if ( !strncasecmp( cmaterial, "BEVEL", 5 ) )
+                                {
+                                        material = "NULL";
+                                        side->bevel = true;
+                                }
+                                if ( GetTextureContents( cmaterial ) == CONTENTS_NULL )
+                                {
+                                        material = "NULL";
                                 }
                         }
+                        cmaterial = material.c_str();
+                        safe_strncpy( side->td.name, cmaterial, sizeof( side->td.name ) );
+
+                        // Read material axes
+                        LVector3 axis;
+                        LVector2 shift_scale;
+
+                        // U axis
+                        CKeyValues::parse_material_axis(child->get_value("uaxis"), axis, shift_scale);
+                        VectorCopy(axis, side->td.vects.valve.UAxis);
+                        side->td.vects.valve.shift[0] = shift_scale[0];
+                        side->td.vects.valve.scale[0] = shift_scale[1];
+
+                        // V axis
+                        CKeyValues::parse_material_axis(child->get_value("vaxis"), axis, shift_scale);
+                        VectorCopy(axis, side->td.vects.valve.VAxis);
+                        side->td.vects.valve.shift[1] = shift_scale[0];
+                        side->td.vects.valve.scale[1] = shift_scale[1];
+
+                        // Rotation is implicit in U/V axes
+                        side->td.vects.valve.rotate = 0;
+
+                        // Lightmap scale
+                        side->td.vects.valve.lightmap_scale = atof(child->get_value("lightmap_scale").c_str());
+                        std::cout << side->td.vects.valve.lightmap_scale << std::endl;
+
+                        side->td.txcommand = 0;                  // Quark stuff, but needs setting always
                 }
-
-                ok = GetToken( true );                               // Done with line, this reads the first item from the next line
-
-                if ( ( g_TXcommand == '1' || g_TXcommand == '2' ) )
-                {
-                        // We are QuArK mode and need to translate some numbers to align textures its way
-                        // from QuArK, the texture vectors are given directly from the three points
-                        vec3_t          TexPt[2];
-                        int             k;
-                        float           dot22, dot23, dot33, mdet, aa, bb, dd;
-
-                        k = g_TXcommand - '0';
-                        for ( j = 0; j < 3; j++ )
-                        {
-                                TexPt[1][j] = ( side->planepts[k][j] - side->planepts[0][j] ) * ScaleCorrection;
-                        }
-                        k = 3 - k;
-                        for ( j = 0; j < 3; j++ )
-                        {
-                                TexPt[0][j] = ( side->planepts[k][j] - side->planepts[0][j] ) * ScaleCorrection;
-                        }
-
-                        dot22 = DotProduct( TexPt[0], TexPt[0] );
-                        dot23 = DotProduct( TexPt[0], TexPt[1] );
-                        dot33 = DotProduct( TexPt[1], TexPt[1] );
-                        mdet = dot22 * dot33 - dot23 * dot23;
-                        if ( mdet < 1E-6 && mdet > -1E-6 )
-                        {
-                                aa = bb = dd = 0;
-                                Warning
-                                ( "Degenerate QuArK-style brush texture : Entity %i, Brush %i @ (%f,%f,%f) (%f,%f,%f)	(%f,%f,%f)",
-                                  b->originalentitynum, b->originalbrushnum,
-                                  side->planepts[0][0], side->planepts[0][1], side->planepts[0][2],
-                                  side->planepts[1][0], side->planepts[1][1], side->planepts[1][2], side->planepts[2][0],
-                                  side->planepts[2][1], side->planepts[2][2] );
-                        }
-                        else
-                        {
-                                mdet = 1.0 / mdet;
-                                aa = dot33 * mdet;
-                                bb = -dot23 * mdet;
-                                //cc = -dot23*mdet;             // cc = bb
-                                dd = dot22 * mdet;
-                        }
-
-                        for ( j = 0; j < 3; j++ )
-                        {
-                                side->td.vects.quark.vects[0][j] = aa * TexPt[0][j] + bb * TexPt[1][j];
-                                side->td.vects.quark.vects[1][j] = -( /*cc */ bb * TexPt[0][j] + dd * TexPt[1][j] );
-                        }
-
-                        side->td.vects.quark.vects[0][3] = -DotProduct( side->td.vects.quark.vects[0], side->planepts[0] );
-                        side->td.vects.quark.vects[1][3] = -DotProduct( side->td.vects.quark.vects[1], side->planepts[0] );
-                }
-
-                side->td.txcommand = g_TXcommand;                  // Quark stuff, but needs setting always
-        };
+        }
 
         b->contents = contents = CheckBrushContents( b );
         for ( j = 0; j < b->numsides; j++ )
@@ -591,26 +485,15 @@ static void ParseBrush( entity_t* mapent )
 //  ParseMapEntity
 //      parse an entity from script
 // =====================================================================================
-bool            ParseMapEntity()
+bool ParseMapEntity(CKeyValues *kv)
 {
         int             this_entity;
         entity_t*       mapent;
         epair_t*        e;
 
         g_numparsedbrushes = 0;
-        if ( !GetToken( true ) )
-        {
-                return false;
-        }
 
         this_entity = g_bspdata->numentities;
-
-        if ( strcmp( g_token, "<entity>" ) )
-        {
-                Error( "Parsing Entity %i, expected '<entity>' got '%s'",
-                       g_numparsedentities,
-                       g_token );
-        }
 
         hlassume( g_bspdata->numentities < MAX_MAP_ENTITIES, assume_MAX_MAP_ENTITIES );
         g_bspdata->numentities++;
@@ -619,31 +502,39 @@ bool            ParseMapEntity()
         mapent->firstbrush = g_nummapbrushes;
         mapent->numbrushes = 0;
 
-        while ( 1 )
+        size_t keycount = kv->get_num_keys();
+        for (size_t i = 0; i < keycount; i++)
         {
-                if ( !GetToken( true ) )
-                        Error( "ParseEntity: EOF without closing brace" );
+                e = ParseEpair(kv, i);
+                if ( mapent->numbrushes > 0 ) Warning( "Error: ParseEntity: Keyvalue comes after brushes." ); //--vluzacn
 
-                if ( !strcmp( g_token, "</entity>" ) )  // end of our context
-                        break;
-
-                if ( !strcmp( g_token, "<solid>" ) )  // must be a brush
+                if ( !strcmp( e->key, "mapversion" ) )
                 {
-                        ParseBrush( mapent );
-                        g_numparsedbrushes++;
-
+                        g_nMapFileVersion = atoi( e->value );
                 }
-                else if ( !strcmp( g_token, "<connections>" ) ) // input/output connections
-                {
-                        while ( 1 )
-                        {
-                                GetToken( true );
-                                if ( !strcmp( g_token, "</connections>" ) )
-                                {
-                                        break;
-                                }
 
-                                e = ParseEpair();
+                SetKeyValue( mapent, e->key, e->value );
+                Free( e->key );
+                Free( e->value );
+                Free( e );
+        }
+
+        size_t count = kv->get_num_children();
+        for (size_t i = 0; i < count; i++)
+        {
+                CKeyValues *child = kv->get_child(i);
+                const std::string &name = child->get_name();
+                if (name == "solid")
+                {
+                        ParseBrush(mapent, child);
+                        g_numparsedbrushes++;
+                }
+                else if (name == "connections")
+                {
+                        size_t keycount = child->get_num_keys();
+                        for (size_t j = 0; j < keycount; j++)
+                        {
+                                e = ParseEpair(child, j);
                                 e->next = nullptr;
                                 if ( !mapent->epairs )
                                 {
@@ -659,234 +550,7 @@ bool            ParseMapEntity()
                                 }
                         }
                 }
-                else                        // else assume an epair
-                {
-                        e = ParseEpair();
-                        if ( mapent->numbrushes > 0 ) Warning( "Error: ParseEntity: Keyvalue comes after brushes." ); //--vluzacn
-
-                        if ( !strcmp( e->key, "mapversion" ) )
-                        {
-                                g_nMapFileVersion = atoi( e->value );
-                        }
-
-                        SetKeyValue( mapent, e->key, e->value );
-                        Free( e->key );
-                        Free( e->value );
-                        Free( e );
-                }
         }
-        if ( *ValueForKey( mapent, "zhlt_usemodel" ) )
-        {
-                if ( !*ValueForKey( mapent, "origin" ) )
-                        Warning( "Entity %i: 'zhlt_usemodel' requires the entity to have an origin brush.",
-                                 g_numparsedentities
-                        );
-                mapent->numbrushes = 0;
-        }
-        if ( strcmp( ValueForKey( mapent, "classname" ), "info_hullshape" ) ) // info_hullshape is not affected by '-scale'
-        {
-                bool ent_move_b = false, ent_scale_b = false, ent_gscale_b = false;
-                vec3_t ent_move = { 0,0,0 }, ent_scale_origin = { 0,0,0 };
-                vec_t ent_scale = 1, ent_gscale = 1;
-
-                if ( g_scalesize > 0 )
-                {
-                        ent_gscale_b = true;
-                        ent_gscale = g_scalesize;
-                }
-                double v[4] = { 0,0,0,0 };
-                if ( *ValueForKey( mapent, "zhlt_transform" ) )
-                {
-                        switch
-                                ( sscanf( ValueForKey( mapent, "zhlt_transform" ), "%lf %lf %lf %lf", v, v + 1, v + 2, v + 3 ) )
-                        {
-                        case 1:
-                                ent_scale_b = true;
-                                ent_scale = v[0];
-                                break;
-                        case 3:
-                                ent_move_b = true;
-                                VectorCopy( v, ent_move );
-                                break;
-                        case 4:
-                                ent_scale_b = true;
-                                ent_scale = v[0];
-                                ent_move_b = true;
-                                VectorCopy( v + 1, ent_move );
-                                break;
-                        default:
-                                Warning( "bad value '%s' for key 'zhlt_transform'", ValueForKey( mapent, "zhlt_transform" ) );
-                        }
-                        DeleteKey( mapent, "zhlt_transform" );
-                }
-                GetVectorDForKey( mapent, "origin", ent_scale_origin );
-
-                if ( ent_move_b || ent_scale_b || ent_gscale_b )
-                {
-                        if ( g_nMapFileVersion < 220 || g_brushsides[0].td.txcommand != 0 )
-                        {
-                                Warning( "hlcsg scaling hack is not supported in Worldcraft 2.1- or QuArK mode" );
-                        }
-                        else
-                        {
-                                int ibrush, iside, ipoint;
-                                brush_t *brush;
-                                side_t *side;
-                                vec_t *point;
-                                for ( ibrush = 0, brush = g_mapbrushes + mapent->firstbrush; ibrush < mapent->numbrushes; ++ibrush, ++brush )
-                                {
-                                        for ( iside = 0, side = g_brushsides + brush->firstside; iside < brush->numsides; ++iside, ++side )
-                                        {
-                                                for ( ipoint = 0; ipoint < 3; ++ipoint )
-                                                {
-                                                        point = side->planepts[ipoint];
-                                                        if ( ent_scale_b )
-                                                        {
-                                                                VectorSubtract( point, ent_scale_origin, point );
-                                                                VectorScale( point, ent_scale, point );
-                                                                VectorAdd( point, ent_scale_origin, point );
-                                                        }
-                                                        if ( ent_move_b )
-                                                        {
-                                                                VectorAdd( point, ent_move, point );
-
-                                                        }
-                                                        if ( ent_gscale_b )
-                                                        {
-                                                                VectorScale( point, ent_gscale, point );
-                                                        }
-                                                }
-                                                // note that  tex->vecs = td.vects.valve.Axis / td.vects.valve.scale
-                                                //            tex->vecs[3] = vects.valve.shift + Dot(origin, tex->vecs)
-                                                //      and   texcoordinate = Dot(worldposition, tex->vecs) + tex->vecs[3]
-                                                bool zeroscale = false;
-                                                if ( !side->td.vects.valve.scale[0] )
-                                                {
-                                                        side->td.vects.valve.scale[0] = 1;
-                                                }
-                                                if ( !side->td.vects.valve.scale[1] )
-                                                {
-                                                        side->td.vects.valve.scale[1] = 1;
-                                                }
-                                                if ( ent_scale_b )
-                                                {
-                                                        vec_t coord[2];
-                                                        if ( fabs( side->td.vects.valve.scale[0] ) > NORMAL_EPSILON )
-                                                        {
-                                                                coord[0] = DotProduct( ent_scale_origin, side->td.vects.valve.UAxis ) / side->td.vects.valve.scale[0] + side->td.vects.valve.shift[0];
-                                                                side->td.vects.valve.scale[0] *= ent_scale;
-                                                                if ( fabs( side->td.vects.valve.scale[0] ) > NORMAL_EPSILON )
-                                                                {
-                                                                        side->td.vects.valve.shift[0] = coord[0] - DotProduct( ent_scale_origin, side->td.vects.valve.UAxis ) / side->td.vects.valve.scale[0];
-                                                                }
-                                                                else
-                                                                {
-                                                                        zeroscale = true;
-                                                                }
-                                                        }
-                                                        else
-                                                        {
-                                                                zeroscale = true;
-                                                        }
-                                                        if ( fabs( side->td.vects.valve.scale[1] ) > NORMAL_EPSILON )
-                                                        {
-                                                                coord[1] = DotProduct( ent_scale_origin, side->td.vects.valve.VAxis ) / side->td.vects.valve.scale[1] + side->td.vects.valve.shift[1];
-                                                                side->td.vects.valve.scale[1] *= ent_scale;
-                                                                if ( fabs( side->td.vects.valve.scale[1] ) > NORMAL_EPSILON )
-                                                                {
-                                                                        side->td.vects.valve.shift[1] = coord[1] - DotProduct( ent_scale_origin, side->td.vects.valve.VAxis ) / side->td.vects.valve.scale[1];
-                                                                }
-                                                                else
-                                                                {
-                                                                        zeroscale = true;
-                                                                }
-                                                        }
-                                                        else
-                                                        {
-                                                                zeroscale = true;
-                                                        }
-                                                }
-                                                if ( ent_move_b )
-                                                {
-                                                        if ( fabs( side->td.vects.valve.scale[0] ) > NORMAL_EPSILON )
-                                                        {
-                                                                side->td.vects.valve.shift[0] -= DotProduct( ent_move, side->td.vects.valve.UAxis ) / side->td.vects.valve.scale[0];
-                                                        }
-                                                        else
-                                                        {
-                                                                zeroscale = true;
-                                                        }
-                                                        if ( fabs( side->td.vects.valve.scale[1] ) > NORMAL_EPSILON )
-                                                        {
-                                                                side->td.vects.valve.shift[1] -= DotProduct( ent_move, side->td.vects.valve.VAxis ) / side->td.vects.valve.scale[1];
-                                                        }
-                                                        else
-                                                        {
-                                                                zeroscale = true;
-                                                        }
-                                                }
-                                                if ( ent_gscale_b )
-                                                {
-                                                        side->td.vects.valve.scale[0] *= ent_gscale;
-                                                        side->td.vects.valve.scale[1] *= ent_gscale;
-                                                }
-                                                if ( zeroscale )
-                                                {
-                                                        Error( "Entity %i, Brush %i: invalid texture scale.\n",
-                                                               brush->originalentitynum, brush->originalbrushnum
-                                                        );
-                                                }
-                                        }
-                                }
-                                if ( ent_gscale_b )
-                                {
-                                        if ( *ValueForKey( mapent, "origin" ) )
-                                        {
-                                                double v[3];
-                                                int origin[3];
-                                                char string[MAXTOKEN];
-                                                int i;
-                                                GetVectorDForKey( mapent, "origin", v );
-                                                VectorScale( v, ent_gscale, v );
-                                                for ( i = 0; i<3; ++i )
-                                                        origin[i] = (int)( v[i] >= 0 ? v[i] + 0.5 : v[i] - 0.5 );
-                                                safe_snprintf( string, MAXTOKEN, "%d %d %d", origin[0], origin[1], origin[2] );
-                                                SetKeyValue( mapent, "origin", string );
-                                        }
-                                }
-                                {
-                                        double b[2][3];
-                                        if ( sscanf( ValueForKey( mapent, "zhlt_minsmaxs" ), "%lf %lf %lf %lf %lf %lf", &b[0][0], &b[0][1], &b[0][2], &b[1][0], &b[1][1], &b[1][2] ) == 6 )
-                                        {
-                                                for ( int i = 0; i < 2; i++ )
-                                                {
-                                                        vec_t *point = b[i];
-                                                        if ( ent_scale_b )
-                                                        {
-                                                                VectorSubtract( point, ent_scale_origin, point );
-                                                                VectorScale( point, ent_scale, point );
-                                                                VectorAdd( point, ent_scale_origin, point );
-                                                        }
-                                                        if ( ent_move_b )
-                                                        {
-                                                                VectorAdd( point, ent_move, point );
-
-                                                        }
-                                                        if ( ent_gscale_b )
-                                                        {
-                                                                VectorScale( point, ent_gscale, point );
-                                                        }
-                                                }
-                                                char string[MAXTOKEN];
-                                                safe_snprintf( string, MAXTOKEN, "%.0f %.0f %.0f %.0f %.0f %.0f", b[0][0], b[0][1], b[0][2], b[1][0], b[1][1], b[1][2] );
-                                                SetKeyValue( mapent, "zhlt_minsmaxs", string );
-                                        }
-                                }
-                        }
-                }
-        }
-
-
 
         CheckFatal();
         if ( this_entity == 0 )
@@ -897,14 +561,10 @@ bool            ParseMapEntity()
                 SetKeyValue( mapent, "compiler", versionstring );
         }
 
-
-
         if ( !strcmp( ValueForKey( mapent, "classname" ), "info_compile_parameters" ) )
         {
                 GetParamsFromEnt( mapent );
         }
-
-
 
 	GetVectorForKey( mapent, "origin", mapent->origin );
 
@@ -1130,14 +790,28 @@ void            LoadMapFile( const char* const filename )
 {
         unsigned num_engine_entities;
 
-        LoadScriptFile( filename );
+        PT( CKeyValues ) root = CKeyValues::load( Filename::from_os_specific( filename ) );
+        if ( !root )
+        {
+                Error("Couldn't load map file %s", filename);
+        }
+
+        CPT( TransformState ) net_transform = TransformState::make_identity();
 
         g_bspdata->numentities = 0;
 
         g_numparsedentities = 0;
-        while ( ParseMapEntity() )
+
+        size_t count = root->get_num_children();
+        for (size_t i = 0; i < count; i++)
         {
-                g_numparsedentities++;
+                CKeyValues *kv = root->get_child(i);
+                const std::string &name = kv->get_name();
+                if (name == "world" || name == "entity")
+                {
+                        ParseMapEntity(kv);
+                        g_numparsedentities++;
+                }
         }
 
         AssignLightSourcesToProps();
@@ -1167,5 +841,5 @@ void            LoadMapFile( const char* const filename )
         Verbose( "%5i map entities \n", g_bspdata->numentities - num_engine_entities );
         Verbose( "%5i engine entities\n", num_engine_entities );
 
-        // AJM: added in 
+        // AJM: added in
 }

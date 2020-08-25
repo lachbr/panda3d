@@ -196,7 +196,7 @@ static NodePath g_rtroot( "RTRoot" );
 
 // =====================================================================================
 //  GetParamsFromEnt
-//      this function is called from parseentity when it encounters the 
+//      this function is called from parseentity when it encounters the
 //      info_compile_parameters entity. each tool should have its own version of this
 //      to handle its own specific settings.
 // =====================================================================================
@@ -254,7 +254,7 @@ void            GetParamsFromEnt( entity_t* mapent )
                 Log( "%30s [ %-9s ]\n", "Thread Priority", "low" );
         }
 
-        // bounce(integer) : "Number of radiosity bounces" : 0 
+        // bounce(integer) : "Number of radiosity bounces" : 0
         iTmp = IntForKey( mapent, "bounce" );
         if ( iTmp )
         {
@@ -275,7 +275,7 @@ void            GetParamsFromEnt( entity_t* mapent )
                 Log( "%30s [ %-9s ]\n", "RGB Transfers", ValueForKey( mapent, "rgbtransfers" ) );
         }
 
-        // ambient(string) : "Ambient world light (0.0 to 1.0, R G B)" : "0 0 0" 
+        // ambient(string) : "Ambient world light (0.0 to 1.0, R G B)" : "0 0 0"
         //vec3_t          g_ambient = { DEFAULT_AMBIENT_RED, DEFAULT_AMBIENT_GREEN, DEFAULT_AMBIENT_BLUE };
         pszTmp = ValueForKey( mapent, "ambient" );
         if ( pszTmp )
@@ -313,7 +313,7 @@ void            GetParamsFromEnt( entity_t* mapent )
                 }
         }
 
-        // smooth(integer) : "Smoothing threshold (in degrees)" : 0 
+        // smooth(integer) : "Smoothing threshold (in degrees)" : 0
         flTmp = FloatForKey( mapent, "smooth" );
         if ( flTmp )
         {
@@ -322,7 +322,7 @@ void            GetParamsFromEnt( entity_t* mapent )
                 Log( "%30s [ %-9s ]\n", "Smoothing threshold", ValueForKey( mapent, "smooth" ) );
         }
 
-        // dscale(integer) : "Direct Lighting Scale" : 1 
+        // dscale(integer) : "Direct Lighting Scale" : 1
         flTmp = FloatForKey( mapent, "dscale" );
         if ( flTmp )
         {
@@ -330,7 +330,7 @@ void            GetParamsFromEnt( entity_t* mapent )
                 Log( "%30s [ %-9s ]\n", "Direct Lighting Scale", ValueForKey( mapent, "dscale" ) );
         }
 
-        // chop(integer) : "Chop Size" : 64 
+        // chop(integer) : "Chop Size" : 64
         iTmp = IntForKey( mapent, "chop" );
         if ( iTmp )
         {
@@ -338,7 +338,7 @@ void            GetParamsFromEnt( entity_t* mapent )
                 Log( "%30s [ %-9s ]\n", "Chop Size", ValueForKey( mapent, "chop" ) );
         }
 
-        // texchop(integer) : "Texture Light Chop Size" : 32 
+        // texchop(integer) : "Texture Light Chop Size" : 32
         flTmp = FloatForKey( mapent, "texchop" );
         if ( flTmp )
         {
@@ -1050,7 +1050,7 @@ int CreateChildPatch( int parentnum, Winding *w, float area, const LVector3 &cen
                 g_patches.push_back( child );
                 return childidx;
         }
-                
+
 
         // subdivide patch towards minchop if on the edge of the face
         LVector3 total;
@@ -1095,7 +1095,7 @@ void SubdividePatch( int patchnum )
         if ( !patch )
         {
                 return;
-        }   
+        }
 
         // never subdivide sky patches
         if ( patch->sky )
@@ -1139,8 +1139,8 @@ void SubdividePatch( int patchnum )
         if ( !subdivide )
         {
                 return;
-        } 
-                
+        }
+
 
         // split the winding
         VectorCopy( vec3_origin, split );
@@ -1562,14 +1562,14 @@ void MakeTransfer( int patchidx1, int patchidx2, transfer_t *all_transfers )
         {
                 return;
         }
-                
+
 
         // hack for patch areas <= 0 (degenerate)
         if ( patch2->area <= 0 )
         {
                 return;
         }
-                
+
 
         transfer = &all_transfers[patch1->numtransfers];
 
@@ -1579,7 +1579,7 @@ void MakeTransfer( int patchidx1, int patchidx2, transfer_t *all_transfers )
         {
                 return;
         }
-                
+
 
         // test 5 times rule
         LVector3 vdelta = patch1->origin - patch2->origin;
@@ -1592,7 +1592,7 @@ void MakeTransfer( int patchidx1, int patchidx2, transfer_t *all_transfers )
                 {
                         return;
                 }
-                        
+
         }
 
         trans = patch2->area * scale;
@@ -1600,7 +1600,7 @@ void MakeTransfer( int patchidx1, int patchidx2, transfer_t *all_transfers )
         {
                 return;
         }
-                
+
 
         transfer->patch = patch2 - g_patches.data();
         transfer->transfer = trans;
@@ -1767,7 +1767,7 @@ static void     RadWorld()
         PairEdges(); // done
 
         // store the vertex normals calculated in PairEdges
-        // so that the can be written to the bsp file for 
+        // so that the can be written to the bsp file for
         // use in the engine
         SaveVertexNormals();
 
@@ -1896,7 +1896,7 @@ static void     Usage()
         Log( "   -jitter r g b       : Adds noise, monochromatic, for dithering\n" );
         //Log("-= End of unofficial features! =-\n\n" );
 
-        // ------------------------------------------------------------------------  
+        // ------------------------------------------------------------------------
 
         Log( "   -customshadowwithbounce : Enables custom shadows with bounce light\n" );
         Log( "   -rgbtransfers           : Enables RGB Transfers (for custom shadows)\n\n" );
@@ -2102,7 +2102,7 @@ static void     Settings()
 // AJM: added in
 // =====================================================================================
 //  ReadInfoTexlights
-//      try and parse texlight info from the info_texlights entity 
+//      try and parse texlight info from the info_texlights entity
 // =====================================================================================
 void            ReadInfoTexlights()
 {
@@ -2416,6 +2416,7 @@ int             main( const int argc, char** argv )
                                                 VirtualFileSystem *vfs = VirtualFileSystem::get_global_ptr();
 
                                                 std::string mfdir( argv[++i] );
+                                                load_prc_file_data("", "model-path " + mfdir);
                                                 PT( VirtualFileList ) list = vfs->scan_directory( mfdir );
 
                                                 if ( !list )
@@ -2756,7 +2757,7 @@ int             main( const int argc, char** argv )
                         LogTimeElapsed( end - start );
                         // END RAD
 
-                        
+
 
                         if ( PStatClient::is_connected() )
                         {
