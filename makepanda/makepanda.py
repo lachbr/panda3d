@@ -2214,7 +2214,7 @@ DTOOL_CONFIG=[
     ("PHAVE_LOCKF",                    '1',                      '1'),
     ("SIMPLE_STRUCT_POINTERS",         '1',                      'UNDEF'),
     ("HAVE_DINKUM",                    'UNDEF',                  'UNDEF'),
-    ("HAVE_STL_HASH",                  'UNDEF',                  'UNDEF'),
+    ("HAVE_STL_HASH",                  '1',                      '1'),
     ("GETTIMEOFDAY_ONE_PARAM",         'UNDEF',                  'UNDEF'),
     ("HAVE_GETOPT",                    'UNDEF',                  '1'),
     ("HAVE_GETOPT_LONG_ONLY",          'UNDEF',                  '1'),
