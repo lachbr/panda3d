@@ -459,6 +459,7 @@ void Winding::Clip(const vec3_t normal, const vec_t dist, Winding **front, Windi
         int sides[MAX_POINTS_ON_WINDING + 4];
         int counts[3];
         vec_t dot;
+        vec3_t mid;
         unsigned int i, j;
         unsigned int maxpts;
 
@@ -487,16 +488,16 @@ void Winding::Clip(const vec3_t normal, const vec_t dist, Winding **front, Windi
         sides[i] = sides[0];
         dists[i] = dists[0];
 
+        *front = *back = NULL;
+
         if (!counts[0])
         {
-                *front = NULL;
                 *back = new Winding(*this);
                 return;
         }
         if (!counts[1])
         {
                 *front = new Winding(*this);
-                *back = NULL;
                 return;
         }
 
@@ -541,12 +542,7 @@ void Winding::Clip(const vec3_t normal, const vec_t dist, Winding **front, Windi
                 }
 
                 // generate a split point
-                vec3_t mid;
-                unsigned int tmp = i + 1;
-                if (tmp >= m_NumPoints)
-                {
-                        tmp = 0;
-                }
+                int tmp = (i + 1) % m_NumPoints;
                 vec_t *p2 = m_Points[tmp];
                 dot = dists[i] / (dists[i] - dists[i + 1]);
 #if 0

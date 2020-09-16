@@ -88,7 +88,7 @@ typedef struct
         bumpsample_t *light[MAXLIGHTMAPS];
 	bumpsample_t *sunlight[MAXLIGHTMAPS];
 }
-facelight_t;
+ facelight_t;
 
 extern facelight_t facelight[MAX_MAP_FACES];
 extern lightinfo_t *lightinfo;

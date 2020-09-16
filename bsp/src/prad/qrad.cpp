@@ -637,7 +637,7 @@ void ReadCustomSmoothValue()
         epair_t *ep;
 
         num = g_bspdata->numtexrefs;
-        g_smoothvalues = (float *)malloc( num * sizeof( vec_t ) );
+        g_smoothvalues = (float *)malloc( num * sizeof( float ) );
         for ( i = 0; i < num; i++ )
         {
                 g_smoothvalues[i] = g_smoothing_threshold;
@@ -1787,8 +1787,8 @@ static void     RadWorld()
 
         bfl_collector.start();
         // build initial facelights
-        lightinfo = (lightinfo_t *)malloc( g_bspdata->numfaces * sizeof( lightinfo_t ) );
-        memset( lightinfo, 0, sizeof( lightinfo ) );
+        lightinfo = new lightinfo_t[g_bspdata->numfaces];
+        memset( lightinfo, 0, sizeof( lightinfo_t ) * g_bspdata->numfaces );
         NamedRunThreadsOnIndividual( g_bspdata->numfaces, g_estimate, BuildFacelights ); // done
         bfl_collector.stop();
 

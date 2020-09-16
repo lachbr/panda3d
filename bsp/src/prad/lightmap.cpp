@@ -130,7 +130,7 @@ void PairEdges()
         }
 
         // calc normals
-        for ( i = 0, f = g_bspdata->dfaces; i < g_bspdata->numfaces; f++, i++ )
+        for ( i = 0, f = g_bspdata->dfaces; i < g_bspdata->numfaces; i++, f++ )
         {
                 fn = &faceneighbor[i];
 
@@ -147,7 +147,8 @@ void PairEdges()
                 fn = &faceneighbor[i];
 
                 // allocate room for vertex normals
-                fn->normal = (LVector3 *)calloc( f->numedges, sizeof( fn->normal[0] ) );
+                fn->normal = new LVector3[f->numedges];
+                memset(fn->normal, 0, sizeof(LVector3) * f->numedges);
 
                 // look up all faces sharing vertices and add them to the list
                 for ( j = 0; j < f->numedges; j++ )
@@ -163,12 +164,12 @@ void PairEdges()
                                         continue;
 
                                 neighbornormal = &faceneighbor[vertexface[n][k]].facenormal;
-                                cos_normal_angle = fn->facenormal.dot( *neighbornormal );
+                                cos_normal_angle = neighbornormal->dot(fn->facenormal);
 
                                 // TODO: smoothing groups
                                 if ( cos_normal_angle >= g_smoothing_threshold )
                                 {
-                                        fn->normal[j] += *neighbornormal;
+                                        fn->normal[j] += (*neighbornormal);
                                 }
                                 else
                                 {
@@ -249,8 +250,8 @@ static void     CalcFaceExtents( lightinfo_t* l )
 
         s = l->face;
 
-        mins[0] = mins[1] = 99999999;
-        maxs[0] = maxs[1] = -99999999;
+        mins[0] = mins[1] = 1e24;
+        maxs[0] = maxs[1] = -1e24;
 
         tex = &g_bspdata->texinfo[s->texinfo];
 
@@ -269,7 +270,9 @@ static void     CalcFaceExtents( lightinfo_t* l )
                 for ( j = 0; j < 2; j++ )
                 {
                         val = v->point[0] * tex->lightmap_vecs[j][0] +
-                                v->point[1] * tex->lightmap_vecs[j][1] + v->point[2] * tex->lightmap_vecs[j][2] + tex->lightmap_vecs[j][3];
+                                v->point[1] * tex->lightmap_vecs[j][1] +
+                                v->point[2] * tex->lightmap_vecs[j][2] +
+                                tex->lightmap_vecs[j][3];
                         if ( val < mins[j] )
                         {
                                 mins[j] = val;
@@ -283,52 +286,40 @@ static void     CalcFaceExtents( lightinfo_t* l )
 
         for ( i = 0; i < 2; i++ )
         {
+                mins[i] = (float)std::floor(mins[i]);
+                maxs[i] = (float)std::ceil(maxs[i]);
+
                 l->exactmins[i] = mins[i];
                 l->exactmaxs[i] = maxs[i];
-
-        }
-        int bmins[2];
-        int bmaxs[2];
-        GetFaceExtents( g_bspdata, l->surfnum, bmins, bmaxs );
-        for ( i = 0; i < 2; i++ )
-        {
-                mins[i] = bmins[i];
-                maxs[i] = bmaxs[i];
-                l->texmins[i] = bmins[i];
-                l->texsize[i] = bmaxs[i] - bmins[i];
+                l->texmins[i] = (int)mins[i];
+                l->texsize[i] = (int)(maxs[i] - mins[i]);
                 // Also emit this data to the BSP faces themselves.
                 s->lightmap_mins[i] = l->texmins[i];
                 s->lightmap_size[i] = l->texsize[i];
-        }
 
-        if ( !( tex->flags & TEX_SPECIAL ) )
-        {
-                if ( ( l->texsize[0] > MAX_LIGHTMAP_DIM + 1 ) || ( l->texsize[1] > MAX_LIGHTMAP_DIM + 1 )
-                     || l->texsize[0] < 0 || l->texsize[1] < 0 //--vluzacn
-                     )
+                if (s->lightmap_size[i] > MAX_LIGHTMAP_DIM + 1)
                 {
-                        ThreadLock();
-                        PrintOnce( "\nfor Face %d (texture %s) at ", s - g_bspdata->dfaces, TextureNameFromFace( s ) );
-
-                        for ( i = 0; i < s->numedges; i++ )
+                        LVector3 point;
+                        for (int j = 0; j < s->numedges; j++)
                         {
-                                e = g_bspdata->dsurfedges[s->firstedge + i];
-                                if ( e >= 0 )
-                                {
-                                        v = g_bspdata->dvertexes + g_bspdata->dedges[e].v[0];
-                                }
-                                else
-                                {
-                                        v = g_bspdata->dvertexes + g_bspdata->dedges[-e].v[1];
-                                }
-                                vec3_t pos;
-                                VectorAdd( v->point, g_face_offset[facenum], pos );
-                                Log( "(%4.3f %4.3f %4.3f) ", pos[0], pos[1], pos[2] );
+                                e = g_bspdata->dsurfedges[s->firstedge + j];
+                                v = (e < 0) ?
+                                        g_bspdata->dvertexes + g_bspdata->dedges[-e].v[1] :
+                                        g_bspdata->dvertexes + g_bspdata->dedges[e].v[0];
+                                VectorAdd(point, v->point, point);
+                                Warning("Bad surface extents point: %f %f %f\n", v->point[0], v->point[1], v->point[2]);
                         }
-                        Log( "\n" );
 
-                        Error( "Bad surface extents (%d x %d)\nCheck the file ZHLTProblems.html for a detailed explanation of this problem", l->texsize[0], l->texsize[1] );
+                        point *= 1.0 / s->numedges;
+                        Error( "Bad surface extents - surface is too big to have a lightmap\n\tmaterial %s around point (%.1f %.1f %.1f)\n\t(dimension: %d, %d>%d)\n",
+				g_bspdata->dtexrefs[tex->texref].name,
+				point[0], point[1], point[2],
+				( int )i,
+				( int )s->lightmap_size[i],
+				( int )( MAX_LIGHTMAP_DIM )
+				);
                 }
+
         }
 }
 
@@ -605,7 +596,7 @@ bool BuildSamples( lightinfo_t *l, facelight_t *fl, int facenum )
         // allocate a large number of samples for creation -- get copied later!
         pvector<sample_t> sample_data;
         sample_data.resize( MAX_SINGLEMAP * 2 );
-        sample_t *samples = sample_data.data();
+        int sample_count = 0;
 
         // lightmap space winding
         Winding *lightmap_winding = LightmapCoordWindingForFace( l );
@@ -621,8 +612,8 @@ bool BuildSamples( lightinfo_t *l, facelight_t *fl, int facenum )
         //
         // clip the lightmap "spaced" winding by the lightmap cutting planes
         //
-        Winding *winding_t1, *winding_t2;
-        Winding *winding_s1, *winding_s2;
+        Winding *winding_t1 = nullptr, *winding_t2 = nullptr;
+        Winding *winding_s1 = nullptr, *winding_s2 = nullptr;
         float dist;
 
         for ( int t = 0; t < height && lightmap_winding; t++ )
@@ -633,7 +624,7 @@ bool BuildSamples( lightinfo_t *l, facelight_t *fl, int facenum )
                 // hack - need a separate epsilon for lightmap space since ON_EPSILON is for texture space
                 vec3_t vtnorm;
                 VectorCopy( tnorm, vtnorm );
-                lightmap_winding->Clip( vtnorm, dist, &winding_t1, &winding_t2, ON_EPSILON / 16.0f );
+                lightmap_winding->Clip( vtnorm, dist, &winding_t1, &winding_t2, ON_LIGHTMAP_EPSILON );
 
                 for ( int s = 0; s < width && winding_t2; s++ )
                 {
@@ -643,38 +634,40 @@ bool BuildSamples( lightinfo_t *l, facelight_t *fl, int facenum )
                         VectorCopy( snorm, vsnorm );
                         // lop off a sample in the s dimension, and put it in ws2
                         // hack - need a separate epsilon for lightmap space since ON_EPSILON is for texture space
-                        winding_t2->Clip( vsnorm, dist, &winding_s1, &winding_s2, ON_EPSILON / 16.0 );
+                        winding_t2->Clip( vsnorm, dist, &winding_s1, &winding_s2, ON_LIGHTMAP_EPSILON );
 
                         //
                         // s2 winding is a single sample worth of winding
                         //
                         if ( winding_s2 )
                         {
+                                sample_t sample;
+
                                 // save the s, t positions
-                                samples->s = s;
-                                samples->t = t;
+                                sample.s = s;
+                                sample.t = t;
 
                                 // get the lightmap space area of ws2 and convert to world area
                                 // and find the center (then convert it to 2D)
                                 vec3_t center;
-                                samples->area = winding_s2->getAreaAndBalancePoint( center ) * fl->world_area_per_luxel;
-                                samples->coord[0] = center[0];
-                                samples->coord[1] = center[1];
+                                sample.area = winding_s2->getAreaAndBalancePoint( center ) * fl->world_area_per_luxel;
+                                sample.coord[0] = center[0];
+                                sample.coord[1] = center[1];
 
                                 // find winding bounds (then convert it to 2D)
                                 vec3_t mins, maxs;
                                 winding_s2->getBounds( mins, maxs );
-                                samples->mins[0] = mins[0];
-                                samples->mins[1] = mins[1];
-                                samples->maxs[0] = maxs[0];
-                                samples->maxs[1] = maxs[1];
+                                sample.mins[0] = mins[0];
+                                sample.mins[1] = mins[1];
+                                sample.maxs[0] = maxs[0];
+                                sample.maxs[1] = maxs[1];
 
                                 // convert from lightmap space to world space
                                 LVector3 vpos;
-                                LuxelToWorldSpace( l, samples->coord[0], samples->coord[1], vpos );
-                                VectorCopy( vpos, samples->pos );
+                                LuxelToWorldSpace( l, sample.coord[0], sample.coord[1], vpos );
+                                VectorCopy( vpos, sample.pos );
 
-                                if ( g_extra && samples->area < fl->world_area_per_luxel - EQUAL_EPSILON )
+                                if ( g_extra && sample.area < fl->world_area_per_luxel - EQUAL_EPSILON )
                                 {
                                         //
                                         // convert the winding from lightmaps space to world for debug rendering
@@ -687,17 +680,18 @@ bool BuildSamples( lightinfo_t *l, facelight_t *fl, int facenum )
                                                 LuxelToWorldSpace( l, winding_s2->m_Points[pt][0], winding_s2->m_Points[pt][1], worldpos );
                                                 VectorCopy( worldpos, winding_s2->m_Points[pt] );
                                         }
-                                        samples->winding = winding_s2;
+                                        sample.winding = winding_s2;
                                 }
                                 else
                                 {
                                         // winding isn't needed, free it
-                                        samples->winding = nullptr;
+                                        sample.winding = nullptr;
                                         delete winding_s2;
                                         winding_s2 = nullptr;
                                 }
 
-                                samples++;
+                                sample_data[s + t * width] = sample;
+                                sample_count++;
                         }
 
                         //
@@ -733,14 +727,14 @@ bool BuildSamples( lightinfo_t *l, facelight_t *fl, int facenum )
         //
         // copy over samples
         //
-        fl->numsamples = samples - sample_data.data();
-        fl->sample = (sample_t *)calloc( fl->numsamples, sizeof( *fl->sample ) );
+        fl->numsamples = sample_count;
+        fl->sample = new sample_t[fl->numsamples];
         if ( !fl->sample )
         {
                 return false;
         }
 
-        memcpy( fl->sample, sample_data.data(), fl->numsamples * sizeof( *fl->sample ) );
+        std::copy(sample_data.begin(), sample_data.begin() + sample_count, fl->sample);
 
         // supply a default sample normal (face normal - assumed flat)
         for ( int sample = 0; sample < fl->numsamples; sample++ )
@@ -812,8 +806,8 @@ void CalcPoints( lightinfo_t *l, facelight_t *fl, int facenum )
 
 void AllocateLightstyleSamples( facelight_t *fl, int style, int normal_count )
 {
-        fl->light[style] = (bumpsample_t *)calloc( fl->numsamples, sizeof( bumpsample_t ) );
-	fl->sunlight[style] = (bumpsample_t *)calloc( fl->numsamples, sizeof( bumpsample_t ) );
+        fl->light[style] = new bumpsample_t[fl->numsamples];
+	fl->sunlight[style] = new bumpsample_t[fl->numsamples];
 }
 
 void GetPhongNormal( int facenum, const FourVectors &spot, FourVectors &phongnormal )
@@ -2158,6 +2152,7 @@ void PrecompLightmapOffsets()
         int             lightstyles;
 
         g_bspdata->lightdata.clear();
+        g_bspdata->bouncedlightdata.clear();
 
         for ( facenum = 0; facenum < g_bspdata->numfaces; facenum++ )
         {

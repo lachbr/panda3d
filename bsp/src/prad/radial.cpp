@@ -1,11 +1,14 @@
 #include "radial.h"
 #include "threads.h"
+#include "atomicAdjust.h"
+#include "pnmImage.h"
 
 radial_t *AllocRadial( int facenum )
 {
         dface_t *face = g_bspdata->dfaces + facenum;
 
         radial_t *rad = new radial_t;
+        memset(rad, 0, sizeof(radial_t));
         rad->facenum = facenum;
         rad->w = face->lightmap_size[0] + 1;
         rad->h = face->lightmap_size[1] + 1;
@@ -156,16 +159,9 @@ radial_t *BuildLuxelRadial( int facenum, int style )
         {
                 bumpsample_t light;
 
-                if ( needs_bumpmap )
+                for ( int n = 0; n < fl->normal_count; n++ )
                 {
-                        for ( int n = 0; n < fl->normal_count; n++ )
-                        {
-                                VectorCopy( fl->light[style][i].light[n], light.light[n] );
-                        }
-                }
-                else
-                {
-                        VectorCopy( fl->light[style][i].light[0], light.light[0] );
+                        VectorCopy( fl->light[style][i].light[n], light.light[n] );
                 }
 
                 LVector3 samp_pos;
@@ -474,6 +470,8 @@ bool SampleRadial( radial_t *rad, const LVector3 &pos,
         return base_sample_ok;
 }
 
+static AtomicAdjust::Integer num_lightmaps = 0;
+
 // =====================================================================================
 //  FinalLightFace
 //      Add the indirect lighting on top of the direct lighting and save into final map format
@@ -521,8 +519,19 @@ void FinalLightFace( const int facenum )
         bool needs_bumpmap = fl->bumped;
         int bump_sample_count = needs_bumpmap ? NUM_BUMP_VECTS + 1 : 1;
 
+        int width = f->lightmap_size[0] + 1;
+        int height = f->lightmap_size[1] + 1;
+
+        //std::cout << fl->numluxels << " luxels, " << fl->numsamples << " samples" << std::endl;
+
         for ( k = 0; k < lightstyles; k++ )
         {
+                pvector<PNMImage> bump_images;
+                for (bump_sample = 0; bump_sample < bump_sample_count; bump_sample++)
+                {
+                        bump_images.push_back(PNMImage(width, height));
+                }
+
                 if ( !g_fastmode )
                 {
                         rad = BuildLuxelRadial( facenum, k );
@@ -539,6 +548,9 @@ void FinalLightFace( const int facenum )
 
                 for ( j = 0; j < fl->numluxels; j++ )
                 {
+                        int x = j % width;
+                        int y = j / width;
+
                         // direct lighting
                         bool base_sample_ok = true;
 
@@ -548,13 +560,19 @@ void FinalLightFace( const int facenum )
                         if ( !g_fastmode )
                         {
                                 base_sample_ok = SampleRadial( rad, samp_pos, &lb, bump_sample_count );
-
                         }
                         else
                         {
-                                for ( int bump = 0; bump < bump_sample_count; bump++ )
+                                for ( bump_sample = 0; bump_sample < bump_sample_count; bump_sample++ )
                                 {
-                                        lb[bump] = fl->light[0][j].light[bump];
+                                        if (j >= fl->numluxels)
+                                        {
+                                                lb[bump_sample] = fl->light[k][0].light[bump_sample];
+                                        }
+                                        else
+                                        {
+                                                lb[bump_sample] = fl->light[k][j].light[bump_sample];
+                                        }
                                 }
                         }
 
@@ -563,11 +581,6 @@ void FinalLightFace( const int facenum )
                                 // bounced light
                                 // v is indirect light that is received on the luxel
                                 SampleRadial( prad, samp_pos, &v, bump_sample_count );
-
-                                //for ( bump_sample = 0; bump_sample < bump_sample_count; bump_sample++ )
-                                //{
-                                //        lb[bump_sample].AddLight( v[bump_sample] );
-                                //}
                         }
 
                         for ( bump_sample = 0; bump_sample < bump_sample_count; bump_sample++ )
@@ -592,7 +605,19 @@ void FinalLightFace( const int facenum )
                                 LVector3 bvcol;
                                 VectorCopy( v[bump_sample], bvcol );
                                 VectorToColorRGBExp32( bvcol, *bcol );
+
+                                PNMImage &img = bump_images[bump_sample];
+                                //std::cout << bvcol[0] << bvcol[1] << bvcol[2] << std::endl;
+                                img.set_xel(x, y, dvcol[0] / 255.0, dvcol[1] / 255.0, dvcol[2] / 255.0);
                         }
+                }
+
+                for (bump_sample = 0; bump_sample < bump_sample_count; bump_sample++)
+                {
+                        std::ostringstream ss;
+                        ss << "lightmap_dump/face_" << facenum << "_style_" << k << "_bump_" << bump_sample << ".tga";
+                        PNMImage &img = bump_images[bump_sample];
+                        img.write(Filename(ss.str()));
                 }
 
                 FreeRadial( rad );
