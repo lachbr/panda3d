@@ -31,7 +31,7 @@
 
 #include "config_bsp.h"
 
-class BSPLoader;
+class BSPLevel;
 struct dleafambientindex_t;
 struct dleafambientlighting_t;
 
@@ -196,7 +196,7 @@ class EXPCL_PANDABSP AmbientProbeManager
 {
 public:
         AmbientProbeManager();
-        AmbientProbeManager( BSPLoader *loader );
+        AmbientProbeManager( BSPLevel *level );
 
         void process_ambient_probes();
 
@@ -244,7 +244,7 @@ private:
         INLINE bool is_light_visible( const LPoint3 &point, const light_t *light );
 
 private:
-        BSPLoader *_loader;
+        BSPLevel *_level;
 
         // NodePaths to be influenced by the ambient probes.
         SimpleHashMap<int, pvector<PT( ambientprobe_t )>, int_hash> _probes;

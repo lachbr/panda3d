@@ -62,7 +62,9 @@ PostProcessPass::PostProcessPass( PostProcess *pp, const std::string &name,
 	_color_texture( nullptr ),
 	_depth_texture( nullptr )
 {
-	_aux_textures.resize( AUXTEXTURE_COUNT );
+	for (int i = 0; i < AUXTEXTURE_COUNT; i++) {
+		_aux_textures.push_back(nullptr);
+	}
 }
 
 LVector2i PostProcessPass::get_back_buffer_dimensions() const
@@ -116,7 +118,7 @@ void PostProcessPass::add_aux_output( int n )
 	{
 		char name[10];
 		sprintf( name, "aux%i", n );
-		_aux_textures[n] = make_texture( Texture::F_rgb, name );
+		_aux_textures[n] = make_texture( Texture::F_rgba, name );
 		_buffer->add_render_texture( _aux_textures[n], GraphicsOutput::RTM_bind_or_copy,
 					     (GraphicsBuffer::RenderTexturePlane)( GraphicsOutput::RTP_aux_rgba_0 + n ) );
 	}

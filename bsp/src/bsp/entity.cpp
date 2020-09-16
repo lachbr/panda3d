@@ -12,7 +12,7 @@
 #ifdef _PYTHON_VERSION
 
 #include "entity.h"
-#include "bsploader.h"
+#include "bsplevel.h"
 #include "bounding_kdop.h"
 
 EntityDef::EntityDef(CBaseEntity *cent, PyObject *pent, bool dyn) {
@@ -34,12 +34,12 @@ IMPLEMENT_CLASS(CBoundsEntity);
 
 CBaseEntity::CBaseEntity() :
   TypedReferenceCount(),
-  _loader(nullptr),
+  _level(nullptr),
   _bsp_entnum(0) {
 }
 
-void CBaseEntity::set_data(int entnum, entity_t *ent, BSPLoader *loader) {
-  _loader = loader;
+void CBaseEntity::set_data(int entnum, entity_t *ent, BSPLevel *level) {
+  _level = level;
 
   _bsp_entnum = entnum;
 
@@ -48,8 +48,8 @@ void CBaseEntity::set_data(int entnum, entity_t *ent, BSPLoader *loader) {
   }
 }
 
-BSPLoader *CBaseEntity::get_loader() const {
-  return _loader;
+BSPLevel *CBaseEntity::get_level() const {
+  return _level;
 }
 
 LVector3 CBaseEntity::get_entity_value_vector(const std::string &key) const {
@@ -76,7 +76,7 @@ CPointEntity::CPointEntity() :
   CBaseEntity() {
 }
 
-void CPointEntity::set_data(int entnum, entity_t *ent, BSPLoader *loader) {
+void CPointEntity::set_data(int entnum, entity_t *ent, BSPLevel *loader) {
   CBaseEntity::set_data(entnum, ent, loader);
 
   vec3_t pos;
@@ -115,11 +115,11 @@ void CBoundsEntity::fillin_bounds(LPoint3 &mins, LPoint3 &maxs) {
 }
 
 bool CBoundsEntity::is_inside(const LPoint3 &pt) const {
-  int leaf = _loader->find_leaf(pt, _mdl->headnode[0]);
+  int leaf = _level->find_leaf(pt, _mdl->headnode[0]);
   return leaf == 0;
 }
 
-void CBoundsEntity::set_data(int entnum, entity_t *ent, BSPLoader *loader, dmodel_t *mdl) {
+void CBoundsEntity::set_data(int entnum, entity_t *ent, BSPLevel *loader, dmodel_t *mdl) {
   CBaseEntity::set_data(entnum, ent, loader);
   _mdl = mdl;
 
@@ -139,7 +139,7 @@ CBrushEntity::CBrushEntity() :
   CBaseEntity() {
 }
 
-void CBrushEntity::set_data(int entnum, entity_t *ent, BSPLoader *loader, dmodel_t *mdl, const NodePath &model) {
+void CBrushEntity::set_data(int entnum, entity_t *ent, BSPLevel *loader, dmodel_t *mdl, const NodePath &model) {
   CBaseEntity::set_data(entnum, ent, loader);
   _mins = LVector3(mdl->mins[0], mdl->mins[1], mdl->mins[2]);
   _maxs = LVector3(mdl->maxs[0], mdl->maxs[1], mdl->maxs[2]);

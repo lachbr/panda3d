@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  */
 
 #include "bsp_trace.h"
-#include "bsploader.h"
+#include "bsplevel.h"
 
 #include <pStatTimer.h>
 #include <pStatCollector.h>
@@ -763,7 +763,7 @@ collbspdata_t *SetupCollisionBSPData(const bspdata_t *bspdata)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // BSPTrace
 
-BSPTrace::BSPTrace(BSPLoader *loader) : _loader(loader)
+BSPTrace::BSPTrace(BSPLevel *level) : _level(level)
 {
         RayTrace::initialize();
         _scene = new RayTraceScene;
@@ -774,7 +774,7 @@ void BSPTrace::add_dmodel(const dmodel_t *model, unsigned int mask)
 {
         nassertv(_scene != nullptr);
 
-        const bspdata_t *data = _loader->get_bspdata();
+        const bspdata_t *data = _level->get_bspdata();
 
         for (int facenum = 0; facenum < model->numfaces; facenum++)
         {

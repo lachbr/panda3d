@@ -13,6 +13,7 @@
 #include "shader_generator.h"
 #include "bspMaterial.h"
 #include "bsploader.h"
+#include "bsplevel.h"
 #include "static_props.h"
 #include "bloom_attrib.h"
 #include "postprocess/postprocess_defines.h"
@@ -200,9 +201,10 @@ bool ShaderSpec::add_csm( const RenderState *rs, ShaderPermutations &result, BSP
                 result.add_input( ShaderInput( "pssmMVPs", generator->get_pssm_rig()->get_mvp_array() ) );
 
                 BSPLoader *loader = BSPLoader::get_global_ptr();
+								BSPLevel *level = loader->get_level();
                 result.add_input( ShaderInput( "sunVector", generator->get_pssm_rig()->get_sun_vector() ) );
-                if ( loader && loader->get_ambient_probe_mgr()->get_sunlight() )
-                        result.add_input( ShaderInput( "sunColor", loader->get_ambient_probe_mgr()->get_sunlight()->color ) );
+                if ( level && level->get_ambient_probe_mgr()->get_sunlight() )
+                        result.add_input( ShaderInput( "sunColor", level->get_ambient_probe_mgr()->get_sunlight()->color ) );
                 else
                         result.add_input( ShaderInput( "sunColor", LVector3( 1, 1, 1 ) ) );
 

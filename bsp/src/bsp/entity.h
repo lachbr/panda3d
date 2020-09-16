@@ -25,7 +25,7 @@
 #include "typedReferenceCount.h"
 #include "simpleHashMap.h"
 
-class BSPLoader;
+class BSPLevel;
 class CBaseEntity;
 
 #ifdef CPPPARSER
@@ -55,7 +55,7 @@ class CBaseEntity : public TypedReferenceCount {
 PUBLISHED:
   CBaseEntity();
 
-  BSPLoader *get_loader() const;
+  BSPLevel *get_level() const;
 
   INLINE std::string get_entity_value(const std::string &key) const {
     int itr = _entity_keyvalues.find(key);
@@ -80,10 +80,11 @@ PUBLISHED:
   }
 
 public:
-  void set_data(int entnum, entity_t *ent, BSPLoader *loader);
+  void set_data(int entnum, entity_t *ent, BSPLevel *level);
 
 protected:
-  BSPLoader *_loader;
+  // This is bad. If the level transitions, this becomes a dangling pointer.
+  BSPLevel *_level;
   // The entity index in the BSP file from which this entity originated.
   // If this entity was preserved in a level transition, this index
   // is no longer valid.
@@ -104,7 +105,7 @@ PUBLISHED:
   LVector3 get_angles() const;
 
 public:
-  void set_data(int entnum, entity_t *ent, BSPLoader *loader);
+  void set_data(int entnum, entity_t *ent, BSPLevel *level);
 
 private:
   LPoint3 _origin;
@@ -127,7 +128,7 @@ PUBLISHED:
   void fillin_bounds(LPoint3 &mins, LPoint3 &maxs);
 
 public:
-  void set_data(int entnum, entity_t *t, BSPLoader *loader, dmodel_t *mdl);
+  void set_data(int entnum, entity_t *t, BSPLevel *level, dmodel_t *mdl);
 
 private:
   PT(BoundingKDOP) _bounds;
@@ -144,7 +145,7 @@ PUBLISHED:
   void get_model_bounds(LPoint3 &mins, LPoint3 &maxs);
 
 public:
-  void set_data(int entnum, entity_t *ent, BSPLoader *loader, dmodel_t *mdl, const NodePath &model);
+  void set_data(int entnum, entity_t *ent, BSPLevel *level, dmodel_t *mdl, const NodePath &model);
 
 private:
   LVector3 _mins;

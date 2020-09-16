@@ -52,7 +52,7 @@ void PostProcess::startup( GraphicsOutput *output )
  * Adds this camera to the postprocessing pipeline.
  * The scene rendered by this camera will be postprocessed.
  */
-void PostProcess::add_camera( const NodePath &camera )
+void PostProcess::add_camera( const NodePath &camera, int sort )
 {
 	PT( camerainfo_t ) info = new camerainfo_t;
 	info->camera = camera;
@@ -82,7 +82,7 @@ void PostProcess::add_camera( const NodePath &camera )
 	size_t i = _camera_info.size();
 	_camera_info.push_back( info );
 
-	_scene_pass->setup_scene_camera( i );
+	_scene_pass->setup_scene_camera( i, sort );
 }
 
 /**

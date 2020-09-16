@@ -15,6 +15,7 @@
 #include "decals.h"
 #include "bsp_trace.h"
 #include "bsploader.h"
+#include "bsplevel.h"
 #include "bspMaterial.h"
 #include "bspMaterialAttrib.h"
 #include "textureStages.h"
@@ -329,9 +330,9 @@ void R_DecalComputeBasis(decalinfo_t *decal)
 
     // s, t, textureSpaceNormal (T cross S = textureSpaceNormal(N))
     //   N
-    //   \   
-    //    \     
-    //     \  
+    //   \
+    //    \
+    //     \
     //      |---->S
     //      |
     //		|
@@ -456,6 +457,8 @@ void R_DoDecalSHClip(decalinfo_t *info)
 void R_DecalSurface(const dface_t *face, decalinfo_t *pinfo)
 {
     BSPLoader *loader = BSPLoader::get_global_ptr();
+    BSPLevel *level = loader->get_level();
+
     int facenum = face - pinfo->data->dfaces;
 
     pinfo->change_surface(face);
@@ -499,7 +502,7 @@ void R_DecalSurface(const dface_t *face, decalinfo_t *pinfo)
         col_writer.add_data4f(pinfo->decal_color);
         if (pinfo->lightmap)
         {
-            lm_uv_writer.add_data2f(loader->get_lightcoords(facenum, cvert->position));
+            lm_uv_writer.add_data2f(level->get_lightcoords(facenum, cvert->position));
         }
 
         pinfo->vdata_row_count++;
@@ -514,8 +517,8 @@ void R_DecalSurface(const dface_t *face, decalinfo_t *pinfo)
             first_row,
             first_row + ((tri + 1) % pinfo->vert_count),
             first_row + ((tri + 2) % pinfo->vert_count));
+        tris->close_primitive();
     }
-    tris->close_primitive();
 
     pinfo->geom->add_primitive(tris);
 }
@@ -595,7 +598,7 @@ void DecalManager::decal_trace(const std::string &decal_material, const LPoint2 
     {
         PStatTimer trace_timer(decal_trace_collector);
 
-        BulletClosestHitRayResult result = _loader->get_physics_world()->ray_test_closest(start, end, world_bitmask);
+        BulletClosestHitRayResult result = _level->get_physics_world()->ray_test_closest(start, end, world_bitmask);
 
         if (!result.has_hit())
             return;
@@ -603,13 +606,13 @@ void DecalManager::decal_trace(const std::string &decal_material, const LPoint2 
         int triangle_idx = result.get_triangle_index();
         hitbox = NodePath(result.get_node());
         BulletRigidBodyNode *node = DCAST(BulletRigidBodyNode, result.get_node());
-        int temp_modelnum = _loader->get_brush_triangle_model_fast(node, triangle_idx);
+        int temp_modelnum = _level->get_brush_triangle_model_fast(node, triangle_idx);
         if (temp_modelnum != -1)
         {
             modelnum = temp_modelnum;
-            mdata = _loader->get_brush_model_data(modelnum);
+            mdata = _level->get_brush_model_data(modelnum);
             merged_modelnum = mdata.merged_modelnum;
-            const dmodel_t *model = _loader->get_bspdata()->dmodels + modelnum;
+            const dmodel_t *model = _level->get_bspdata()->dmodels + modelnum;
             headnode = model->headnode[0];
         }
         else
@@ -652,7 +655,7 @@ void DecalManager::decal_trace(const std::string &decal_material, const LPoint2 
         decal_scale,
         decal_color,
         mat,
-        _loader->get_bspdata());
+        _level->get_bspdata());
     if (!is_studio)
     {
         if (merged_modelnum != 0)
@@ -745,8 +748,8 @@ void DecalManager::decal_trace(const std::string &decal_material, const LPoint2 
     // Bind lightmaps if needed
     if (info.lightmap)
     {
-        LightmapPaletteDirectory::LightmapPaletteEntry *entry = _loader->get_lightmap_dir()->entries[0];
-        Texture *lm_tex = entry->palette_tex;
+        LightmapPalette *pal = _level->get_lightmap_dir()->palettes[0];
+        Texture *lm_tex = pal->texture;
 
         CPT(RenderAttrib)
         lightmap_tex_attr = TextureAttrib::make();
@@ -805,7 +808,7 @@ void DecalManager::decal_trace(const std::string &decal_material, const LPoint2 
                 if (!other->decalnp.is_empty())
                     other->decalnp.remove_node();
                 if (other->brush_modelnum != merged_modelnum)
-                    _loader->get_brush_model_data(other->brush_modelnum).decal_rbc->collect();
+                    _level->get_brush_model_data(other->brush_modelnum).decal_rbc->collect();
                 _decals.erase(std::find(_decals.begin(), _decals.end(), other));
             }
         }
@@ -819,7 +822,7 @@ void DecalManager::decal_trace(const std::string &decal_material, const LPoint2 
         {
             d->decalnp.remove_node();
             if (d->brush_modelnum != merged_modelnum)
-                _loader->get_brush_model_data(d->brush_modelnum).decal_rbc->collect();
+                _level->get_brush_model_data(d->brush_modelnum).decal_rbc->collect();
         }
         _decals.pop_back();
     }
@@ -875,10 +878,10 @@ void DecalManager::init()
 {
     _decal_rbc = new RigidBodyCombiner("decal-root");
     _decal_root = NodePath(_decal_rbc);
-    _decal_root.reparent_to(_loader->get_result());
+    _decal_root.reparent_to(_level->get_result());
     _decal_root.hide(CAMERA_SHADOW);
 }
 
-DecalManager::DecalManager(BSPLoader *loader) : _loader(loader)
+DecalManager::DecalManager(BSPLevel *loader) : _level(loader)
 {
 }

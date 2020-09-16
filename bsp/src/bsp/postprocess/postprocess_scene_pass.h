@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -28,7 +28,7 @@ PUBLISHED:
 	virtual bool setup_buffer();
 	virtual void add_aux_output( int n );
 
-	void setup_scene_camera( int i );
+	void setup_scene_camera( int i, int sort = 0 );
 
 	void set_camera_state( const RenderState *state );
 

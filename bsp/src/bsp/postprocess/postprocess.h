@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -78,7 +78,7 @@ PUBLISHED:
 
 	void startup( GraphicsOutput *output );
 
-	void add_camera( const NodePath &camera );
+	void add_camera( const NodePath &camera, int sort = 0 );
 	void remove_camera( const NodePath &camera );
 
 	INLINE void add_effect( PostProcessEffect *effect )

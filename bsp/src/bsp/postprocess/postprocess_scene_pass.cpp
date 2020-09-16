@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -25,6 +25,7 @@ PostProcessScenePass::PostProcessScenePass( PostProcess *pp ) :
 	_cam_state( nullptr )
 {
 	_fbprops.set_depth_bits( 32 );
+	_fbprops.set_aux_rgba(AUXTEXTURE_COUNT);
 }
 
 void PostProcessScenePass::add_aux_output( int n )
@@ -114,7 +115,7 @@ void PostProcessScenePass::set_camera_state( const RenderState *state )
  * Sets up the scene camera to render its contents into our output textures.
  * This is used to have multiple cameras/display regions render into the same output.
  */
-void PostProcessScenePass::setup_scene_camera( int i )
+void PostProcessScenePass::setup_scene_camera( int i, int sort )
 {
 	PostProcess::camerainfo_t *info = _pp->get_camera_info( i );
 	DCAST( Camera, info->camera.node() )->set_initial_state( _cam_state );
@@ -125,6 +126,7 @@ void PostProcessScenePass::setup_scene_camera( int i )
 	_pp->set_clears( i, dr );
 	dr->set_camera( _pp->get_camera( i ) );
 	dr->set_active( true );
+	dr->set_sort(sort);
 	info->new_region = dr;
 }
 

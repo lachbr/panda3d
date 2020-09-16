@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -20,7 +20,7 @@
 #include "boundingBox.h"
 #include "rigidBodyCombiner.h"
 
-class BSPLoader;
+class BSPLevel;
 
 enum
 {
@@ -41,7 +41,7 @@ public:
 class EXPCL_PANDABSP DecalManager
 {
 public:
-	DecalManager(BSPLoader *loader);
+	DecalManager(BSPLevel *level);
 
 	void init();
 
@@ -66,7 +66,7 @@ private:
 	PT(RigidBodyCombiner)
 	_decal_rbc;
 	NodePath _decal_root;
-	BSPLoader *_loader;
+	BSPLevel *_level;
 	pdeque<PT(Decal)> _decals;
 	pvector<PT(Decal)> _map_decals;
 };

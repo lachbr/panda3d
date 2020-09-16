@@ -16,7 +16,6 @@
 #include "ambient_probes.h"
 #include "cubemaps.h"
 #include "aux_data_attrib.h"
-#include "bsploader.h"
 
 #include <pStatTimer.h>
 #include <config_pgraphnodes.h>
@@ -74,8 +73,14 @@ ConfigVariableDouble ambient_light_scale("pssm-ambient-light-scale", 1.0);
 
 TypeHandle BSPShaderGenerator::_type_handle;
 PT(Texture) BSPShaderGenerator::_identity_cubemap = nullptr;
+PT(BSPShaderGenerator) BSPShaderGenerator::_global_ptr = nullptr;
 
 NotifyCategoryDef(bspShaderGenerator, "");
+
+BSPShaderGenerator *BSPShaderGenerator::
+ptr() {
+  return _global_ptr;
+}
 
 BSPShaderGenerator::BSPShaderGenerator(GraphicsOutput *output, GraphicsStateGuardian *gsg, const NodePath &camera, const NodePath &render) :
   ShaderGenerator(gsg),
@@ -87,21 +92,25 @@ BSPShaderGenerator::BSPShaderGenerator(GraphicsOutput *output, GraphicsStateGuar
   _sun_vector(0),
   _pssm_split_texture_array(nullptr),
   _pssm_layered_buffer(nullptr),
+  _pssm_display_region(nullptr),
   _sunlight(NodePath()),
   _has_shadow_sunlight(false),
   _shader_quality(SHADERQUALITY_HIGH) {
+
+  if (!_global_ptr) {
+    _global_ptr = this;
+  }
+
   _exposure_adjustment = PTA_float::empty_array(1);
   _exposure_adjustment[0] = 1.0f;
 
   // Shadows need to be updated before literally anything else.
   // Any RTT of the main scene should happen after shadows are updated.
-  _pssm_rig->set_use_stable_csm(true);
+  _pssm_rig->set_use_stable_csm(false);
   _pssm_rig->set_sun_distance(pssm_sun_distance);
   _pssm_rig->set_pssm_distance(pssm_max_distance);
   _pssm_rig->set_resolution(pssm_size);
   _pssm_rig->set_use_fixed_film_size(true);
-
-  //BSPLoader::get_global_ptr()->set_shader_generator( this );
 
   _planar_reflections = new PlanarReflections(this);
 
@@ -160,7 +169,7 @@ BSPShaderGenerator::BSPShaderGenerator(GraphicsOutput *output, GraphicsStateGuar
     state = state->set_attrib(ColorBlendAttrib::make_off(), 10);
     state = state->set_attrib(CullBinAttrib::make_default(), 10);
     state = state->set_attrib(TransparencyAttrib::make((TransparencyAttrib::Mode)TransparencyAttrib::M_off), 10);
-    state = state->set_attrib(CullFaceAttrib::make(CullFaceAttrib::M_cull_none), 10);
+    state = state->set_attrib(CullFaceAttrib::make(CullFaceAttrib::M_cull_counter_clockwise), 10);
 
     // Automatically generate shaders for the shadow scene using the CSMRender shader.
     CPT(RenderAttrib) shattr = ShaderAttrib::make();
@@ -185,6 +194,7 @@ BSPShaderGenerator::BSPShaderGenerator(GraphicsOutput *output, GraphicsStateGuar
     dr->set_clear_depth_active(true);
     dr->set_camera(_pssm_rig->get_camera(0));
     dr->set_sort(-10000);
+    _pssm_display_region = dr;
   }
 }
 

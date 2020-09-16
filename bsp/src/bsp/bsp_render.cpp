@@ -11,6 +11,7 @@
 
 #include "bsp_render.h"
 #include "bsploader.h"
+#include "bsplevel.h"
 
 #include <depthOffsetAttrib.h>
 #include <cullableObject.h>
@@ -57,7 +58,9 @@ bool BSPCullTraverser::is_in_view( CullTraverserData &data )
                 return false;
         }
 
-	if ( _loader->has_active_level() )
+        BSPLevel *level = loader->get_level();
+
+	if ( level )
 	{
 		CPT( BSPFaceAttrib ) bfa;
 		data._state->get_attrib_def( bfa );
@@ -71,13 +74,13 @@ bool BSPCullTraverser::is_in_view( CullTraverserData &data )
 		// Now test against PVS (AABBs of all potentially visible leafs).
 
 		pvs_node_xform_collector.start();
-		CPT( GeometricBoundingVolume ) bbox = loader->make_net_bounds(
+		CPT( GeometricBoundingVolume ) bbox = level->make_net_bounds(
 			data.get_net_transform( this ),
 			data.node()->get_bounds()->as_geometric_bounding_volume() );
 		pvs_node_xform_collector.stop();
 
 		pvs_test_node_collector.start();
-		bool ret = loader->pvs_bounds_test( bbox, get_required_leaf_flags() );
+		bool ret = level->pvs_bounds_test( bbox, get_required_leaf_flags() );
 		pvs_test_node_collector.stop();
 		return ret;
 	}
@@ -234,7 +237,9 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
                         data._state = data._state->compose( get_depth_offset_state() );
                 }
 
-		if ( _loader->has_active_level() &&
+                BSPLevel *level = _loader->get_level();
+
+		if ( level &&
 		     node->is_of_type( BSPModel::get_class_type() ) &&
 		     node->get_name() == "model-0" ) // UNDONE: think of a better way to identify world geometry?
 		{
@@ -245,12 +250,11 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
 
 			keep_going = false;
 
-			_loader->_leaf_aabb_lock.acquire();
-			bool should_render = _loader->_curr_leaf_idx != 0;
+			bool should_render = level->_curr_leaf_idx != 0;
 
 			if ( should_render )
 			{
-				const GeomNode::Geoms &world_geoms = _loader->_leaf_world_geoms[_loader->_curr_leaf_idx];
+				const GeomNode::Geoms &world_geoms = level->_leaf_world_geoms[level->_curr_leaf_idx];
 
 				int num_world_geoms = world_geoms.get_num_geoms();
 				for ( int i = 0; i < num_world_geoms; i++ )
@@ -298,11 +302,9 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
 				}
 			}
 
-			_loader->_leaf_aabb_lock.release();
-
 			wsp_trav_collector.stop();
 		}
-		else if ( _loader->has_active_level() &&
+		else if ( level &&
 			  node->is_of_type( ModelRoot::get_class_type() ) &&
 			  has_camera_bits( CAMERA_MASK_LIGHTING ) )
                 {
@@ -323,7 +325,7 @@ void BSPCullTraverser::traverse_below( CullTraverserData &data )
                         if ( !disabled )
                         {
                                 // Update the node's ambient probe stuff:
-                                const RenderState *input_state = _loader->_amb_probe_mgr.update_node(
+                                const RenderState *input_state = level->_amb_probe_mgr.update_node(
                                         node, data.get_net_transform( this ), has_camera_bits( CAMERA_MAIN | CAMERA_VIEWMODEL ) );
                                 if ( input_state )
                                 {
@@ -406,10 +408,12 @@ bool BSPRender::cull_callback( CullTraverser *trav, CullTraverserData &data )
         BSPCullTraverser bsp_trav( trav, _loader );
         bsp_trav.local_object();
 
+        BSPLevel *level = _loader->get_level();
+
 	if ( bsp_trav.has_camera_bits( CAMERA_MAIN ) && _loader->has_visibility() )
 	{
 		// Update visible leafs on main camera pass.
-		_loader->update_visibility(
+		level->update_visibility(
 			trav->get_camera_transform()->get_pos() );
 	}
 

@@ -1,3 +1,4 @@
+#define _PYTHON_VERSION
 #ifdef _PYTHON_VERSION
 
 #include "py_bsploader.h"
@@ -53,7 +54,7 @@ void Py_BSPLoader::
 get_entity_keyvalues(PyObject *list, const int entnum) {
   PyMutexHolder holder;
 
-  entity_t *ent = _bspdata->entities + entnum;
+  entity_t *ent = get_level()->get_bspdata()->entities + entnum;
   for (epair_t *ep = ent->epairs; ep->next != nullptr; ep = ep->next) {
     PyObject *kv = PyTuple_New(2);
     PyTuple_SetItem(kv, 0, PyUnicode_FromString(ep->key));
@@ -68,7 +69,7 @@ link_cent_to_pyent(int entnum, PyObject *pyent) {
   EntityDef *pdef = nullptr;
   bool found_pdef = false;
 
-  entity_t *ent = _bspdata->entities + entnum;
+  entity_t *ent = get_level()->get_bspdata()->entities + entnum;
   std::string targetname = ValueForKey(ent, "targetname");
 
   pvector<EntityDef *> children;
@@ -158,7 +159,7 @@ read(const Filename &filename, bool is_transition) {
 void Py_BSPLoader::
 spawn_entities() {
 
-  PyMutexHolder holder;
+
 
   // Now load all of the entities at the application level.
   for (size_t i = 0; i < _entities.size(); i++) {
@@ -166,6 +167,10 @@ spawn_entities() {
     if (ent->py_entity && !ent->dynamic && !ent->preserved) {
       // This is a newly loaded (not preserved from previous level) entity
       // that is from the BSP file.
+      PyMutexHolder holder;
+
+      //PyTypeObject *tp = Py_TYPE(ent->py_entity);
+      //std::cout << ent->c_entity->get_classname() << " : " << ent->py_entity << " : " << _PyType_Lookup(tp, PyUnicode_FromString("load")) << std::endl;
 
       PyObject *meth = PyObject_GetAttrString(ent->py_entity, (char *)"load");
       if (meth) {
@@ -180,36 +185,20 @@ spawn_entities() {
 
 //============================================================================================
 
-PyObject *Py_CL_BSPLoader::
-make_pyent(PyObject *py_ent, const string &classname) {
-  if (_entity_to_class.find(classname) != _entity_to_class.end()) {
+class Py_CL_BSPLevel : public BSPLevel {
+public:
+  Py_CL_BSPLevel(BSPLoader *loader);
 
-    PyMutexHolder holder;
+protected:
+  virtual void load_geometry();
+};
 
-    // A python class was linked to this entity!
-    PyObject *obj = PyObject_CallObject(_entity_to_class[classname], NULL);
-    if (obj == nullptr)
-      PyErr_PrintEx(1);
-    Py_INCREF(obj);
-    // Give the python entity a handle to the c entity.
-    PyObject_SetAttrString(obj, (char *)"cEntity", py_ent);
-    // Precache all resources the entity will use.
-    PyObject_CallMethod(obj, (char *)"precache", NULL);
-
-    // Don't call load just yet, we need to have all of the entities created first, because some
-    // entities rely on others.
-    return obj;
-  }
-  return nullptr;
+Py_CL_BSPLevel::
+Py_CL_BSPLevel(BSPLoader *loader) :
+  BSPLevel(loader) {
 }
 
-void Py_CL_BSPLoader::
-link_entity_to_class(const string &entname, PyObject *type) {
-  Py_INCREF(type);
-  _entity_to_class[entname] = type;
-}
-
-void Py_CL_BSPLoader::
+void Py_CL_BSPLevel::
 load_geometry() {
   load_cubemaps();
 
@@ -223,6 +212,44 @@ load_geometry() {
   _result.set_attrib(BSPFaceAttrib::make_default(), 1);
 
   _decal_mgr.init();
+}
+
+PT(BSPLevel) Py_CL_BSPLoader::
+make_level() {
+  return new Py_CL_BSPLevel(this);
+}
+
+PyObject *Py_CL_BSPLoader::
+make_pyent(PyObject *py_ent, const string &classname) {
+  if (_entity_to_class.find(classname) != _entity_to_class.end()) {
+
+    PyMutexHolder holder;
+
+    Py_INCREF(py_ent);
+
+    // A python class was linked to this entity!
+    PyObject *obj = PyObject_CallObject(_entity_to_class[classname], NULL);
+    if (obj == nullptr)
+      PyErr_PrintEx(1);
+    Py_INCREF(obj);
+    // Give the python entity a handle to the c entity.
+    PyObject_SetAttrString(obj, (char *)"cEntity", py_ent);
+    // Precache all resources the entity will use.
+    PyObject_CallMethod(obj, (char *)"precache", NULL);
+
+    // Don't call load just yet, we need to have all of the entities created first, because some
+    // entities rely on others.
+    PyTypeObject *tp = Py_TYPE(obj);
+    std::cout << classname << " : " << obj << " : " << obj->ob_refcnt << " : " << tp->tp_dict << std::endl;
+    return obj;
+  }
+  return nullptr;
+}
+
+void Py_CL_BSPLoader::
+link_entity_to_class(const string &entname, PyObject *type) {
+  Py_INCREF(type);
+  _entity_to_class[entname] = type;
 }
 
 void Py_CL_BSPLoader::
@@ -254,8 +281,11 @@ cleanup_entities(bool is_transition) {
 
 void Py_CL_BSPLoader::
 load_entities() {
-  for (int entnum = 0; entnum < _bspdata->numentities; entnum++) {
-    entity_t *ent = &_bspdata->entities[entnum];
+  BSPLevel *level = get_level();
+  bspdata_t *bspdata = level->get_bspdata();
+
+  for (int entnum = 0; entnum < bspdata->numentities; entnum++) {
+    entity_t *ent = &bspdata->entities[entnum];
 
     string classname = ValueForKey(ent, "classname");
     const char *psz_classname = classname.c_str();
@@ -274,32 +304,33 @@ load_entities() {
       // This is a bounds entity. We do not actually care about the geometry,
       // but the mins and maxs of the model. We will use that to create
       // a BoundingBox to check if the avatar is inside of it.
-      int modelnum = extract_modelnum_s(ent);
+      int modelnum = BSPLevel::extract_modelnum_s(ent);
       if (modelnum != -1) {
-        remove_model(modelnum);
-        _model_data[modelnum].model_root = get_model(0);
-        _model_data[modelnum].merged_modelnum = 0;
-        NodePath(_model_data[modelnum].decal_rbc).remove_node();
-        _model_data[modelnum].decal_rbc = nullptr;
+        level->remove_model(modelnum);
+        brush_model_data_t &model_data = level->get_brush_model_data(modelnum);
+        model_data.model_root = level->get_model(0);
+        model_data.merged_modelnum = 0;
+        NodePath(model_data.decal_rbc).remove_node();
+        model_data.decal_rbc = nullptr;
 
-        dmodel_t *mdl = &_bspdata->dmodels[modelnum];
+        dmodel_t *mdl = &bspdata->dmodels[modelnum];
 
         PT(CBoundsEntity) entity = new CBoundsEntity;
-        entity->set_data(entnum, ent, this, mdl);
+        entity->set_data(entnum, ent, level, mdl);
 
-        PyObject *py_ent = DTool_CreatePyInstance<CBoundsEntity>(entity, true);
+        PyObject *py_ent = DTool_CreatePyInstance<CBoundsEntity>(entity, false);
         PyObject *linked = make_pyent(py_ent, classname);
 
         _entities.push_back(new EntityDef(entity, linked));
       }
     } else if (!strncmp(classname.c_str(), "func_", 5)) {
       // Brush entites begin with func_, handle those accordingly.
-      int modelnum = extract_modelnum_s(ent);
+      int modelnum = BSPLevel::extract_modelnum_s(ent);
       if (modelnum != -1) {
         // Brush model
-        NodePath modelroot = get_model(modelnum);
+        NodePath modelroot = level->get_model(modelnum);
         // render all faces of brush model in a single batch
-        clear_model_nodes_below(modelroot);
+        BSPLevel::clear_model_nodes_below(modelroot);
         modelroot.flatten_strong();
 
         if (!strncmp(classname.c_str(), "func_wall", 9) ||
@@ -308,24 +339,26 @@ load_entities() {
           // func_walls and func_details aren't really entities,
           // they are just hints to the compiler. we can treat
           // them as regular brushes part of worldspawn.
-          modelroot.wrt_reparent_to(get_model(0));
-          flatten_node(modelroot);
+          modelroot.wrt_reparent_to(level->get_model(0));
+          BSPLevel::flatten_node(modelroot);
           NodePathCollection npc = modelroot.get_children();
           for (int n = 0; n < npc.get_num_paths(); n++) {
-            npc[n].wrt_reparent_to(get_model(0));
+            npc[n].wrt_reparent_to(level->get_model(0));
           }
-          remove_model(modelnum);
-          _model_data[modelnum].model_root = _model_data[0].model_root;
-          NodePath(_model_data[modelnum].decal_rbc).remove_node();
-          _model_data[modelnum].decal_rbc = _model_data[0].decal_rbc;
-          _model_data[modelnum].merged_modelnum = 0;
+          level->remove_model(modelnum);
+          brush_model_data_t &world_model = level->get_brush_model_data(0);
+          brush_model_data_t &model_data = level->get_brush_model_data(modelnum);
+          model_data.model_root = world_model.model_root;
+          NodePath(model_data.decal_rbc).remove_node();
+          model_data.decal_rbc = world_model.decal_rbc;
+          model_data.merged_modelnum = 0;
           continue;
         }
 
         PT(CBrushEntity) entity = new CBrushEntity;
-        entity->set_data(entnum, ent, this, &_bspdata->dmodels[modelnum], modelroot);
+        entity->set_data(entnum, ent, level, &bspdata->dmodels[modelnum], modelroot);
 
-        PyObject *py_ent = DTool_CreatePyInstance<CBrushEntity>(entity, true);
+        PyObject *py_ent = DTool_CreatePyInstance<CBrushEntity>(entity, false);
         PyObject *linked = make_pyent(py_ent, classname);
 
         _entities.push_back(new EntityDef(entity, linked));
@@ -335,18 +368,18 @@ load_entities() {
       const BSPMaterial *bspmat = BSPMaterial::get_from_file(mat);
       Texture *tex = TexturePool::load_texture(bspmat->get_keyvalue("$basetexture"));
       LPoint3 vpos(origin[0], origin[1], origin[2]);
-      _decal_mgr.decal_trace(mat, LPoint2(tex->get_orig_file_x_size() / 16.0, tex->get_orig_file_y_size() / 16.0),
+      level->trace_decal(mat, LPoint2(tex->get_orig_file_x_size() / 16.0, tex->get_orig_file_y_size() / 16.0),
                              0.0, vpos, vpos, LColorf(1.0), DECALFLAGS_STATIC);
     } else {
       if (classname == "light_environment")
-        _light_environment = ent;
+        level->set_light_environment(ent);
 
       // We don't know what this entity is exactly, maybe they linked it to a python class.
       // It didn't start with func_, so we can assume it's just a point entity.
       PT(CPointEntity) entity = new CPointEntity;
-      entity->set_data(entnum, ent, this);
+      entity->set_data(entnum, ent, level);
 
-      PyObject *py_ent = DTool_CreatePyInstance<CPointEntity>(entity, true);
+      PyObject *py_ent = DTool_CreatePyInstance<CPointEntity>(entity, false);
       PyObject *linked = make_pyent(py_ent, classname);
 
       _entities.push_back(new EntityDef(entity, linked));
@@ -356,15 +389,32 @@ load_entities() {
 
 //============================================================================================
 
+class Py_AI_BSPLevel : public BSPLevel {
+public:
+  Py_AI_BSPLevel(BSPLoader *loader);
+
+protected:
+  virtual void load_geometry();
+};
+
+Py_AI_BSPLevel::
+Py_AI_BSPLevel(BSPLoader *loader) :
+  BSPLevel(loader) {
+}
+
+void Py_AI_BSPLevel::
+load_geometry() {
+  make_faces_ai();
+}
+
+PT(BSPLevel) Py_AI_BSPLoader::
+make_level() {
+  return new Py_AI_BSPLevel(this);
+}
+
 void Py_AI_BSPLoader::
 add_dynamic_entity(PyObject *pyent) {
   PyMutexHolder holder;
-
-  if (std::string(pyent->ob_type->tp_name) == "ModPlayerAI") {
-    PyObject *dir = PyObject_Dir(pyent);
-    PyObject *repr = PyObject_Repr(dir);
-    std::cout << "Add ModPlayerAI: " << std::string(PyUnicode_AsUTF8(repr)) << std::endl;
-  }
 
   Py_INCREF(pyent);
 
@@ -408,10 +458,13 @@ link_server_entity_to_class(const string &name, PyObject *type) {
 void Py_AI_BSPLoader::
 load_entities() {
 
+  BSPLevel *level = get_level();
+  bspdata_t *bspdata = level->get_bspdata();
+
   PyMutexHolder holder;
 
-  for (int entnum = 0; entnum < _bspdata->numentities; entnum++) {
-    entity_t *ent = &_bspdata->entities[entnum];
+  for (int entnum = 0; entnum < bspdata->numentities; entnum++) {
+    entity_t *ent = &bspdata->entities[entnum];
 
     string classname = ValueForKey(ent, "classname");
     const char *psz_classname = classname.c_str();
@@ -440,18 +493,18 @@ load_entities() {
             if (entnum == 0)
               modelnum = 0;
             else
-              modelnum = extract_modelnum(entnum);
+              modelnum = level->extract_modelnum(entnum);
             entity = new CBrushEntity;
-            DCAST(CBrushEntity, entity)->set_data(entnum, ent, this,
-                                                  _bspdata->dmodels + modelnum, get_model(modelnum));
+            DCAST(CBrushEntity, entity)->set_data(entnum, ent, level,
+                                                  bspdata->dmodels + modelnum, level->get_model(modelnum));
           } else if (!strncmp(classname.c_str(), "trigger_", 8)) {
-            int modelnum = extract_modelnum_s(ent);
+            int modelnum = BSPLevel::extract_modelnum_s(ent);
             entity = new CBoundsEntity;
-            DCAST(CBoundsEntity, entity)->set_data(entnum, ent, this,
-                                                   &_bspdata->dmodels[modelnum]);
+            DCAST(CBoundsEntity, entity)->set_data(entnum, ent, level,
+                                                   &bspdata->dmodels[modelnum]);
           } else {
             entity = new CPointEntity;
-            DCAST(CPointEntity, entity)->set_data(entnum, ent, this);
+            DCAST(CPointEntity, entity)->set_data(entnum, ent, level);
           }
 
           Py_INCREF(ret);
@@ -504,12 +557,6 @@ read(const Filename &filename, bool is_transition) {
           PyObject *py_mat = DTool_CreatePyInstance(&mat, *(Dtool_PyTypedObject *)mat.get_class_type().get_python_type(), true, true);
           Py_INCREF(py_mat);
 
-          if (std::string(def->py_entity->ob_type->tp_name) == "ModPlayerAI") {
-            PyObject *dir = PyObject_Dir(def->py_entity);
-            PyObject *repr = PyObject_Repr(dir);
-            std::cout << "ModPlayerAI: " << std::string(PyUnicode_AsUTF8(repr)) << std::endl;
-          }
-
           PyObject *meth = PyObject_GetAttrString(def->py_entity, (char*)"transitionXform");
           if (meth) {
             PyObject *args = PyTuple_Pack(2, py_dest_landmark_np, py_mat);
@@ -537,11 +584,6 @@ read(const Filename &filename, bool is_transition) {
   }
 
   return true;
-}
-
-void Py_AI_BSPLoader::
-load_geometry() {
-  make_faces_ai();
 }
 
 void Py_AI_BSPLoader::

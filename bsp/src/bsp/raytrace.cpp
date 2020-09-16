@@ -129,7 +129,7 @@ void RayTraceTriangleMesh::add_triangles_from_geom( const Geom *geom, const Tran
 
         const GeomVertexData *vdata = dgeom->get_vertex_data();
         GeomVertexReader reader( vdata, InternalName::get_vertex() );
-        
+
         for ( int i = 0; i < dgeom->get_num_primitives(); i++ )
         {
                 const GeomPrimitive *prim = dgeom->get_primitive( i );
@@ -155,7 +155,7 @@ void RayTraceTriangleMesh::add_triangles_from_geom( const Geom *geom, const Tran
 void RayTraceTriangleMesh::build()
 {
         LPoint4f *vertices = (LPoint4f *)rtcSetNewGeometryBuffer( _geometry, RTC_BUFFER_TYPE_VERTEX, 0,
-                                                                  RTC_FORMAT_FLOAT3, sizeof( LPoint4f ), 
+                                                                  RTC_FORMAT_FLOAT3, sizeof( LPoint4f ),
                                                                   _verts.size() );
         raytrace_cat.debug()
                 << "build(): vertex buffer: " << vertices << "\n";
@@ -324,7 +324,7 @@ void RayTraceScene::trace_four_rays( const FourVectors &start, const FourVectors
 {
 
         RTCIntersectContext ctx;
-        rtcInitIntersectContext( &ctx ); 
+        rtcInitIntersectContext( &ctx );
         //ctx.flags = RTC_INTERSECT_CONTEXT_FLAG_COHERENT;
 
         ALIGN_16BYTE RTCRayHit4 rhit4;
@@ -340,7 +340,7 @@ void RayTraceScene::trace_four_rays( const FourVectors &start, const FourVectors
         StoreAlignedSIMD( rhit4.ray.tnear, Four_Zeros );
         StoreAlignedSIMD( rhit4.ray.tfar, distance );
         StoreAlignedUIntSIMD( rhit4.ray.flags, Four_Zeros );
-        
+
         rtcIntersect4( Four_NegativeOnes_NonSIMD, _scene, &ctx, &rhit4 );
 
         res->geom_id = LoadAlignedIntSIMD( rhit4.hit.geomID );

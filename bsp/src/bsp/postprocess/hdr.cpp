@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -251,7 +251,7 @@ void HDRPass::setup_quad()
 
 void HDRPass::draw( CallbackData *data )
 {
-	
+
 	GeomDrawCallbackData *geom_cbdata;
 	DCAST_INTO_V( geom_cbdata, data );
 	GraphicsStateGuardian *gsg;
@@ -292,7 +292,7 @@ void HDRPass::draw( CallbackData *data )
 	CPT( Geom ) munged_geom = _hdr_quad_geom;
 	CPT( GeomVertexData ) munged_data = _hdr_quad_geom->get_vertex_data();
 	gsg->get_geom_munger( _hdr_geom_state, Thread::get_current_thread() )->
-		munge_geom( munged_geom, munged_data, true, Thread::get_current_thread() );
+		munge_geom( munged_geom, munged_data, false, Thread::get_current_thread() );
 
 	// Render the quad.
 	// The shader will discard any pixels that are not within the specified luminance range.

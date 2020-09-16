@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -98,7 +98,7 @@ void VertexLitGenericSpec::setup_permutations( ShaderPermutations &result,
 
         BSPLoader *bsploader = BSPLoader::get_global_ptr();
 
-        if ( !bsploader || !bsploader->has_active_level() )
+        if ( !bsploader || !bsploader->get_level() )
         {
                 // Break out the lights by type.
                 const LightAttrib *la;

@@ -323,8 +323,8 @@ public:
                 POINT_FAR_BOTTOM_LEFT,
                 POINT_FAR_BOTTOM_RIGHT,
                 POINT_FAR_TOP_RIGHT,
-                POINT_FAR_TOP_LEFT,       
-                
+                POINT_FAR_TOP_LEFT,
+
                 POINT_NEAR_BOTTOM_LEFT,
                 POINT_NEAR_BOTTOM_RIGHT,
                 POINT_NEAR_TOP_RIGHT,
@@ -429,7 +429,7 @@ public:
                                 },
                                 {	// PLANE_BOTTOM
                                         POINT_NEAR_BOTTOM_RIGHT, POINT_FAR_BOTTOM_RIGHT,
-                                },                                
+                                },
                                 {	// PLANE_RIGHT
                                         POINT_FAR_BOTTOM_RIGHT, POINT_FAR_BOTTOM_RIGHT,	// Invalid combination.
                                 },
@@ -457,7 +457,7 @@ public:
                                         POINT_FAR_TOP_RIGHT, POINT_FAR_TOP_LEFT,		// Invalid combination.
                                 },
                         },
-                        
+
                 };
                 points[0] = table[plane1][plane2][0];
                 points[1] = table[plane1][plane2][1];
@@ -543,15 +543,15 @@ public:
                                 PLANE_BOTTOM,
                                 PLANE_NEAR,
                                 PLANE_FAR
-                        },                        
+                        },
                         {	// PLANE_FAR
                                 PLANE_LEFT,
                                 PLANE_RIGHT,
                                 PLANE_TOP,
                                 PLANE_BOTTOM
                         },
-                        
-                        
+
+
                 };
 
                 for ( int i = 0; i < 4; i++ )
@@ -584,7 +584,7 @@ static PT( BoundingKDOP ) make_shadow_cull_bounds( const BoundingHexahedron *vie
                 {
                         planes.push_back( plane );
                 }
-                        
+
         }
         backplanes = (int)planes.size();
 #if CSM_BOUNDS_DEBUG
@@ -626,7 +626,7 @@ static PT( BoundingKDOP ) make_shadow_cull_bounds( const BoundingHexahedron *vie
                                 planes.push_back( LPlane( view_frustum->get_point( points[0] ),
                                                           view_frustum->get_point( points[1] ),
                                                           view_frustum->get_point( points[0] ) + light_dir ) );
-                                        
+
                         }
                 }
         }
@@ -716,12 +716,12 @@ void PSSMCameraRig::compute_pssm_splits( const LMatrix4& transform, float max_di
 
                 // Compute new film offset
                 cam->get_lens()->set_film_offset( film_offset );
-                
+
                 _camera_nearfar[i] = LVecBase2( best_min_extent.get_z(), best_max_extent.get_z() );
                 cam->get_lens()->set_near_far( 10.0, _sun_distance * 2 );
 
                 // Compute the camera MVP
-                LMatrix4 mvp = compute_mvp( i );
+                LMatrix4 mvp;
 
                 // Stable CSM Snapping
                 if ( _use_stable_csm )
@@ -732,6 +732,10 @@ void PSSMCameraRig::compute_pssm_splits( const LMatrix4& transform, float max_di
                         // Compute the new mvp, since we changed the snap offset
                         mvp = compute_mvp( i );
                 }
+                else
+                {
+                        mvp = compute_mvp( i );
+                }
 
                 _camera_viewmatrix.set_element( i, merged_transform );
                 _camera_mvps.set_element( i, mvp );
@@ -739,7 +743,7 @@ void PSSMCameraRig::compute_pssm_splits( const LMatrix4& transform, float max_di
 
 #if CSM_TIGHT_BOUNDS
         create_union_collector.start();
-        
+
         // Generate a tight shadow camera frustum to only
         // render objects into the shadow maps that may
         // possibly cast a shadow into the view frustum.
@@ -785,7 +789,7 @@ void PSSMCameraRig::compute_pssm_splits( const LMatrix4& transform, float max_di
         dbg_draw.end();
         dbg_root.reparent_to( NodePath(main_cam) );
 #endif // CSM_BOUNDS_DEBUG
-        
+
         Camera *maincam = DCAST( Camera, _cam_nodes[0].node() );
         maincam->set_cull_center( NodePath(main_cam) );
         maincam->set_cull_bounds( bounds );

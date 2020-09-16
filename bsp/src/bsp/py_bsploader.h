@@ -51,9 +51,10 @@ PUBLISHED:
   PyObject *make_pyent(PyObject *pyent, const string &classname);
 
 protected:
-  virtual void load_geometry();
   virtual void cleanup_entities(bool is_transition);
   virtual void load_entities();
+
+  virtual PT(BSPLevel) make_level();
 
 private:
   // for purely client-sided, non networked entities
@@ -89,9 +90,10 @@ PUBLISHED:
   virtual bool read(const Filename &filename, bool is_transition = false);
 
 protected:
-  virtual void load_geometry();
   virtual void cleanup_entities(bool is_transition);
   virtual void load_entities();
+
+  virtual PT(BSPLevel) make_level();
 
 private:
   // entity name to distributed object class

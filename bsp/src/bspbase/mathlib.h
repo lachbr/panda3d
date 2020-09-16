@@ -42,8 +42,9 @@ INLINE void P_swap(float &a, float &b)
 
 // HLCSG_HLBSP_DOUBLEPLANE: We could use smaller epsilon for hlcsg and hlbsp (hlcsg and hlbsp use double as vec_t), which will totally eliminate all epsilon errors. But we choose this big epsilon to tolerate the imprecision caused by Hammer. Basically, this is a balance between precision and flexibility.
 #define NORMAL_EPSILON 0.00001
-#define ON_EPSILON 0.04 // we should ensure that (float)BOGUS_RANGE < (float)(BOGUA_RANGE + 0.2 * ON_EPSILON)
-#define EQUAL_EPSILON 0.004
+#define ON_EPSILON 0.1 // we should ensure that (float)BOGUS_RANGE < (float)(BOGUA_RANGE + 0.2 * ON_EPSILON)
+#define EQUAL_EPSILON 0.001
+#define ON_LIGHTMAP_EPSILON ON_EPSILON / 16.0
 
 //
 // Vector Math
@@ -524,6 +525,26 @@ INLINE void AngleMatrix(const LVector3 &angles, const LVector3 &position, LMatri
 {
         AngleMatrix(angles, matrix);
         matrix.set_col(3, position);
+}
+
+INLINE int CeilPow2( int in )
+{
+	int retval;
+
+	retval = 1;
+	while( retval < in )
+		retval <<= 1;
+	return retval;
+}
+
+INLINE int FloorPow2( int in )
+{
+	int retval;
+
+	retval = 1;
+	while( retval < in )
+		retval <<= 1;
+	return retval >> 1;
 }
 
 #endif //MATHLIB_H__

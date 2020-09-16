@@ -142,6 +142,8 @@ PUBLISHED:
 
         void update();
 
+        static BSPShaderGenerator *ptr();
+
 private:
         struct SplitShadowMap
         {
@@ -153,6 +155,7 @@ private:
 
         PT( Texture ) _pssm_split_texture_array;
         PT( GraphicsOutput ) _pssm_layered_buffer;
+        PT( DisplayRegion ) _pssm_display_region;
 
         pvector<SplitShadowMap> _split_maps;
 
@@ -171,6 +174,8 @@ private:
 	PT( PlanarReflections ) _planar_reflections;
 
         static PT( Texture ) _identity_cubemap;
+
+        static PT(BSPShaderGenerator) _global_ptr;
 
 public:
         static TypeHandle get_class_type()

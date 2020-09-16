@@ -10,7 +10,6 @@
  */
 
 #include "shader_lightmappedgeneric.h"
-#include "bsploader.h"
 #include "shader_generator.h"
 #include "planar_reflections.h"
 #include "bspMaterial.h"
@@ -42,7 +41,7 @@ LightmappedGenericSpec::LightmappedGenericSpec() :
              Filename("shaders/stdshaders/lightmappedGeneric_PBR.frag.glsl")) {
 }
 
-string get_texcoord(int n) {
+std::string get_texcoord(int n) {
   std::ostringstream ss;
   ss << "p3d_MultiTexCoord" << n;
   return ss.str();

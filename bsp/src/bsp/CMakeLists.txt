@@ -10,6 +10,7 @@ set(P3BSP_HEADERS
   bsp_render.h
   bsp_trace.h
   bsploader.h
+  bsplevel.h
   ciolib.h
   cubemaps.h
   decals.h
@@ -35,7 +36,7 @@ set(P3BSP_HEADERS
   shader_vertexlitgeneric.h
   static_props.h
   texture_filter.h
-  TexturePacker.h
+  imagePacker.h
   plane_culled_geom_node.h
   dynamicRender.h
 
@@ -52,11 +53,13 @@ set(P3BSP_HEADERS
   postprocess/postprocess_pass.h
   postprocess/postprocess_scene_pass.h
   postprocess/ssao.h
+  postprocess/motion_blur.h
 )
 
 set(P3BSP_IGATE_HEADERS
   config_bsp.h
   bsploader.h
+  bsplevel.h
   bsp_render.h
   shader_generator.h
   shader_spec.h
@@ -86,6 +89,7 @@ set(P3BSP_IGATE_HEADERS
   postprocess/bloom.h
   postprocess/fxaa.h
   postprocess/ssao.h
+  postprocess/motion_blur.h
 )
 
 set(P3BSP_IGATE_EXTENSIONS
@@ -108,6 +112,7 @@ set(P3BSP_SOURCES
   bsp_render.cpp
   bsp_trace.cpp
   bsploader.cpp
+  bsplevel.cpp
   ciolib.cpp
   decals.cpp
   glow_node.cpp
@@ -131,7 +136,7 @@ set(P3BSP_SOURCES
   shader_vertexlitgeneric.cpp
   static_props.cpp
   texture_filter.cpp
-  TexturePacker.cpp
+  imagePacker.cxx
   plane_culled_geom_node.cpp
   dynamicRender.cxx
 
@@ -145,6 +150,7 @@ set(P3BSP_SOURCES
   postprocess/postprocess_pass.cpp
   postprocess/postprocess_scene_pass.cpp
   postprocess/ssao.cpp
+  postprocess/motion_blur.cpp
 )
 
 composite_sources(p3bsp P3BSP_SOURCES)

@@ -16,6 +16,7 @@
 #include <eventHandler.h>
 
 #include "bsploader.h"
+#include "bsplevel.h"
 
 PhysicsCharacterController::PhysicsCharacterController(BSPLoader *loader, BulletWorld *world, const NodePath &render,
                                                        const NodePath &parent, float walk_height,
@@ -409,6 +410,7 @@ void PhysicsCharacterController::update_event_sphere() {
 
 void PhysicsCharacterController::update_foot_contact() {
   BSPLoader *loader = _bsp_loader;
+  BSPLevel *level = loader->get_level();
 
   if (!_above_ground) {
     // If we aren't above a ground, check if we are below a ground.
@@ -454,11 +456,11 @@ void PhysicsCharacterController::update_foot_contact() {
     BulletRigidBodyNode *node = DCAST(BulletRigidBodyNode, hit.get_node());
 
     int triangle_idx = hit.get_triangle_index();
-    if (_movement_state != MOVEMENTSTATE_SWIMMING && !_touching_water) {
+    if (level && _movement_state != MOVEMENTSTATE_SWIMMING && !_touching_water) {
       std::string mat = _default_material;
-      if (loader->has_brush_collision_node(node)) {
-        if (loader->has_brush_collision_triangle(node, triangle_idx)) {
-          mat = loader->get_brush_triangle_material(node, triangle_idx);
+      if (level->has_brush_collision_node(node)) {
+        if (level->has_brush_collision_triangle(node, triangle_idx)) {
+          mat = level->get_brush_triangle_material(node, triangle_idx);
         }
       }
       _current_material = mat;

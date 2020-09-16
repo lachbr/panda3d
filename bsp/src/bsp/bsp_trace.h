@@ -1,6 +1,6 @@
 /**
  * PANDA3D BSP LIBRARY
- * 
+ *
  * Copyright (c) Brian Lach <brianlach72@gmail.com>
  * All rights reserved.
  *
@@ -57,7 +57,7 @@ extern EXPCL_PANDABSP collbspdata_t *SetupCollisionBSPData( const bspdata_t *bsp
 extern EXPCL_PANDABSP void CM_BoxTrace( const Ray &ray, int headnode, int brushmask,
                          bool compute_endpoint, const collbspdata_t *bspdata, Trace &trace );
 
-class BSPLoader;
+class BSPLevel;
 
 enum
 {
@@ -68,7 +68,7 @@ enum
 class EXPCL_PANDABSP BSPTrace : public ReferenceCount
 {
 public:
-	BSPTrace( BSPLoader *loader );
+	BSPTrace( BSPLevel *level );
 
 	void add_dmodel( const dmodel_t *model, unsigned int mask );
 
@@ -93,7 +93,7 @@ private:
 	typedef SimpleHashMap<int, const dface_t *, int_hash> RT_DFaceMap;
 	RT_DFaceMap _dface_map;
 
-	BSPLoader *_loader;
+	BSPLevel *_level;
 };
 
 #else

@@ -12,6 +12,7 @@
 #include "ambient_probes.h"
 #include "ambient_boost_effect.h"
 #include "bspfile.h"
+#include "bsplevel.h"
 #include "bsploader.h"
 #include "bsptools.h"
 #include "lighting_origin_effect.h"
@@ -97,7 +98,7 @@ static light_t *dummy_light = new light_t;
 
 AmbientProbeManager::
 AmbientProbeManager() :
-    _loader(nullptr), _sunlight(nullptr),
+    _level(nullptr), _sunlight(nullptr),
     //_light_kdtree( nullptr ),
     //_probe_kdtree( nullptr ),
     _envmap_kdtree(nullptr) {
@@ -106,8 +107,8 @@ AmbientProbeManager() :
   dummy_light->type = 0;
 }
 
-AmbientProbeManager::AmbientProbeManager(BSPLoader *loader) :
-    _loader(loader), _sunlight(nullptr),
+AmbientProbeManager::AmbientProbeManager(BSPLevel *loader) :
+    _level(loader), _sunlight(nullptr),
     //_light_kdtree( nullptr ),
     //_probe_kdtree( nullptr ),
     _envmap_kdtree(nullptr) {
@@ -129,19 +130,21 @@ void AmbientProbeManager::process_ambient_probes() {
 
 #ifdef VISUALIZE_AMBPROBES
   if (!_vis_root.is_empty()) { _vis_root.remove_node(); }
-  _vis_root = _loader->_result.attach_new_node("visAmbProbesRoot");
+  _vis_root = _level->_result.attach_new_node("visAmbProbesRoot");
 #endif
 
+  bspdata_t *bspdata = _level->get_bspdata();
+
   _light_pvs.clear();
-  _light_pvs.resize(_loader->_bspdata->dmodels[0].visleafs + 1);
+  _light_pvs.resize(bspdata->dmodels[0].visleafs + 1);
   _all_lights.clear();
 
   //_light_kdtree = new KDTree( 3 );
   // vector<vector<double>> light_points;
 
   // Build light data structures
-  for (int entnum = 0; entnum < _loader->_bspdata->numentities; entnum++) {
-    entity_t *ent = _loader->_bspdata->entities + entnum;
+  for (int entnum = 0; entnum < bspdata->numentities; entnum++) {
+    entity_t *ent = bspdata->entities + entnum;
     const char *classname = ValueForKey(ent, "classname");
     if (!strncmp(classname, "light", 5)) {
       PT(light_t)
@@ -153,7 +156,7 @@ void AmbientProbeManager::process_ambient_probes() {
       VectorCopy(pos, light->pos);
       VectorScale(light->pos, 1 / 16.0, light->pos);
 
-      light->leaf = _loader->find_leaf(light->pos);
+      light->leaf = _level->find_leaf(light->pos);
       light->color =
           color_from_value(ValueForKey(ent, "_light"), true, true).get_xyz();
       light->type = lighttype_from_classname(classname);
@@ -228,18 +231,18 @@ void AmbientProbeManager::process_ambient_probes() {
   // Build light PVS
   for (size_t lightnum = 0; lightnum < _all_lights.size(); lightnum++) {
     light_t *light = _all_lights[lightnum];
-    for (int leafnum = 0; leafnum < _loader->_bspdata->dmodels[0].visleafs + 1;
+    for (int leafnum = 0; leafnum < bspdata->dmodels[0].visleafs + 1;
          leafnum++) {
       if (light->type != LIGHTTYPE_SUN &&
-          _loader->is_cluster_visible(light->leaf, leafnum)) {
+          _level->is_cluster_visible(light->leaf, leafnum)) {
         _light_pvs[leafnum].push_back(light);
       }
     }
   }
 
-  for (size_t i = 0; i < _loader->_bspdata->leafambientindex.size(); i++) {
-    dleafambientindex_t *ambidx = &_loader->_bspdata->leafambientindex[i];
-    dleaf_t *leaf = _loader->_bspdata->dleafs + i;
+  for (size_t i = 0; i < bspdata->leafambientindex.size(); i++) {
+    dleafambientindex_t *ambidx = &bspdata->leafambientindex[i];
+    dleaf_t *leaf = bspdata->dleafs + i;
     _probes[i] = pvector<PT(ambientprobe_t)>();
 
     _probe_kdtrees[i] = new KDTree(3);
@@ -247,7 +250,7 @@ void AmbientProbeManager::process_ambient_probes() {
 
     for (int j = 0; j < ambidx->num_ambient_samples; j++) {
       dleafambientlighting_t *light =
-          &_loader->_bspdata
+          &bspdata
                ->leafambientlighting[ambidx->first_ambient_sample + j];
       PT(ambientprobe_t)
       probe = new ambientprobe_t;
@@ -270,7 +273,7 @@ void AmbientProbeManager::process_ambient_probes() {
       probe->cube = PTA_LVecBase3::empty_array(6);
       for (int k = 0; k < 6; k++) {
         probe->cube.set_element(
-            k, color_shift_pixel(&light->cube.color[k], _loader->_gamma));
+            k, color_shift_pixel(&light->cube.color[k], 2.2));
       }
 #ifdef VISUALIZE_AMBPROBES
       PT(TextNode)
@@ -299,11 +302,13 @@ void AmbientProbeManager::process_ambient_probes() {
 }
 
 void AmbientProbeManager::load_cubemaps() {
-  std::cout << _loader->_bspdata->cubemaps.size() << " cubemaps " << std::endl;
+  bspdata_t *bspdata = _level->get_bspdata();
+
+  std::cout << bspdata->cubemaps.size() << " cubemaps " << std::endl;
   _envmap_kdtree = new KDTree(3);
   vector<vector<double> > envmap_points;
-  for (size_t i = 0; i < _loader->_bspdata->cubemaps.size(); i++) {
-    dcubemap_t *dcm = &_loader->_bspdata->cubemaps[i];
+  for (size_t i = 0; i < bspdata->cubemaps.size(); i++) {
+    dcubemap_t *dcm = &bspdata->cubemaps[i];
     PT(cubemap_t)
     cm = new cubemap_t;
     cm->pos =
@@ -318,7 +323,7 @@ void AmbientProbeManager::load_cubemaps() {
     }
     if (match) continue;
 
-    cm->leaf = _loader->find_leaf(cm->pos);
+    cm->leaf = _level->find_leaf(cm->pos);
     cm->size = dcm->size;
     cm->has_full_cubemap = true;
 
@@ -351,7 +356,7 @@ void AmbientProbeManager::load_cubemaps() {
       for (int y = 0; y < dcm->size; y++) {
         for (int x = 0; x < dcm->size; x++) {
           colorrgbexp32_t *col =
-              &_loader->_bspdata->cubemapdata[dcm->imgofs[j] + xel];
+              &bspdata->cubemapdata[dcm->imgofs[j] + xel];
           LVector3 vcol;
           ColorRGBExp32ToVector(*col, vcol);
           img.set_xel(x, y, vcol);
@@ -378,7 +383,7 @@ INLINE bool AmbientProbeManager::is_sky_visible(const LPoint3 &point) {
   LPoint3 end = start + (_sunlight->direction.get_xyz() * 10000);
   Ray ray(start, end, LPoint3::zero(), LPoint3::zero());
   Trace trace;
-  CM_BoxTrace(ray, 0, CONTENTS_SKY | CONTENTS_SOLID, false, _loader->_colldata,
+  CM_BoxTrace(ray, 0, CONTENTS_SKY | CONTENTS_SOLID, false, _level->get_colldata(),
               trace);
 
   return trace.has_hit() && trace.hit_contents == CONTENTS_SKY;
@@ -389,7 +394,7 @@ INLINE bool AmbientProbeManager::is_light_visible(const LPoint3 &point,
   Ray ray((point + LPoint3(0, 0, 0.05)) * 16, light->pos * 16, LPoint3::zero(),
           LPoint3::zero());
   Trace trace;
-  CM_BoxTrace(ray, 0, CONTENTS_SOLID, false, _loader->_colldata, trace);
+  CM_BoxTrace(ray, 0, CONTENTS_SOLID, false, _level->get_colldata(), trace);
 
   return !trace.has_hit();
 }
@@ -433,6 +438,8 @@ const RenderState *AmbientProbeManager::update_node(PandaNode *node,
     curr_trans = curr_trans->set_pos(curr_trans->get_pos() + world_offset);
   }
 
+  BSPLoader *loader = _level->get_loader();
+
   finddata_collector.start();
   bool new_instance = false;
 
@@ -442,7 +449,7 @@ const RenderState *AmbientProbeManager::update_node(PandaNode *node,
     input = new CNodeShaderInput;
     input->state_with_input = RenderState::make(AuxDataAttrib::make(input));
     input->last_transform = curr_trans;
-    input->level_context = _loader->_level_context;
+    input->level_context = loader->get_level_context();
     node->set_user_data(input);
     new_instance = true;
   }
@@ -471,11 +478,11 @@ const RenderState *AmbientProbeManager::update_node(PandaNode *node,
 
   bool average_lighting = cfg_lightaverage.get_value();
 
-  bool lighting_current = _loader->is_valid_level_context(input->level_context);
+  bool lighting_current = loader->is_valid_level_context(input->level_context);
   if (!lighting_current) {
     // The level has changed. Make ourselves current and update everything.
     // Don't fade out old lights since they were deleted.
-    input->level_context = _loader->_level_context;
+    input->level_context = loader->get_level_context();
     average_lighting = false;
     pos_changed = true;
   }
@@ -496,7 +503,7 @@ const RenderState *AmbientProbeManager::update_node(PandaNode *node,
   // be in the incorrect leaf, giving incorrect ambient.
   curr_net[2] += ON_EPSILON;
 
-  int leaf_id = _loader->find_leaf(curr_net);
+  int leaf_id = _level->find_leaf(curr_net);
 
   if (pos_changed) {
     // Update ambient cube
@@ -744,7 +751,7 @@ const RenderState *AmbientProbeManager::update_node(PandaNode *node,
       if (avg_cube_luminance < r_ambientmin &&
           avg_cube_luminance < (direct_light * r_ambientfraction.get_value())) {
         float boost_factor =
-            std::min((direct_light * r_ambientfraction) / max_cube_luminance,
+            std::min((direct_light * r_ambientfraction.get_value()) / max_cube_luminance,
                      r_ambientfactor.get_value());
         for (int i = 0; i < 6; i++) {
           input->boxcolor_boosted[i] =
@@ -793,7 +800,7 @@ void AmbientProbeManager::xform_lights(const TransformState *cam_trans) {
 
   LMatrix4 cam_mat = cam_trans->get_mat();
 
-  int cam_leaf = _loader->find_leaf(cam_trans->get_pos());
+  int cam_leaf = _level->find_leaf(cam_trans->get_pos());
   const pvector<light_t *> &lights = _light_pvs[cam_leaf];
   size_t numlights = lights.size();
   for (size_t i = 0; i < numlights; i++) {
