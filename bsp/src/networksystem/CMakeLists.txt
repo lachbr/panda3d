@@ -11,8 +11,6 @@ set(P3BSPNET_SOURCES
 )
 
 set(P3BSPNET_IGATEEXT
-  distributed_smooth_node_base.h
-  distributed_smooth_node_base.cpp
   networksystem.h
   networksystem.cpp
 )
