@@ -5,7 +5,7 @@ endif()
 add_subdirectory(src/bspbase)
 add_subdirectory(src/bsp)
 add_subdirectory(src/networksystem)
-add_subdirectory(src/editor)
+add_subdirectory(src/leveleditor)
 
 add_subdirectory(src/recastnavigation)
 
@@ -15,14 +15,18 @@ add_subdirectory(src/pvis)
 add_subdirectory(src/prad)
 
 if(HAVE_PYTHON)
-	add_python_module(panda3d.bsp p3bsp p3bspinternal LINK p3bsp LINK panda
-		IMPORT panda3d.core IMPORT panda3d.bullet COMPONENT BSPPython)
+  add_python_module(panda3d.bsp p3bsp p3bspinternal LINK p3bsp LINK panda
+                    IMPORT panda3d.core IMPORT panda3d.bullet COMPONENT BSPPython)
 
   add_python_module(panda3d.networksystem p3networksystem IMPORT panda3d.core COMPONENT BSPPython)
 
   add_python_module(panda3d.recastnavigation p3recastnavigation IMPORT panda3d.core COMPONENT BSPPython)
 
   add_python_module(panda3d.editor p3editor IMPORT panda3d.core IMPORT panda3d.bsp COMPONENT BSPPython)
+  
+  # Install our Python code
+  install_python_package(bsp SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/src" LIB COMPONENT BSP)
+  
 endif()
 
-#export_targets(BSP COMPONENT BSPDevel)
+#export_targets(BSP NAMESPACE "Panda3D::BSP" COMPONENT BSPDevel)
