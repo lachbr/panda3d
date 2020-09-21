@@ -24,6 +24,7 @@
 #include "bulletTriangleMeshShape.h"
 #include "bulletWorld.h"
 #include "hdr.h"
+#include "rayTraceHitResult.h"
 
 NotifyCategoryDeclNoExport(bsplevel);
 NotifyCategoryDef(bsplevel, "");

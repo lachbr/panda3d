@@ -14,9 +14,11 @@
 
 #ifndef CPPPARSER
 
+#include "config_bsplib.h"
 #include "winding.h"
 #include "bsptools.h"
-#include "raytrace.h"
+#include "rayTraceScene.h"
+#include "rayTraceGeometry.h"
 
 struct bspdata_t;
 

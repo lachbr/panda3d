@@ -3,7 +3,9 @@
 
 #include <simpleHashMap.h>
 
-#include "raytrace.h"
+#include "rayTrace.h"
+#include "rayTraceScene.h"
+#include "rayTraceHitResult.h"
 #include "mathtypes.h"
 #include "mathlib/ssemath.h"
 #include "bspfile.h"

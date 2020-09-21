@@ -23,7 +23,6 @@ set(P3BSPLIB_HEADERS
   planar_reflections.h
   pssmCameraRig.h
   rangecheckedvar.h
-  raytrace.h
   shader_csmrender.h
   shader_decalmodulate.h
   shader_features.h
@@ -57,7 +56,6 @@ set(P3BSPLIB_IGATE_HEADERS
   shader_unlitgeneric.h
   shader_unlitnomat.h
   shader_csmrender.h
-  raytrace.h
   shader_skybox.h
   ambient_boost_effect.h
   audio_3d_manager.h
@@ -104,7 +102,6 @@ set(P3BSPLIB_SOURCES
   planar_reflections.cpp
   pssmCameraRig.cpp
   rangecheckedvar.cpp
-  raytrace.cpp
   shader_csmrender.cpp
   shader_decalmodulate.cpp
   shader_features.cpp
@@ -130,7 +127,7 @@ target_compile_definitions(p3bsplib PUBLIC CIO)
 if(HAVE_PYTHON)
   target_compile_definitions(p3bsplib PUBLIC _PYTHON_VERSION)
 endif()
-target_link_libraries(p3bsplib panda pandaegg p3eggbase p3bullet p3bspbase p3postprocess p3interrogatedb PKG::EMBREE)
+target_link_libraries(p3bsplib panda pandaegg p3eggbase p3bullet p3bspbase p3postprocess p3raytrace p3interrogatedb PKG::EMBREE)
 target_interrogate(p3bsplib ALL EXTENSIONS ${P3BSPLIB_IGATE_EXTENSIONS})
 
 if(NOT BUILD_METALIBS)

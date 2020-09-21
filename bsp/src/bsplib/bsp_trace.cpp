@@ -13,6 +13,8 @@
 
 #include "bsp_trace.h"
 #include "bsplevel.h"
+#include "rayTrace.h"
+#include "rayTraceTriangleMesh.h"
 
 #include <pStatTimer.h>
 #include <pStatCollector.h>

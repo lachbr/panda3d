@@ -17,7 +17,6 @@
 #include "shader_spec.h"
 #include "aux_data_attrib.h"
 #include "bounding_kdop.h"
-#include "raytrace.h"
 #include "ambient_boost_effect.h"
 #include "glow_node.h"
 #include "static_props.h"
@@ -79,10 +78,6 @@ init_libbsplib() {
   ShaderSpec::init_type();
 
   BoundingKDOP::init_type();
-
-  RayTrace::initialize();
-  RayTraceGeometry::init_type();
-  RayTraceTriangleMesh::init_type();
 
   BSPTextureFilter::init_type();
   TexturePool::get_global_ptr()->register_filter(new BSPTextureFilter);

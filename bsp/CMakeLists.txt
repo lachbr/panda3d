@@ -11,6 +11,7 @@ add_subdirectory(src/pcsg)
 add_subdirectory(src/postprocess)
 add_subdirectory(src/prad)
 add_subdirectory(src/pvis)
+add_subdirectory(src/raytrace)
 add_subdirectory(src/recastnavigation)
 
 # Add the bsp metalib
@@ -18,6 +19,7 @@ add_subdirectory(metalibs/bsp)
 
 if(HAVE_PYTHON)
   add_python_module(panda3d.bsp p3bsplib p3bspinternal p3postprocess p3leveleditor p3networksystem
+                    p3raytrace
                     IMPORT panda3d.core IMPORT panda3d.bullet COMPONENT BSPPython)
 
   add_python_module(panda3d.recastnavigation p3recastnavigation IMPORT panda3d.core COMPONENT BSPPython)

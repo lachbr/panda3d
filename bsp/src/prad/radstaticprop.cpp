@@ -17,6 +17,7 @@
 #include "lightingutils.h"
 #include "lightmap.h"
 #include "trace.h"
+#include "rayTraceTriangleMesh.h"
 
 pvector<RADStaticProp *> g_static_props;
 

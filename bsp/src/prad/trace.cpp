@@ -9,6 +9,8 @@
 #include "qrad.h"
 //#endif
 #include "radstaticprop.h"
+#include "rayTraceGeometry.h"
+#include "rayTraceHitResult4.h"
 
 #include <pStatCollector.h>
 #include <pStatTimer.h>

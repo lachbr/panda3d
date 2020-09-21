@@ -56,6 +56,7 @@ A simple summary of RAD goes as follows:
 #include "lights.h"
 #include "vismat.h"
 #include "trace.h"
+#include "rayTraceTriangleMesh.h"
 //#include "clhelper.h"
 #include <virtualFileSystem.h>
 #include <simpleHashMap.h>
