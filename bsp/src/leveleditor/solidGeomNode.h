@@ -1,7 +1,7 @@
 #pragma once
 
-#include "config_editor.h"
-#include "config_bsp.h"
+#include "config_leveleditor.h"
+#include "config_bsplib.h"
 #include "geomNode.h"
 #include "geom.h"
 #include "bitMask.h"

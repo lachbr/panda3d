@@ -27,7 +27,7 @@ set(P3PRAD_SOURCES
 
 composite_sources(p3prad P3PRAD_SOURCES)
 add_executable(p3prad ${P3PRAD_HEADERS} ${P3PRAD_SOURCES})
-target_link_libraries(p3prad panda p3bspbase p3bsp)
+target_link_libraries(p3prad panda p3bsp)
 
 set_target_properties(p3prad PROPERTIES OUTPUT_NAME "prad")
 target_compile_definitions(p3prad PRIVATE HLRAD)

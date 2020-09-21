@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config_editor.h"
+#include "config_leveleditor.h"
 #include "referenceCount.h"
 #include "nodePath.h"
 #include "cPlane.h"

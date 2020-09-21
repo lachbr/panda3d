@@ -1,7 +1,7 @@
 #pragma once
 
-#include "config_bsp.h"
-#include "config_editor.h"
+#include "config_bsplib.h"
+#include "config_leveleditor.h"
 #include "modelNode.h"
 #include "solidFace.h"
 #include "pvector.h"

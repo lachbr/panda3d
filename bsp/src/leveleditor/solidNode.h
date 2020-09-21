@@ -1,8 +1,8 @@
 #ifndef SOLIDNODE_H
 #define SOLIDNODE_H
 
-#include "config_bsp.h"
-#include "config_editor.h"
+#include "config_bsplib.h"
+#include "config_leveleditor.h"
 #include "modelNode.h"
 #include "luse.h"
 #include "bitMask.h"

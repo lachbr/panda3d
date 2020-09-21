@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config_editor.h"
+#include "config_leveleditor.h"
 #include "dtoolbase.h"
 #include "luse.h"
 #include "geomVertexFormat.h"

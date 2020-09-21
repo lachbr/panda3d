@@ -1,6 +1,6 @@
 set(P3EDITOR_HEADERS
   cLine.h
-  config_editor.h
+  config_leveleditor.h
   cPlane.h
   cPointCloud.h
   cPolygon.h
@@ -21,9 +21,10 @@ set(P3EDITOR_HEADERS
 )
 
 set(P3EDITOR_SOURCES
-  config_editor.cxx
+  config_leveleditor.cxx
   cPolygon.cxx
   faceMaterial.cxx
+  faceOrientation.cxx
   solid.cxx
   solidFace.cxx
   solidVertex.cxx
@@ -36,16 +37,17 @@ set(P3EDITOR_EXT
   solid_ext.h
 )
 
-composite_sources(p3editor P3EDITOR_SOURCES)
-add_library(p3editor ${P3EDITOR_SOURCES} ${P3EDITOR_HEADERS})
-set_target_properties(p3editor PROPERTIES DEFINE_SYMBOL BUILDING_EDITOR)
-target_link_libraries(p3editor panda p3bsp)
-target_interrogate(p3editor ALL EXTENSIONS ${P3EDITOR_EXT})
+composite_sources(p3leveleditor P3EDITOR_SOURCES)
+add_component_library(p3leveleditor SYMBOL BUILDING_EDITOR ${P3EDITOR_SOURCES} ${P3EDITOR_HEADERS})
+target_link_libraries(p3leveleditor panda p3bsplib)
+target_interrogate(p3leveleditor ALL EXTENSIONS ${P3EDITOR_EXT})
 
-install(TARGETS p3editor
-  EXPORT BSP COMPONENT BSP
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/panda3d
-  ARCHIVE COMPONENT BSPDevel)
+if(NOT BUILD_METALIBS)
+  install(TARGETS p3leveleditor
+    EXPORT BSP COMPONENT BSP
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/panda3d
+    ARCHIVE COMPONENT BSPDevel)
+endif()
 install(FILES ${P3EDITOR_HEADERS} COMPONENT BSPDevel DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/panda3d)

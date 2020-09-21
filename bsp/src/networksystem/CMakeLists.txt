@@ -16,16 +16,17 @@ set(P3BSPNET_IGATEEXT
 )
 
 composite_sources(p3networksystem P3BSPNET_SOURCES)
-add_library(p3networksystem ${P3BSPNET_SOURCES} ${P3BSPNET_HEADERS})
-set_target_properties(p3networksystem PROPERTIES DEFINE_SYMBOL BUILDING_NETWORKSYSTEM)
+add_component_library(p3networksystem SYMBOL BUILDING_NETWORKSYSTEM ${P3BSPNET_SOURCES} ${P3BSPNET_HEADERS})
 target_compile_definitions(p3networksystem PUBLIC STEAMNETWORKINGSOCKETS_STATIC_LINK)
-target_link_libraries(p3networksystem panda p3direct GameNetworkingSockets::GameNetworkingSockets_s)
+target_link_libraries(p3networksystem panda GameNetworkingSockets::GameNetworkingSockets_s)
 target_interrogate(p3networksystem ALL EXTENSIONS ${P3BSPNET_IGATEEXT})
 
-install(TARGETS p3networksystem
-  EXPORT BSP COMPONENT BSP
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/panda3d
-  ARCHIVE COMPONENT BSPDevel)
+if(NOT BUILD_METALIBS)
+  install(TARGETS p3networksystem
+    EXPORT BSP COMPONENT BSP
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/panda3d
+    ARCHIVE COMPONENT BSPDevel)
+endif()
 #install(FILES ${P3BSPNET_HEADERS} COMPONENT BSPDevel DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/panda3d)

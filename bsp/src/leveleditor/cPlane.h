@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config_editor.h"
+#include "config_leveleditor.h"
 #include "plane.h"
 
 class EXPCL_EDITOR CPlane : public LPlane {

@@ -1,0 +1,92 @@
+/**
+ * PANDA3D BSP LIBRARY
+ *
+ * Copyright (c) Brian Lach <brianlach72@gmail.com>
+ * All rights reserved.
+ *
+ * @file config_bsplib.cpp
+ * @author Brian Lach
+ * @date March 27, 2018
+ */
+
+#include "config_bsplib.h"
+
+#include "bsploader.h"
+#include "bsp_render.h"
+#include "shader_generator.h"
+#include "shader_spec.h"
+#include "aux_data_attrib.h"
+#include "bounding_kdop.h"
+#include "raytrace.h"
+#include "ambient_boost_effect.h"
+#include "glow_node.h"
+#include "static_props.h"
+#include "bloom_attrib.h"
+#include "plane_culled_geom_node.h"
+#include "dynamicRender.h"
+
+#include <texturePool.h>
+#include "texture_filter.h"
+
+vector_string parse_cmd(const std::string &cmd) {
+  vector_string result;
+
+  std::string current = "";
+  for (size_t i = 0; i < cmd.size(); i++) {
+    char c = cmd[i];
+    if (c == ' ') {
+      result.push_back(current);
+      current = "";
+      continue;
+    }
+    current += c;
+    if (i == cmd.size() - 1) // add last argument
+      result.push_back(current);
+  }
+
+  return result;
+}
+
+ConfigureDef(config_bsp);
+ConfigureFn(config_bsp) {
+  init_libbsplib();
+}
+
+void
+init_libbsplib() {
+  static bool initialized = false;
+  if (initialized)
+    return;
+  initialized = true;
+
+  BSPFaceAttrib::init_type();
+  BSPRender::init_type();
+  BSPCullTraverser::init_type();
+  BSPRoot::init_type();
+  BSPProp::init_type();
+  BSPModel::init_type();
+  BSPShaderGenerator::init_type();
+  GlowNode::init_type();
+  PlaneCulledGeomNode::init_type();
+
+  AmbientBoostEffect::init_type();
+  AmbientBoostEffect::register_with_read_factory();
+
+  AuxDataAttrib::init_type();
+  StaticPropAttrib::init_type();
+  BloomAttrib::init_type();
+
+  ShaderSpec::init_type();
+
+  BoundingKDOP::init_type();
+
+  RayTrace::initialize();
+  RayTraceGeometry::init_type();
+  RayTraceTriangleMesh::init_type();
+
+  BSPTextureFilter::init_type();
+  TexturePool::get_global_ptr()->register_filter(new BSPTextureFilter);
+
+  DynamicRender::init_type();
+  DynamicCullTraverser::init_type();
+}
