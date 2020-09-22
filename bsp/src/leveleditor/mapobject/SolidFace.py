@@ -5,7 +5,7 @@ from panda3d.core import ColorAttrib, Vec3, Vec2, deg2Rad, Quat, Point3
 from panda3d.core import CullFaceAttrib, AntialiasAttrib, CKeyValues, LVector2i
 from panda3d.core import RenderState, TransparencyAttrib, ColorScaleAttrib, DepthTestAttrib, DepthWriteAttrib, CullBinAttrib
 from panda3d.bsp import PlaneCulledGeomNode, BSPMaterialAttrib
-from panda3d.editor import SolidFaceGeom
+from panda3d.bsp import SolidFaceGeom
 
 from .MapWritable import MapWritable
 from .SolidVertex import SolidVertex
