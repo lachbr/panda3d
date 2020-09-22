@@ -19,7 +19,7 @@ add_subdirectory(metalibs/bsp)
 
 if(HAVE_PYTHON)
   add_python_module(panda3d.bsp p3bsplib p3bspinternal p3postprocess p3leveleditor p3networksystem
-                    p3raytrace
+                    LINK panda LINK p3bsp
                     IMPORT panda3d.core IMPORT panda3d.bullet COMPONENT BSPPython)
 
   add_python_module(panda3d.recastnavigation p3recastnavigation IMPORT panda3d.core COMPONENT BSPPython)
