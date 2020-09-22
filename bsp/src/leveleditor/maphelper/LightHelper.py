@@ -2,7 +2,7 @@ from panda3d.core import PointLight, Vec4, Vec3, CKeyValues
 
 from .MapHelper import MapHelper
 
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 
 class LightHelper(MapHelper):
 
@@ -20,8 +20,8 @@ class LightHelper(MapHelper):
 
     def generate(self, helperInfo):
         color = self.mapObject.getPropertyValue("_light", default = Vec4(255, 255, 255, 255))
-        color = CIGlobals.colorFromRGBScalar255(color)
-        color = CIGlobals.vec3GammaToLinear(color)
+        color = BSPUtils.colorFromRGBScalar255(color)
+        color = BSPUtils.vec3GammaToLinear(color)
 
         constant = float(self.mapObject.getPropertyValue("_constant_attn", default = "0.0"))
         linear = float(self.mapObject.getPropertyValue("_linear_attn", default = "0.0"))

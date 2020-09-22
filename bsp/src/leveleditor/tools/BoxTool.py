@@ -5,7 +5,7 @@ from panda3d.core import TextNode
 from .BaseTool import BaseTool, ToolUsage
 from src.leveleditor.viewport.Viewport2D import Viewport2D
 from src.leveleditor.viewport.ViewportType import *
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 from src.leveleditor import RenderModes
 from src.leveleditor.geometry.Handles import Handles, HandleType
 from src.leveleditor.geometry.Box import Box

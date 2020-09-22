@@ -1,7 +1,5 @@
 from panda3d.core import LineSegs, NodePath, Vec4, Point3, AntialiasAttrib
 
-from src.coginvasion.globals import CIGlobals
-
 from .GridSettings import GridSettings
 
 class Grid:

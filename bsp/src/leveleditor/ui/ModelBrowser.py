@@ -4,7 +4,7 @@ from panda3d.bsp import BSPShaderGenerator
 from .AssetBrowser import AssetBrowser
 
 from PyQt5 import QtGui, QtWidgets, QtCore
-from src.coginvasion.globals import CIGlobals, ShaderGlobals
+from bsp.bspbase import BSPUtils, ShaderGlobals
 
 import math
 from collections import deque
@@ -36,7 +36,7 @@ class ModelBrowser(AssetBrowser):
         self.buffer = base.graphicsEngine.makeOutput(base.pipe, "modelBrowserBuffer", 0,
             fbprops, props, flags, None, None)
         gsg = self.buffer.getGsg()
-        self.buffer.setClearColor(CIGlobals.vec3GammaToLinear(core.Vec4(82 / 255.0, 82 / 255.0, 82 / 255.0, 1.0)))
+        self.buffer.setClearColor(BSPUtils.vec3GammaToLinear(core.Vec4(82 / 255.0, 82 / 255.0, 82 / 255.0, 1.0)))
         self.buffer.setActive(False)
 
         self.displayRegion = self.buffer.makeDisplayRegion()
@@ -128,7 +128,7 @@ class ModelBrowser(AssetBrowser):
         qimage = QtGui.QImage(image.getXSize(), image.getYSize(), QtGui.QImage.Format_RGB888)
         for x in range(image.getXSize()):
             for y in range(image.getYSize()):
-                col = CIGlobals.vec3LinearToGamma(image.getXelA(x, y))
+                col = BSPUtils.vec3LinearToGamma(image.getXelA(x, y))
                 qimage.setPixelColor(x, y,
                     QtGui.QColor(int(col[0] * 255), int(col[1] * 255), int(col[2] * 255), int(col[3] * 255)))
 

@@ -3,7 +3,7 @@ from panda3d.core import LPlane, Vec4
 
 from direct.showbase.PythonUtil import invertDict
 
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 
 from PyQt5 import QtGui, QtCore
 

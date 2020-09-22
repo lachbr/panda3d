@@ -36,8 +36,8 @@ jsonFile = "settings.json"
 # because there might be code that relies on this being defined.
 sm = SettingsManager()
 
-from src.coginvasion.globals import CIGlobals
-CIGlobals.SettingsMgr = sm
+from bsp.bspbase import BSPUtils
+BSPUtils.SettingsMgr = sm
 
 from src.leveleditor.LevelEditor import LevelEditor
 base = LevelEditor()

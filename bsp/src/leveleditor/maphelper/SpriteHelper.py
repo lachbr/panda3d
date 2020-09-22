@@ -1,7 +1,7 @@
 from panda3d.core import NodePath, ModelNode, CardMaker, CKeyValues, Vec4
 from panda3d.bsp import BSPMaterial
 
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
 
 from .MapHelper import MapHelper
@@ -26,7 +26,7 @@ class SpriteHelper(MapHelper):
         color255Prop = color255Props[0] if len(color255Props) > 0 else None
         if color255Prop:
             color = self.mapObject.getPropertyValue(color255Prop)
-            color = CIGlobals.colorFromRGBScalar255(color)
+            color = BSPUtils.colorFromRGBScalar255(color)
         else:
             color = Vec4(1)
 

@@ -7,7 +7,7 @@ from panda3d.core import CollisionRay, CollisionNode, CollisionHandlerQueue, Mat
 from panda3d.core import Vec4, ModifierButtons, Point2, Vec3, Point3, Vec2, ModelNode, LVector2i, LPoint2i
 from panda3d.core import OmniBoundingVolume, OrthographicLens, MouseButton
 
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 
 from .ViewportType import *
 from .ViewportGizmo import ViewportGizmo
@@ -21,7 +21,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 # Base viewport class
 class Viewport(QtWidgets.QWidget, DirectObject):
 
-    ClearColor = CIGlobals.vec3GammaToLinear(Vec4(0.361, 0.361, 0.361, 1.0))
+    ClearColor = BSPUtils.vec3GammaToLinear(Vec4(0.361, 0.361, 0.361, 1.0))
 
     def __init__(self, vpType, window, doc):
         DirectObject.__init__(self)

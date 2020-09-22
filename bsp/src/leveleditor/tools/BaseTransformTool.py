@@ -13,7 +13,7 @@ from src.leveleditor.actions.ActionGroup import ActionGroup
 from src.leveleditor.actions.Create import Create
 from src.leveleditor.actions.Select import Select
 from .SelectTool import SelectTool
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 
 from PyQt5 import QtWidgets
 
@@ -117,7 +117,7 @@ class TransformWidgetAxis(NodePath):
             dot = abs(camToAxis.dot(self.direction))
             inRange = dot >= self.DotRange[0] if not self.OppositeDot else dot <= self.DotRange[0]
             if inRange:
-                alpha = CIGlobals.remapVal(dot, self.DotRange[0], self.DotRange[1], 1.0, 0.0)
+                alpha = BSPUtils.remapVal(dot, self.DotRange[0], self.DotRange[1], 1.0, 0.0)
                 self.setAlphaScale(alpha)
             else:
                 self.setAlphaScale(1)

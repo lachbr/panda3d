@@ -1,6 +1,6 @@
 from panda3d.core import Vec3, Point3
 
-from src.coginvasion.globals import CIGlobals
+from bsp.bspbase import BSPUtils
 
 from .Line import Line
 from . import PlaneClassification
@@ -29,7 +29,7 @@ class Winding:
         up = Vec3.unitX() if x == Vec3.unitZ() else Vec3.unitZ()
 
         v = up.dot(normal)
-        up = CIGlobals.extrude(up, -v, normal)
+        up = BSPUtils.extrude(up, -v, normal)
         up.normalize()
 
         org = normal * dist
