@@ -2,7 +2,7 @@ from panda3d.core import Point2, WindowProperties
 
 from src.leveleditor.DocObject import DocObject
 
-from src.coginvasion.base import ScreenshotHandler
+from bsp.bspbase import ScreenshotHandler
 
 class ViewportManager(DocObject):
 
