@@ -12,6 +12,7 @@ import os  # NOQA: E402
 from pyparsing import *  # NOQA: E402
 from .fgd import *  # NOQA: E402
 
+from panda3d.core import VirtualFileSystem, getModelPath, Filename
 
 # Basic parsers
 def protectUnescapedCharacters(quoted_string):
@@ -180,31 +181,40 @@ pp_fgd = OneOrMore(pp_mapsize | pp_include | pp_material_ex |
                    pp_autovisgroup | pp_entity).ignore(pp_comment)
 
 
-def FgdParse(filename):
+def FgdParse(filename, search_path = None):
     """Parse a .fgd file and return a FGD object
-    :param filename: A path to the .fgd file to be parsed
-    :type filename: string
+    :param filenames: A path to the .fgd file to be parsed
+    :type filename: list
     :return: a FGD object
     :rtype: FGD
     """
 
+    if not search_path:
+        search_path = getModelPath().getValue()
+
+    vfs = VirtualFileSystem.getGlobalPtr()
+
     game_data = Fgd()
 
-    filepath = os.path.abspath(filename)
-    filedir = os.path.dirname(filepath)
+    filename = Filename.fromOsSpecific(filename)
 
-    try:
-        f = open(filename, "r", encoding="iso-8859-1")
-        results = pp_fgd.parseFile(f)
-        f.close()
-    except Exception as e:
-        raise
+    if vfs.resolveFilename(filename, search_path):
+        filedir = filename.getDirname()
+        data = vfs.readFile(filename, True).decode("iso-8859-1")
+        try:
+            results = pp_fgd.parseString(data)
+        except Exception as e:
+            raise
+    else:
+        raise FileNotFoundError
 
     for i in results:
         if isinstance(i, FgdEditorData):
             if i.class_type == 'include':
-                include_path = os.path.join(filedir, i.data)
-                base_game_data = FgdParse(include_path)
+                # Append the directory of the current file to the search path
+                inc_search_path = getModelPath().getValue()
+                inc_search_path.appendDirectory(filedir)
+                base_game_data = FgdParse(i.data, inc_search_path)
                 game_data.add_include(base_game_data)
             game_data.add_editor_data(i)
     for i in results:
