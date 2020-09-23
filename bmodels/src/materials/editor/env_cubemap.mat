@@ -1,0 +1,5 @@
+UnlitGeneric
+{
+    $basetexture materials/editor/env_cubemap.png
+    $translucent 1
+}

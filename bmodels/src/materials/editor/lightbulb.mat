@@ -1,0 +1,5 @@
+UnlitGeneric
+{
+    $basetexture materials/editor/light.png
+    $translucent 1
+}
