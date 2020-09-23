@@ -6,9 +6,80 @@ from direct.showbase.Loader import Loader
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from panda3d.core import ClockObject, ConfigVariableBool, PStatClient, AsyncTaskManager
-from panda3d.core import TrueClock, loadPrcFile, loadPrcFileData
+from panda3d.core import TrueClock, loadPrcFile, loadPrcFileData, VirtualFileSystem
 
 import builtins
+
+# This is the default PRC data that we load for any app that uses HostBase.
+# These values can be overridden/tweaked on a per-project basis by creating a
+# etc/base.prc on the current working directory.
+DefaultHostBasePRC = """
+# GL stuff
+load-display pandagl
+gl-coordinate-system default
+gl-force-fbo-color 0
+gl-depth-zero-to-one 0
+gl-force-depth-stencil 0
+gl-compile-and-execute 1
+gl-version 3 2
+glsl-preprocess 1
+
+allow-incomplete-render 1
+
+framebuffer-srgb 1
+framebuffer-alpha 0
+framebuffer-float 0
+framebuffer-multisample 0
+multisamples 0
+support-stencil 0 # Turn this on if we ever need stencil buffer
+stencil-bits 0
+depth-bits 24
+shadow-depth-bits 32
+color-bits 8 8 8
+alpha-bits 0
+
+default-model-extension .bam
+
+allow-flatten-color 1
+
+garbage-collect-states 1
+
+hardware-animated-vertices 1
+basic-shaders-only 0
+
+pstats-eventmanager 1
+
+flatten-collision-nodes 1
+
+egg-load-old-curves 0
+
+allow-async-bind 1
+restore-initial-pose 0
+
+preload-textures 1
+preload-simple-textures 1
+texture-compression 0
+texture-minfilter mipmap
+texture-magfilter linear
+
+text-minfilter linear
+text-magfilter linear
+text-flatten 1
+text-dynamic-merge 1
+
+pssm-size 2048
+pssm-shadow-depth-bias 0.0001
+pssm-normal-offset-scale 3.0
+pssm-softness-factor 2.0
+
+interpolate-frames 1
+
+support-ipv6 0
+
+assert-abort 1
+
+model-path .
+"""
 
 class HostBase(DirectObject):
     """ Main routine base class for client/server processes """
@@ -27,6 +98,8 @@ class HostBase(DirectObject):
         # We will manually manage the clock
         self.globalClock.setMode(ClockObject.MSlave)
         builtins.globalClock = self.globalClock
+
+        self.vfs = VirtualFileSystem.getGlobalPtr()
 
         # For tasks that run every application frame
         self.taskMgr = TaskManagerGlobal.taskMgr
@@ -82,79 +155,10 @@ class HostBase(DirectObject):
         loadPrcFile("etc/" + name + ".prc")
 
     def loadDefaultConfig(self):
-        data = """
-
-        # GL stuff
-        load-display pandagl
-        gl-coordinate-system default
-        gl-force-fbo-color 0
-        gl-depth-zero-to-one 0
-        gl-force-depth-stencil 0
-        gl-compile-and-execute 1
-        gl-version 3 2
-        glsl-preprocess 1
-
-        allow-incomplete-render 1
-
-        framebuffer-srgb 1
-        framebuffer-alpha 0
-        framebuffer-float 0
-        framebuffer-multisample 0
-        multisamples 0
-        support-stencil 0 # Turn this on if we ever need stencil buffer
-        stencil-bits 0
-        depth-bits 24
-        shadow-depth-bits 32
-        color-bits 8 8 8
-        alpha-bits 0
-
-        default-model-extension .bam
-
-        allow-flatten-color 1
-
-        garbage-collect-states 1
-
-        hardware-animated-vertices 1
-        basic-shaders-only 0
-
-        pstats-eventmanager 1
-
-        flatten-collision-nodes 1
-
-        egg-load-old-curves 0
-
-        allow-async-bind 1
-        restore-initial-pose 0
-
-        preload-textures 1
-        preload-simple-textures 1
-        texture-compression 0
-        texture-minfilter mipmap
-        texture-magfilter linear
-
-        text-minfilter linear
-        text-magfilter linear
-        text-flatten 1
-        text-dynamic-merge 1
-
-        pssm-size 2048
-        pssm-shadow-depth-bias 0.0001
-        pssm-normal-offset-scale 3.0
-        pssm-softness-factor 2.0
-
-        interpolate-frames 1
-
-        support-ipv6 0
-
-        assert-abort 1
-
-        model-path .
-        """
-
-        self.loadDefaultPRCData("bsp", data)
+        self.loadDefaultPRCData("base", DefaultHostBasePRC)
 
     def loadLocalConfig(self):
-        self.loadLocalPRCFile("bsp")
+        self.loadLocalPRCFile("base")
 
     def setTickRate(self, rate):
         self.ticksPerSec = rate
@@ -241,8 +245,8 @@ class HostBase(DirectObject):
             self.deltaTime = now - self.frameTime
             self.frameTime = now
 
-            self.globalClock.setFrameTime(now)
-            self.globalClock.setDt(self.frameTime)
+            self.globalClock.setFrameTime(self.frameTime)
+            self.globalClock.setDt(self.deltaTime)
             self.globalClock.setFrameCount(self.frameCount)
 
             # Tick PStats if we are connected
