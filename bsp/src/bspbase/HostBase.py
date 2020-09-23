@@ -6,6 +6,7 @@ from direct.showbase.Loader import Loader
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from panda3d.core import ClockObject, ConfigVariableBool, PStatClient, AsyncTaskManager
+from panda3d.core import TrueClock, loadPrcFile, loadPrcFileData
 
 import builtins
 
@@ -15,6 +16,9 @@ class HostBase(DirectObject):
     notify = directNotify.newCategory("HostBase")
 
     def __init__(self):
+        self.loadDefaultConfig()
+        self.loadLocalConfig()
+
         if ConfigVariableBool("want-pstats", False):
             PStatClient.connect()
 
@@ -69,6 +73,89 @@ class HostBase(DirectObject):
         self.ticksPerSec = 60
         self.intervalPerTick = 1.0 / self.ticksPerSec
 
+    def loadDefaultPRCData(self, name, data):
+        loadPrcFileData(name + "-default", data)
+
+    def loadLocalPRCFile(self, name):
+        # Loads a local config prc out of the etc folder on the current working
+        # directory. Can be used to override default config values.
+        loadPrcFile("etc/" + name + ".prc")
+
+    def loadDefaultConfig(self):
+        data = """
+
+        # GL stuff
+        load-display pandagl
+        gl-coordinate-system default
+        gl-force-fbo-color 0
+        gl-depth-zero-to-one 0
+        gl-force-depth-stencil 0
+        gl-compile-and-execute 1
+        gl-version 3 2
+        glsl-preprocess 1
+
+        allow-incomplete-render 1
+
+        framebuffer-srgb 1
+        framebuffer-alpha 0
+        framebuffer-float 0
+        framebuffer-multisample 0
+        multisamples 0
+        support-stencil 0 # Turn this on if we ever need stencil buffer
+        stencil-bits 0
+        depth-bits 24
+        shadow-depth-bits 32
+        color-bits 8 8 8
+        alpha-bits 0
+
+        default-model-extension .bam
+
+        allow-flatten-color 1
+
+        garbage-collect-states 1
+
+        hardware-animated-vertices 1
+        basic-shaders-only 0
+
+        pstats-eventmanager 1
+
+        flatten-collision-nodes 1
+
+        egg-load-old-curves 0
+
+        allow-async-bind 1
+        restore-initial-pose 0
+
+        preload-textures 1
+        preload-simple-textures 1
+        texture-compression 0
+        texture-minfilter mipmap
+        texture-magfilter linear
+
+        text-minfilter linear
+        text-magfilter linear
+        text-flatten 1
+        text-dynamic-merge 1
+
+        pssm-size 2048
+        pssm-shadow-depth-bias 0.0001
+        pssm-normal-offset-scale 3.0
+        pssm-softness-factor 2.0
+
+        interpolate-frames 1
+
+        support-ipv6 0
+
+        assert-abort 1
+
+        model-path .
+        """
+
+        self.loadDefaultPRCData("bsp", data)
+
+    def loadLocalConfig(self):
+        self.loadLocalPRCFile("bsp")
+
     def setTickRate(self, rate):
         self.ticksPerSec = rate
         self.intervalPerTick = 1.0 / self.ticksPerSec
@@ -90,6 +177,12 @@ class HostBase(DirectObject):
     def startup(self):
         self.eventMgr.restart()
         self.running = True
+
+    def preRunFrame(self):
+        pass
+
+    def postRunFrame(self):
+        pass
 
     def runFrame(self):
         #
@@ -155,6 +248,10 @@ class HostBase(DirectObject):
             # Tick PStats if we are connected
             PStatClient.mainTick()
 
+            self.preRunFrame()
+
             self.runFrame()
+
+            self.postRunFrame()
 
             self.frameCount += 1
