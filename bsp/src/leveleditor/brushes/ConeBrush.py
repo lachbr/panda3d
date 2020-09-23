@@ -5,7 +5,7 @@ from bsp.leveleditor.math.Plane import Plane
 from .BaseBrush import BaseBrush
 
 from .controls.NumericControl import NumericControl
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 import math
 

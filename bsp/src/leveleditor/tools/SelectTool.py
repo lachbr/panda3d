@@ -2,8 +2,8 @@ from panda3d.core import RenderState, ColorAttrib, Vec4, Point3, NodePath, Colli
 from panda3d.core import CollisionHandlerQueue, GeomNode
 
 from .BoxTool import BoxTool, ResizeHandle, BoxAction
-from src.leveleditor import LEGlobals
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEGlobals
+from bsp.leveleditor import LEUtils
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
 from bsp.leveleditor.actions.Select import Select, Deselect
 from bsp.leveleditor.menu.KeyBind import KeyBind

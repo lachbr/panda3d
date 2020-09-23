@@ -6,7 +6,7 @@ from .MapObject import MapObject
 from .SolidFace import SolidFace
 from .SolidVertex import SolidVertex
 
-from src.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals
 from bsp.leveleditor.math import PlaneClassification
 from bsp.leveleditor.math.Plane import Plane
 

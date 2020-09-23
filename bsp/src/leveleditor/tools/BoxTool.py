@@ -6,12 +6,12 @@ from .BaseTool import BaseTool, ToolUsage
 from bsp.leveleditor.viewport.Viewport2D import Viewport2D
 from bsp.leveleditor.viewport.ViewportType import *
 from bsp.bspbase import BSPUtils
-from src.leveleditor import RenderModes
+from bsp.leveleditor import RenderModes
 from bsp.leveleditor.geometry.Handles import Handles, HandleType
 from bsp.leveleditor.geometry.Box import Box
 from bsp.leveleditor.geometry.Rect import Rect
 from bsp.leveleditor.geometry.GeomView import GeomView
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 from bsp.leveleditor.menu import KeyBinds
 from bsp.leveleditor.menu.KeyBind import KeyBind
 

@@ -1,5 +1,5 @@
 from panda3d.bsp import BSPMaterial
-from panda3d.core import LVector2i, PNMImage, VirtualFileSystem
+from panda3d.core import LVector2i, PNMImage, VirtualFileSystem, getModelPath, Filename
 
 from PyQt5 import QtGui, QtCore
 
@@ -13,9 +13,9 @@ class MaterialReference:
         self.material = BSPMaterial.getFromFile(filename)
         self.filename = filename
         if self.material.hasKeyvalue("$basetexture"):
-            baseTexturePath = self.material.getKeyvalue("$basetexture")
+            baseTexturePath = Filename(self.material.getKeyvalue("$basetexture"))
 
-            if vfs.exists(baseTexturePath):
+            if vfs.resolveFilename(baseTexturePath, getModelPath().getValue()):
                 imageData = bytes(VirtualFileSystem.getGlobalPtr().readFile(baseTexturePath, True))
                 byteArray = QtCore.QByteArray.fromRawData(imageData)
                 image = QtGui.QImage.fromData(byteArray)

@@ -1,5 +1,5 @@
 from .BaseEditor import BaseEditor
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 from PyQt5 import QtWidgets, QtCore
 

@@ -1,6 +1,6 @@
 from .BaseBrush import BaseBrush
 
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 class BlockBrush(BaseBrush):
     Name = "Block"

@@ -2,7 +2,7 @@ from .SelectionMode import SelectionMode
 from .SelectionType import SelectionModeTransform, SelectionType
 from bsp.leveleditor.menu.KeyBind import KeyBind
 
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 
 class VertexMode(SelectionMode):
 

@@ -1,11 +1,11 @@
 from .SelectionMode import SelectionMode
 from .SelectionType import SelectionType, SelectionModeTransform
 from bsp.leveleditor.ui.FaceEditSheet import FaceEditSheet
-from src.leveleditor import MaterialPool
+from bsp.leveleditor import MaterialPool
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
 
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 
 _FaceEditSheet = None
 

@@ -5,7 +5,7 @@ import math
 
 from .controls.NumericControl import NumericControl
 from .controls.BooleanControl import BooleanControl
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 Atan2 = 63.4
 

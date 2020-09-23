@@ -2,7 +2,7 @@ from panda3d.core import RenderState, DepthTestAttrib, DepthWriteAttrib, ShaderA
 from panda3d.core import LVector2i, Vec4, CullBinAttrib
 from panda3d.bsp import BSPMaterial, BSPMaterialAttrib
 
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 
 StippleShader = None
 def getStippleShader():

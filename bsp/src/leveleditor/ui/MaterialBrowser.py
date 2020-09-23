@@ -1,5 +1,5 @@
 from .AssetBrowser import AssetBrowser
-from src.leveleditor import MaterialPool
+from bsp.leveleditor import MaterialPool
 
 from PyQt5 import QtCore, QtGui
 

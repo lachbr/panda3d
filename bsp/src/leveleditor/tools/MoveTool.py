@@ -2,8 +2,8 @@ from panda3d.core import NodePath, CardMaker, Vec4, Quat, Vec3, SamplerState, Om
 from panda3d.core import CollisionBox, CollisionNode, CollisionTraverser, CollisionHandlerQueue, BitMask32, Point3
 from panda3d.core import LPlane, LineSegs, AntialiasAttrib
 
-from src.leveleditor import LEGlobals
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEGlobals
+from bsp.leveleditor import LEUtils
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
 from bsp.leveleditor.math.Ray import Ray
 from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties

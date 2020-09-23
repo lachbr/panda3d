@@ -1,6 +1,6 @@
 from .BaseTransformTool import BaseTransformTool, TransformWidget, TransformWidgetAxis
 from bsp.leveleditor.selection.SelectionType import SelectionModeTransform
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties
 from bsp.leveleditor.actions.ActionGroup import ActionGroup
 from bsp.leveleditor.menu.KeyBind import KeyBind

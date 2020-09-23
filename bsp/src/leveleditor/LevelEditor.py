@@ -14,8 +14,9 @@ from direct.task.TaskManagerGlobal import taskMgr
 from direct.showbase.MessengerGlobal import messenger
 from direct.showbase.EventManagerGlobal import eventMgr
 
-from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
+#from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
 
+from bsp.bspbase.HostBase import HostBase
 from bsp.leveleditor.viewport.QuadSplitter import QuadSplitter
 from bsp.leveleditor.viewport.Viewport2D import Viewport2D
 from bsp.leveleditor.viewport.Viewport3D import Viewport3D
@@ -26,7 +27,7 @@ from bsp.leveleditor.selection.SelectionManager import SelectionManager
 from bsp.leveleditor.selection.SelectionType import SelectionType
 from bsp.leveleditor.actions.ActionManager import ActionManager
 from bsp.leveleditor.brushes.BrushManager import BrushManager
-from src.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals
 from bsp.leveleditor.grid.GridSettings import GridSettings
 from bsp.leveleditor.Document import Document
 from bsp.leveleditor.ui import About
@@ -345,7 +346,7 @@ class LevelEditorApp(QtWidgets.QApplication):
         splash.finish(self.window)
         self.window.showMaximized()
 
-class LevelEditor(DirectObject):
+class LevelEditor(HostBase):
     notify = directNotify.newCategory("Foundry")
 
     DocActions = [
@@ -369,10 +370,7 @@ class LevelEditor(DirectObject):
     ]
 
     def __init__(self):
-        DirectObject.__init__(self)
-
-        if ConfigVariableBool("want-pstats", False):
-            PStatClient.connect()
+        HostBase.__init__(self)
 
         self.docTitle = ""
         self.viewportName = ""
@@ -390,23 +388,6 @@ class LevelEditor(DirectObject):
             self.notify.error("No graphics pipe is available!")
             return
 
-        self.globalClock = ClockObject.getGlobalClock()
-        # Since we have already started up a TaskManager, and probably
-        # a number of tasks; and since the TaskManager had to use the
-        # TrueClock to tell time until this moment, make sure the
-        # globalClock object is exactly in sync with the TrueClock.
-        trueClock = TrueClock.getGlobalPtr()
-        self.globalClock.setRealTime(trueClock.getShortTime())
-        self.globalClock.tick()
-        builtins.globalClock = self.globalClock
-
-        self.loader = CogInvasionLoader(self)
-        self.graphicsEngine.setDefaultLoader(self.loader.loader)
-        builtins.loader = self.loader
-
-        self.taskMgr = taskMgr
-        builtins.taskMgr = self.taskMgr
-
         self.dgTrav = DataGraphTraverser()
 
         self.dataRoot = NodePath("data")
@@ -415,15 +396,6 @@ class LevelEditor(DirectObject):
         self.aspect2d = NodePath("aspect2d")
         builtins.aspect2d = self.aspect2d
 
-        # Messages that are sent regardless of the active document.
-        self.messenger = messenger
-        builtins.messenger = self.messenger
-
-        self.eventMgr = eventMgr
-        builtins.eventMgr = self.eventMgr
-        self.eventMgr.restart()
-
-        builtins.base = self
         builtins.hidden = self.hidden
 
         ###################################################################
@@ -436,8 +408,6 @@ class LevelEditor(DirectObject):
         self.document = None
 
         TextNode.setDefaultFont(loader.loadFont("resources/models/fonts/consolas.ttf"))
-
-        self.initialize()
 
     def requestRender(self):
         self.renderRequested = True
@@ -526,9 +496,24 @@ class LevelEditor(DirectObject):
             return LEUtils.snapToGrid(GridSettings.DefaultStep, point)
         return point
 
-    def initialize(self):
-        self.loader.mountMultifiles()
-        self.loader.mountMultifile("resources/mod.mf")
+    def loadDefaultConfig(self):
+        HostBase.loadDefaultConfig(self)
+
+        data = """
+        bounds-type box
+        """
+
+        self.loadDefaultPRCData("leveleditor", data)
+
+    def loadLocalConfig(self):
+        HostBase.loadLocalConfig(self)
+        self.loadLocalPRCFile("leveleditor")
+
+    def startup(self):
+        HostBase.startup(self)
+
+        #self.loader.mountMultifiles()
+        #self.loader.mountMultifile("resources/mod.mf")
 
         self.fgd = FgdParse('resources/phase_14/etc/cio.fgd')
         self.qtApp = LevelEditorApp()
@@ -608,15 +593,14 @@ class LevelEditor(DirectObject):
         text = "Snap: %s Grid: %i" % ("On" if GridSettings.GridSnap else "Off", GridSettings.DefaultStep)
         self.qtApp.window.gridSnapLabel.setText(text)
 
-    def run(self):
-        self.running = True
-        while self.running:
-            fr = globalClock.getAverageFrameRate()
-            dt = globalClock.getDt()
-            self.qtWindow.fpsLabel.setText("%.2f ms / %i fps" % (dt * 1000, fr))
-            self.qtApp.processEvents()
-            self.__gbcLoop()
-            self.__dataLoop()
-            self.__docLoop()
-            self.taskMgr.step()
-            self.__igLoop()
+    def preRunFrame(self):
+        fr = globalClock.getAverageFrameRate()
+        dt = globalClock.getDt()
+        self.qtWindow.fpsLabel.setText("%.2f ms / %i fps" % (dt * 1000, fr))
+        self.qtApp.processEvents()
+        self.__gbcLoop()
+        self.__dataLoop()
+        self.__docLoop()
+
+    def postRunFrame(self):
+        self.__igLoop()

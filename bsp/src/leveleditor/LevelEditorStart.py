@@ -1,4 +1,5 @@
 import sys
+import os
 
 try:
     import PyQt5
@@ -14,19 +15,15 @@ except ImportError:
 
 from PyQt5 import QtWidgets, QtGui
 
-from panda3d.core import loadPrcFile, loadPrcFileData, ConfigVariableString, ConfigVariableDouble
-loadPrcFile('config/Confauto.prc')
-loadPrcFile('config/config_client.prc')
-loadPrcFileData('', 'model-path ./resources') # Don't require mounting of phases
-loadPrcFileData('', 'model-path ./hl2/materials')
-loadPrcFileData('', 'model-path ./tf/materials')
-loadPrcFileData('', 'window-type none')
+from panda3d.core import loadPrcFile, loadPrcFileData, ConfigVariableString, ConfigVariableDouble, Filename
 
 from bsp.leveleditor.LevelEditor import LevelEditor
 base = LevelEditor()
 
 ConfigVariableDouble('decompressor-step-time').setValue(0.01)
 ConfigVariableDouble('extractor-step-time').setValue(0.01)
+
+base.startup()
 
 print("taha")
 

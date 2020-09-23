@@ -2,7 +2,7 @@ from .BaseBrush import BaseBrush
 
 from panda3d.core import Point3
 
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 class WedgeBrush(BaseBrush):
     Name = "Wedge"

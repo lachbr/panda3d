@@ -6,7 +6,7 @@ from .SelectionType import SelectionType, SelectionModeTransform
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.math.Line import Line
 from bsp.leveleditor.actions.Select import Select, Deselect
-from src.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals
 
 class SelectionMode(DocObject):
 

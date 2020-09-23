@@ -9,7 +9,7 @@ from bsp.leveleditor.geometry.GeomView import GeomView
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
 from bsp.leveleditor.actions.Clip import Clip
 from bsp.leveleditor.math.Plane import Plane
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 from bsp.leveleditor.IDGenerator import IDGenerator
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.menu import KeyBinds

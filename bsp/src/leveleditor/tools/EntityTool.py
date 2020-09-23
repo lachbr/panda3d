@@ -9,7 +9,7 @@ from bsp.leveleditor.geometry.Box import Box
 from bsp.leveleditor.geometry.GeomView import GeomView
 from bsp.leveleditor.grid.GridSettings import GridSettings
 from bsp.leveleditor.mapobject.Entity import Entity
-from src.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals
 from bsp.leveleditor.actions.Create import Create
 from bsp.leveleditor.actions.Select import Deselect
 from bsp.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode

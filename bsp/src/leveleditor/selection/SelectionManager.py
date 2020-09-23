@@ -4,8 +4,8 @@ from bsp.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectProper
 from bsp.leveleditor.geometry.Box import Box
 from bsp.leveleditor.geometry.GeomView import GeomView
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_2D_MASK, VIEWPORT_3D_MASK
-from src.leveleditor import RenderModes
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import RenderModes
+from bsp.leveleditor import LEGlobals
 from .SelectionType import SelectionType
 from bsp.leveleditor.actions.Delete import Delete
 from bsp.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode

@@ -1,7 +1,7 @@
 from .BaseEditor import BaseEditor
 from PyQt5 import QtWidgets, QtCore
 
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 class BooleanEditor(BaseEditor):
 

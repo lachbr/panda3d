@@ -7,7 +7,7 @@ from .ToolOptions import ToolOptions
 from bsp.leveleditor.selection.SelectionType import SelectionModeTransform
 from bsp.leveleditor.math.Ray import Ray
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
-from src.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals
 from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties
 from bsp.leveleditor.actions.ActionGroup import ActionGroup
 from bsp.leveleditor.actions.Create import Create

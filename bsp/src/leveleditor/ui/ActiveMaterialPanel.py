@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 
 from direct.showbase.DirectObject import DirectObject
 
-from src.leveleditor import MaterialPool
+from bsp.leveleditor import MaterialPool
 from bsp.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
 from bsp.leveleditor.actions.ActionGroup import ActionGroup
 from bsp.leveleditor.mapobject.Solid import Solid

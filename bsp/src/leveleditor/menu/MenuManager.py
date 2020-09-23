@@ -3,7 +3,7 @@
 from .KeyBind import KeyBind
 from .KeyBinds import KeyBindsByID
 
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 

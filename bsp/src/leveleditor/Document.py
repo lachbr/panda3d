@@ -8,7 +8,7 @@ from direct.showbase.Messenger import Messenger
 from direct.task.Task import TaskManager
 from direct.showbase.EventManager import EventManager
 
-from src.coginvasion.globals import ShaderGlobals
+from bsp.bspbase import ShaderGlobals
 
 from bsp.leveleditor.mapobject.World import World
 from bsp.leveleditor.mapobject.Entity import Entity

@@ -3,7 +3,7 @@ from panda3d.core import Point3, CKeyValues, BitMask32, RenderState, ColorAttrib
 from panda3d.core import PStatCollector
 
 from .MapWritable import MapWritable
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 from .TransformProperties import OriginProperty, AnglesProperty, ScaleProperty, ShearProperty, TransformProperty
 from . import MetaData
 from .ObjectProperty import ObjectProperty

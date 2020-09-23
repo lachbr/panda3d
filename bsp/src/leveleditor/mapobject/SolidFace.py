@@ -11,12 +11,12 @@ from .MapWritable import MapWritable
 from .SolidVertex import SolidVertex
 
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
-from src.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals
 from bsp.leveleditor.math import PlaneClassification
 from bsp.leveleditor.math.Plane import Plane
 from bsp.leveleditor.Align import Align
 from bsp.leveleditor.IDGenerator import IDGenerator
-from src.leveleditor import MaterialPool
+from bsp.leveleditor import MaterialPool
 
 from enum import IntEnum
 

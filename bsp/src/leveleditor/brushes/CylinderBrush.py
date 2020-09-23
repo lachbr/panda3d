@@ -3,7 +3,7 @@ from panda3d.core import Point3
 from .BaseBrush import BaseBrush
 
 from .controls.NumericControl import NumericControl
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 import math
 

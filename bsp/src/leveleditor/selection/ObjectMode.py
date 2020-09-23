@@ -3,7 +3,7 @@ from panda3d.core import GeomNode
 from .SelectionMode import SelectionMode
 from .SelectionType import SelectionType
 from bsp.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectPropertiesWindow
-from src.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.mapobject.Entity import Entity
 from bsp.leveleditor.mapobject.Solid import Solid

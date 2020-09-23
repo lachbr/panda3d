@@ -1,7 +1,7 @@
 from .BaseBrush import BaseBrush
 
 from .controls.BooleanControl import BooleanControl
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 from panda3d.core import Point3
 

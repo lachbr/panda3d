@@ -4,7 +4,7 @@ from panda3d.core import RenderState, FogAttrib, LightAttrib
 from .Viewport import Viewport
 from .ViewportType import *
 
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 from bsp.leveleditor.grid.Grid2D import Grid2D
 
 from PyQt5 import QtCore

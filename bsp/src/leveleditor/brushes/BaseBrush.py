@@ -5,7 +5,7 @@ from bsp.leveleditor.mapobject.Solid import Solid
 from bsp.leveleditor.mapobject.SolidFace import SolidFace
 from bsp.leveleditor.mapobject.SolidVertex import SolidVertex
 
-from src.leveleditor import LEUtils
+from bsp.leveleditor import LEUtils
 
 
 class BaseBrush:

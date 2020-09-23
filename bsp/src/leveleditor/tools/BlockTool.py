@@ -11,7 +11,7 @@ from bsp.leveleditor.grid.GridSettings import GridSettings
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.IDGenerator import IDGenerator
 
-from src.leveleditor import MaterialPool, LEGlobals
+from bsp.leveleditor import MaterialPool, LEGlobals
 
 from PyQt5 import QtWidgets, QtCore
 
@@ -158,9 +158,12 @@ class BlockTool(BoxTool):
         self.doc.updateAllViews()
 
     def determineMaterial(self):
+        print("Determine material")
         if MaterialPool.ActiveMaterial:
+            print("use active")
             return MaterialPool.ActiveMaterial
         else:
+            print("Use default")
             return MaterialPool.getMaterial("materials/dev/dev_measuregeneric01.mat")
 
     def boxDrawnConfirm(self):
