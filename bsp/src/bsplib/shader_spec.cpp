@@ -28,7 +28,7 @@ void ShaderSpec::ShaderSource::read( const Filename &file )
         filename = file;
         if ( !filename.empty() )
         {
-                if ( vfs->exists( filename ) )
+                if ( vfs->resolve_filename(filename, get_model_path()) )
                 {
                         full_source = vfs->read_file( filename, true );
 
@@ -41,7 +41,8 @@ void ShaderSpec::ShaderSource::read( const Filename &file )
                 else
                 {
                         std::cout << "Couldn't find shader source file "
-                                << filename.get_fullpath() << std::endl;
+                                << filename.get_fullpath() << " on model-path "
+																<< get_model_path() << std::endl;
                 }
         }
 }
