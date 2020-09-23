@@ -1,4 +1,4 @@
-"""BSPUtils: Various helper/utility functions"""
+"""BSPUtils module: Various helper/utility functions"""
 
 from panda3d.core import deg2Rad, rad2Deg, Vec3, VBase4, NodePath
 

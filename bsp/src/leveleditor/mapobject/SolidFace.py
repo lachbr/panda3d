@@ -11,7 +11,7 @@ from .MapWritable import MapWritable
 from .SolidVertex import SolidVertex
 
 from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
-from bsp.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals, LEConfig
 from bsp.leveleditor.math import PlaneClassification
 from bsp.leveleditor.math.Plane import Plane
 from bsp.leveleditor.Align import Align
@@ -77,12 +77,12 @@ class FaceMaterial:
         self.material = None
         self.tangent = Vec3(1, 0, 0)
         self.binormal = Vec3(0, 0, 1)
-        self.scale = Vec2(1, 1)
+        self.scale = Vec2(LEConfig.default_texture_scale.getValue())
         self.shift = LVector2i(0, 0)
         self.uAxis = Vec3(0)
         self.vAxis = Vec3(0)
         self.rotation = 0.0
-        self.lightmapScale = 16
+        self.lightmapScale = LEConfig.default_lightmap_scale.getValue()
 
     def cleanup(self):
         self.material = None

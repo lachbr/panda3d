@@ -1,3 +1,6 @@
+"""HostBase module: Contains the HostBase class, which is the main entry point
+for all shows that utilize the BSP library."""
+
 from direct.showbase.DirectObject import DirectObject
 from direct.task import TaskManagerGlobal, Task
 from direct.showbase import EventManagerGlobal
@@ -152,7 +155,7 @@ class HostBase(DirectObject):
     def loadLocalPRCFile(self, name):
         # Loads a local config prc out of the etc folder on the current working
         # directory. Can be used to override default config values.
-        loadPrcFile("etc/" + name + ".prc")
+        return loadPrcFile("etc/" + name + ".prc")
 
     def loadDefaultConfig(self):
         self.loadDefaultPRCData("base", DefaultHostBasePRC)

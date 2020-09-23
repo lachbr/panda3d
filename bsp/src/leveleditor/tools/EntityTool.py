@@ -17,6 +17,7 @@ from bsp.leveleditor.selection.SelectionType import SelectionType
 from bsp.leveleditor.actions.Select import Select
 from bsp.leveleditor.actions.ActionGroup import ActionGroup
 from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor import LEConfig
 
 import random
 
@@ -94,7 +95,7 @@ class EntityTool(BaseTool):
 
     def __init__(self, mgr):
         BaseTool.__init__(self, mgr)
-        self.classname = "prop_static"
+        self.classname = LEConfig.default_point_entity.getValue()
         self.applyRandomYaw = False
         self.pos = Point3(0, 0, 0)
 

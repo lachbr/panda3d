@@ -27,7 +27,7 @@ from bsp.leveleditor.selection.SelectionManager import SelectionManager
 from bsp.leveleditor.selection.SelectionType import SelectionType
 from bsp.leveleditor.actions.ActionManager import ActionManager
 from bsp.leveleditor.brushes.BrushManager import BrushManager
-from bsp.leveleditor import LEUtils, LEGlobals
+from bsp.leveleditor import LEUtils, LEGlobals, LEConfig
 from bsp.leveleditor.grid.GridSettings import GridSettings
 from bsp.leveleditor.Document import Document
 from bsp.leveleditor.ui import About
@@ -38,13 +38,15 @@ from bsp.leveleditor.ui.MaterialBrowser import MaterialBrowser
 from bsp.leveleditor.menu.MenuManager import MenuManager
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.menu import KeyBinds
+from bsp.leveleditor import MaterialPool
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMessageBox
-from bsp.leveleditor.fgdtools import FgdParse, FgdWrite
+from bsp.leveleditor.fgdtools import FgdParse, FgdWrite, Fgd
 
 import builtins
 import time
+import sys
 
 stylesheet = """
 
@@ -370,6 +372,8 @@ class LevelEditor(HostBase):
     ]
 
     def __init__(self):
+        self.gotLocalConfig = False
+
         HostBase.__init__(self)
 
         self.docTitle = ""
@@ -507,7 +511,25 @@ class LevelEditor(HostBase):
 
     def loadLocalConfig(self):
         HostBase.loadLocalConfig(self)
-        self.loadLocalPRCFile("leveleditor")
+        ret = self.loadLocalPRCFile("leveleditor")
+        if ret:
+            self.gotLocalConfig = True
+
+    def loadFGDFiles(self):
+        """Reads the .fgd files specified in the config file"""
+
+        self.fgd = Fgd()
+        numVals = LEConfig.fgd_files.getNumUniqueValues()
+
+        if numVals == 0:
+            QtWidgets.QMessageBox.critical(None, LEGlobals.AppName,
+                "No FGD files specified in local config!", QtWidgets.QMessageBox.Ok)
+            sys.exit(1)
+
+        for i in range(numVals):
+            fgdFilename = LEConfig.fgd_files.getUniqueValue(i)
+            fgd = FgdParse(fgdFilename)
+            self.fgd.add_include(fgd)
 
     def startup(self):
         HostBase.startup(self)
@@ -515,9 +537,18 @@ class LevelEditor(HostBase):
         #self.loader.mountMultifiles()
         #self.loader.mountMultifile("resources/mod.mf")
 
-        self.fgd = FgdParse('resources/phase_14/etc/cio.fgd')
         self.qtApp = LevelEditorApp()
         self.qtWindow = self.qtApp.window
+
+        if not self.gotLocalConfig:
+            QtWidgets.QMessageBox.critical(None, LEGlobals.AppName,
+                "Local config file not found. Please make sure that "
+                "etc/leveleditor.prc exists on your working directory or "
+                "search path.")
+            sys.exit(1)
+
+        self.loadFGDFiles()
+
         self.menuMgr = MenuManager()
         self.menuMgr.addMenuItems()
         ToolManager.addToolActions()
@@ -547,6 +578,10 @@ class LevelEditor(HostBase):
         self.menuMgr.action(KeyBind.Toggle3DGrid).setChecked(GridSettings.EnableGrid3D)
 
         self.brushMgr.addBrushes()
+
+        # Set the default active material here
+        MaterialPool.setActiveMaterial(
+            MaterialPool.getMaterial(LEConfig.default_material.getValue()))
 
     def __viewQuads(self):
         self.document.page.arrangeInQuadLayout()

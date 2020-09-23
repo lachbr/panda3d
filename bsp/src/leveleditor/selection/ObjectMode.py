@@ -3,7 +3,7 @@ from panda3d.core import GeomNode
 from .SelectionMode import SelectionMode
 from .SelectionType import SelectionType
 from bsp.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectPropertiesWindow
-from bsp.leveleditor import LEGlobals
+from bsp.leveleditor import LEGlobals, LEConfig
 from bsp.leveleditor.menu.KeyBind import KeyBind
 from bsp.leveleditor.mapobject.Entity import Entity
 from bsp.leveleditor.mapobject.Solid import Solid
@@ -125,7 +125,7 @@ class ObjectMode(SelectionMode):
         if not existing:
             # Tie to new entity
             existing = Entity(base.document.getNextID())
-            existing.setClassname("func_detail") # TODO: default brush entity
+            existing.setClassname(LEConfig.default_solid_entity.getValue())
             actions.append(Create(base.document.world.id, existing))
         else:
             # Move the new parent to the root, in case it is a descendant of a selected parent
