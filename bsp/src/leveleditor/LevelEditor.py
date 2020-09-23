@@ -16,31 +16,31 @@ from direct.showbase.EventManagerGlobal import eventMgr
 
 from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
 
-from src.leveleditor.viewport.QuadSplitter import QuadSplitter
-from src.leveleditor.viewport.Viewport2D import Viewport2D
-from src.leveleditor.viewport.Viewport3D import Viewport3D
-from src.leveleditor.viewport.ViewportType import *
-from src.leveleditor.viewport.ViewportManager import ViewportManager
-from src.leveleditor.tools.ToolManager import ToolManager
-from src.leveleditor.selection.SelectionManager import SelectionManager
-from src.leveleditor.selection.SelectionType import SelectionType
-from src.leveleditor.actions.ActionManager import ActionManager
-from src.leveleditor.brushes.BrushManager import BrushManager
+from bsp.leveleditor.viewport.QuadSplitter import QuadSplitter
+from bsp.leveleditor.viewport.Viewport2D import Viewport2D
+from bsp.leveleditor.viewport.Viewport3D import Viewport3D
+from bsp.leveleditor.viewport.ViewportType import *
+from bsp.leveleditor.viewport.ViewportManager import ViewportManager
+from bsp.leveleditor.tools.ToolManager import ToolManager
+from bsp.leveleditor.selection.SelectionManager import SelectionManager
+from bsp.leveleditor.selection.SelectionType import SelectionType
+from bsp.leveleditor.actions.ActionManager import ActionManager
+from bsp.leveleditor.brushes.BrushManager import BrushManager
 from src.leveleditor import LEUtils, LEGlobals
-from src.leveleditor.grid.GridSettings import GridSettings
-from src.leveleditor.Document import Document
-from src.leveleditor.ui import About
-from src.leveleditor.ui.ActiveMaterialPanel import ActiveMaterialPanel
-from src.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
-from src.leveleditor.ui.ModelBrowser import ModelBrowser
-from src.leveleditor.ui.MaterialBrowser import MaterialBrowser
-from src.leveleditor.menu.MenuManager import MenuManager
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.menu import KeyBinds
+from bsp.leveleditor.grid.GridSettings import GridSettings
+from bsp.leveleditor.Document import Document
+from bsp.leveleditor.ui import About
+from bsp.leveleditor.ui.ActiveMaterialPanel import ActiveMaterialPanel
+from bsp.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
+from bsp.leveleditor.ui.ModelBrowser import ModelBrowser
+from bsp.leveleditor.ui.MaterialBrowser import MaterialBrowser
+from bsp.leveleditor.menu.MenuManager import MenuManager
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.menu import KeyBinds
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMessageBox
-from src.leveleditor.fgdtools import FgdParse, FgdWrite
+from bsp.leveleditor.fgdtools import FgdParse, FgdWrite
 
 import builtins
 import time
@@ -148,7 +148,7 @@ class LevelEditorWindow(QtWidgets.QMainWindow, DirectObject):
             "bottom": QtCore.Qt.BottomDockWidgetArea
         }
 
-        from src.leveleditor.ui.mainwindow import Ui_LevelEditor
+        from bsp.leveleditor.ui.mainwindow import Ui_LevelEditor
         self.ui = Ui_LevelEditor()
         self.ui.setupUi(self)
 

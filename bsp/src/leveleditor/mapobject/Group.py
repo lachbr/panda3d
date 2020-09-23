@@ -1,4 +1,4 @@
-from src.leveleditor.mapobject.MapObject import MapObject
+from bsp.leveleditor.mapobject.MapObject import MapObject
 
 class Group(MapObject):
 

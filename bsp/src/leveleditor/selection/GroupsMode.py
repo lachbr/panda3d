@@ -1,8 +1,8 @@
 from .ObjectMode import ObjectMode
 from .SelectionType import SelectionType
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.mapobject.Entity import Entity
-from src.leveleditor.mapobject.Group import Group
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.mapobject.Entity import Entity
+from bsp.leveleditor.mapobject.Group import Group
 
 class GroupsMode(ObjectMode):
 

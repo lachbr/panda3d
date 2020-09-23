@@ -1,9 +1,9 @@
 from .BaseTransformTool import BaseTransformTool, TransformWidget, TransformWidgetAxis
-from src.leveleditor.selection.SelectionType import SelectionModeTransform
+from bsp.leveleditor.selection.SelectionType import SelectionModeTransform
 from src.leveleditor import LEUtils
-from src.leveleditor.actions.EditObjectProperties import EditObjectProperties
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 from panda3d.core import LineSegs, Vec3, AntialiasAttrib, LPlane, Point3, KeyboardButton
 

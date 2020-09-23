@@ -1,16 +1,16 @@
-from src.leveleditor.DocObject import DocObject
-from src.leveleditor.ui.ToolProperties import ToolProperties
+from bsp.leveleditor.DocObject import DocObject
+from bsp.leveleditor.ui.ToolProperties import ToolProperties
 
 from PyQt5 import QtWidgets
 
-from src.leveleditor.tools.SelectTool import SelectTool
-from src.leveleditor.tools.MoveTool import MoveTool
-from src.leveleditor.tools.RotateTool import RotateTool
-from src.leveleditor.tools.ScaleTool import ScaleTool
-from src.leveleditor.tools.EntityTool import EntityTool
-from src.leveleditor.tools.BlockTool import BlockTool
-from src.leveleditor.tools.ClipTool import ClipTool
-from src.leveleditor.tools.DNATool import DNATool
+from bsp.leveleditor.tools.SelectTool import SelectTool
+from bsp.leveleditor.tools.MoveTool import MoveTool
+from bsp.leveleditor.tools.RotateTool import RotateTool
+from bsp.leveleditor.tools.ScaleTool import ScaleTool
+from bsp.leveleditor.tools.EntityTool import EntityTool
+from bsp.leveleditor.tools.BlockTool import BlockTool
+from bsp.leveleditor.tools.ClipTool import ClipTool
+from bsp.leveleditor.tools.DNATool import DNATool
 
 from functools import partial
 

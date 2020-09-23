@@ -1,8 +1,8 @@
-from src.leveleditor.ui.ObjectProperties import Ui_ObjectProperties
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.ui.ObjectProperties import Ui_ObjectProperties
+from bsp.leveleditor.DocObject import DocObject
 from .ObjectPropertiesDelegate import ObjectPropertiesDelegate
 from .ObjectPropertiesItems import ObjectPropertiesItem, ObjectPropertiesNullItem, ObjectPropertiesSpawnflagsItem
-from src.leveleditor.mapobject.Entity import Entity
+from bsp.leveleditor.mapobject.Entity import Entity
 
 from PyQt5 import QtGui, QtWidgets, QtCore
 

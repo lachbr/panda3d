@@ -8,10 +8,10 @@ from .TransformProperties import OriginProperty, AnglesProperty, ScaleProperty, 
 from . import MetaData
 from .ObjectProperty import ObjectProperty
 
-from src.leveleditor.math.Line import Line
-from src.leveleditor.geometry.Box import Box
-from src.leveleditor.geometry.GeomView import GeomView
-from src.leveleditor.viewport.ViewportType import VIEWPORT_2D_MASK, VIEWPORT_3D_MASK
+from bsp.leveleditor.math.Line import Line
+from bsp.leveleditor.geometry.Box import Box
+from bsp.leveleditor.geometry.GeomView import GeomView
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_2D_MASK, VIEWPORT_3D_MASK
 
 from enum import IntEnum
 

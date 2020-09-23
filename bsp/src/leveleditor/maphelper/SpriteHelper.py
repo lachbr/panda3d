@@ -2,7 +2,7 @@ from panda3d.core import NodePath, ModelNode, CardMaker, CKeyValues, Vec4
 from panda3d.bsp import BSPMaterial
 
 from bsp.bspbase import BSPUtils
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
 
 from .MapHelper import MapHelper
 

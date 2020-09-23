@@ -1,5 +1,5 @@
 from direct.showbase.DirectObject import DirectObject
-from src.leveleditor.ui.HistoryPanel import HistoryPanel
+from bsp.leveleditor.ui.HistoryPanel import HistoryPanel
 
 class ActionEntry:
 

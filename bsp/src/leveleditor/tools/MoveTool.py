@@ -4,12 +4,12 @@ from panda3d.core import LPlane, LineSegs, AntialiasAttrib
 
 from src.leveleditor import LEGlobals
 from src.leveleditor import LEUtils
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
-from src.leveleditor.math.Ray import Ray
-from src.leveleditor.actions.EditObjectProperties import EditObjectProperties
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.selection.SelectionType import SelectionModeTransform
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
+from bsp.leveleditor.math.Ray import Ray
+from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.selection.SelectionType import SelectionModeTransform
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 from .BaseTransformTool import BaseTransformTool, Rollover, Ready, Down, Global, \
     Local, TransformWidget, TransformWidgetAxis

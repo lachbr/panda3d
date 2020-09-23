@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
 
-from src.leveleditor.math.Plane import Plane
-from src.leveleditor.mapobject.Solid import Solid
-from src.leveleditor.mapobject.SolidFace import SolidFace
-from src.leveleditor.mapobject.SolidVertex import SolidVertex
+from bsp.leveleditor.math.Plane import Plane
+from bsp.leveleditor.mapobject.Solid import Solid
+from bsp.leveleditor.mapobject.SolidFace import SolidFace
+from bsp.leveleditor.mapobject.SolidVertex import SolidVertex
 
 from src.leveleditor import LEUtils
 

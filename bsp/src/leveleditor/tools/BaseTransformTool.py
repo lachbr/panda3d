@@ -4,14 +4,14 @@ from panda3d.core import Point3, Vec3, NodePath, LineSegs, Vec4, \
 
 from .BoxTool import BoxAction, ResizeHandle
 from .ToolOptions import ToolOptions
-from src.leveleditor.selection.SelectionType import SelectionModeTransform
-from src.leveleditor.math.Ray import Ray
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
+from bsp.leveleditor.selection.SelectionType import SelectionModeTransform
+from bsp.leveleditor.math.Ray import Ray
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK
 from src.leveleditor import LEUtils, LEGlobals
-from src.leveleditor.actions.EditObjectProperties import EditObjectProperties
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.actions.Create import Create
-from src.leveleditor.actions.Select import Select
+from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.actions.Create import Create
+from bsp.leveleditor.actions.Select import Select
 from .SelectTool import SelectTool
 from bsp.bspbase import BSPUtils
 

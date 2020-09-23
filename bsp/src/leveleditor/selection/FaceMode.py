@@ -1,9 +1,9 @@
 from .SelectionMode import SelectionMode
 from .SelectionType import SelectionType, SelectionModeTransform
-from src.leveleditor.ui.FaceEditSheet import FaceEditSheet
+from bsp.leveleditor.ui.FaceEditSheet import FaceEditSheet
 from src.leveleditor import MaterialPool
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
 
 from src.leveleditor import LEGlobals
 

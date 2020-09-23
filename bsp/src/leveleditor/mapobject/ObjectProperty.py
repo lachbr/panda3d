@@ -1,4 +1,4 @@
-from src.leveleditor.mapobject import MetaData
+from bsp.leveleditor.mapobject import MetaData
 
 # Base class for a property that is assigned to a MapObject.
 class ObjectProperty:

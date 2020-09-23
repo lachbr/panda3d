@@ -2,14 +2,14 @@ from panda3d.core import Point3, Vec4
 
 from .BoxTool import BoxTool
 from .ToolOptions import ToolOptions
-from src.leveleditor.actions.Create import MultiCreate
-from src.leveleditor.actions.Select import Select, Deselect
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
-from src.leveleditor.selection.SelectionType import SelectionType
-from src.leveleditor.grid.GridSettings import GridSettings
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.IDGenerator import IDGenerator
+from bsp.leveleditor.actions.Create import MultiCreate
+from bsp.leveleditor.actions.Select import Select, Deselect
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
+from bsp.leveleditor.selection.SelectionType import SelectionType
+from bsp.leveleditor.grid.GridSettings import GridSettings
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.IDGenerator import IDGenerator
 
 from src.leveleditor import MaterialPool, LEGlobals
 

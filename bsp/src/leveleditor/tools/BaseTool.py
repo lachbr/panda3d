@@ -1,6 +1,6 @@
 from PyQt5 import QtGui, QtWidgets
 
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.DocObject import DocObject
 
 from enum import IntEnum
 

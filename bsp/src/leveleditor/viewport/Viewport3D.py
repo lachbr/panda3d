@@ -3,7 +3,7 @@ from panda3d.core import Vec3
 
 from .Viewport import Viewport
 from .FlyCam import FlyCam
-from src.leveleditor.grid.Grid3D import Grid3D
+from bsp.leveleditor.grid.Grid3D import Grid3D
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 

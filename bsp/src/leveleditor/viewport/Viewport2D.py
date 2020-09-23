@@ -5,7 +5,7 @@ from .Viewport import Viewport
 from .ViewportType import *
 
 from src.leveleditor import LEUtils
-from src.leveleditor.grid.Grid2D import Grid2D
+from bsp.leveleditor.grid.Grid2D import Grid2D
 
 from PyQt5 import QtCore
 

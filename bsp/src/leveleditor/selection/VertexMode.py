@@ -1,6 +1,6 @@
 from .SelectionMode import SelectionMode
 from .SelectionType import SelectionModeTransform, SelectionType
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 from src.leveleditor import LEGlobals
 

@@ -1,5 +1,5 @@
 from .BaseEditor import BaseEditor
-from src.leveleditor.ui.ModelBrowser import ModelBrowser
+from bsp.leveleditor.ui.ModelBrowser import ModelBrowser
 
 from PyQt5 import QtWidgets, QtCore
 

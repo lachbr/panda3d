@@ -1,8 +1,8 @@
 from panda3d.core import CKeyValues, Vec3, Vec4, Vec2, NodePath
 
 from .MapObject import MapObject
-from src.leveleditor.maphelper import HelperFactory
-from src.leveleditor.fgdtools import PropertyNotFound
+from bsp.leveleditor.maphelper import HelperFactory
+from bsp.leveleditor.fgdtools import PropertyNotFound
 from . import MetaData
 from .EntityProperty import EntityProperty
 from .EntitySpawnflags import EntitySpawnflags

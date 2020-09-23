@@ -1,5 +1,5 @@
 from .BaseTool import BaseTool
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 class DNATool(BaseTool):
     Name = "Toontown DNA"

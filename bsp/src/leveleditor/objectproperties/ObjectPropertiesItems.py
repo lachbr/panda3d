@@ -1,7 +1,7 @@
 from PyQt5 import QtGui, QtCore
 
 from src.leveleditor import LEUtils
-from src.leveleditor.actions.EditObjectProperties import EditObjectProperties
+from bsp.leveleditor.actions.EditObjectProperties import EditObjectProperties
 
 class ObjectPropertiesNullItem(QtGui.QStandardItem):
 

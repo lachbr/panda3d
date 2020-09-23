@@ -1,4 +1,4 @@
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.DocObject import DocObject
 
 # Base class for serializable map data
 class MapWritable(DocObject):

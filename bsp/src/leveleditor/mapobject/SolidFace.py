@@ -10,12 +10,12 @@ from panda3d.bsp import SolidFaceGeom
 from .MapWritable import MapWritable
 from .SolidVertex import SolidVertex
 
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
 from src.leveleditor import LEUtils, LEGlobals
-from src.leveleditor.math import PlaneClassification
-from src.leveleditor.math.Plane import Plane
-from src.leveleditor.Align import Align
-from src.leveleditor.IDGenerator import IDGenerator
+from bsp.leveleditor.math import PlaneClassification
+from bsp.leveleditor.math.Plane import Plane
+from bsp.leveleditor.Align import Align
+from bsp.leveleditor.IDGenerator import IDGenerator
 from src.leveleditor import MaterialPool
 
 from enum import IntEnum

@@ -1,15 +1,15 @@
 from panda3d.core import RenderState, ColorAttrib, Vec4, Point3, GeomNode
 
-from src.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectPropertiesWindow
-from src.leveleditor.geometry.Box import Box
-from src.leveleditor.geometry.GeomView import GeomView
-from src.leveleditor.viewport.ViewportType import VIEWPORT_2D_MASK, VIEWPORT_3D_MASK
+from bsp.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectPropertiesWindow
+from bsp.leveleditor.geometry.Box import Box
+from bsp.leveleditor.geometry.GeomView import GeomView
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_2D_MASK, VIEWPORT_3D_MASK
 from src.leveleditor import RenderModes
 from src.leveleditor import LEGlobals
 from .SelectionType import SelectionType
-from src.leveleditor.actions.Delete import Delete
-from src.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.actions.Delete import Delete
+from bsp.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
+from bsp.leveleditor.DocObject import DocObject
 
 from .GroupsMode import GroupsMode
 from .ObjectMode import ObjectMode

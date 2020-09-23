@@ -11,7 +11,7 @@ from bsp.bspbase import BSPUtils
 
 from .ViewportType import *
 from .ViewportGizmo import ViewportGizmo
-from src.leveleditor.math.Ray import Ray
+from bsp.leveleditor.math.Ray import Ray
 from src.leveleditor import LEUtils
 
 from direct.showbase.DirectObject import DirectObject

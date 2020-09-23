@@ -2,16 +2,16 @@ from panda3d.core import GeomNode
 
 from .SelectionMode import SelectionMode
 from .SelectionType import SelectionType
-from src.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectPropertiesWindow
+from bsp.leveleditor.objectproperties.ObjectPropertiesWindow import ObjectPropertiesWindow
 from src.leveleditor import LEGlobals
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.mapobject.Entity import Entity
-from src.leveleditor.mapobject.Solid import Solid
-from src.leveleditor.actions.Reparent import Reparent
-from src.leveleditor.actions.Delete import Delete
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.actions.Create import Create
-from src.leveleditor.actions.Select import Select
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.mapobject.Entity import Entity
+from bsp.leveleditor.mapobject.Solid import Solid
+from bsp.leveleditor.actions.Reparent import Reparent
+from bsp.leveleditor.actions.Delete import Delete
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.actions.Create import Create
+from bsp.leveleditor.actions.Select import Select
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 

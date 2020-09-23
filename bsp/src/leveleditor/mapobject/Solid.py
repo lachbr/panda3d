@@ -1,14 +1,14 @@
 from panda3d.core import Point3, Vec3, NodePath, CKeyValues, CollisionNode, CollisionPolygon, CollisionSegment, Vec4, Mat4
 from panda3d.bsp import SolidGeomNode
 
-from src.leveleditor.math.Winding import Winding
+from bsp.leveleditor.math.Winding import Winding
 from .MapObject import MapObject
 from .SolidFace import SolidFace
 from .SolidVertex import SolidVertex
 
 from src.leveleditor import LEUtils, LEGlobals
-from src.leveleditor.math import PlaneClassification
-from src.leveleditor.math.Plane import Plane
+from bsp.leveleditor.math import PlaneClassification
+from bsp.leveleditor.math.Plane import Plane
 
 from .ObjectProperty import ObjectProperty
 

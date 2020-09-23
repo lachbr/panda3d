@@ -1,9 +1,9 @@
 from panda3d.core import Vec3, Point2, WindowProperties, NodePath, SamplerState
 
 from direct.gui.DirectGui import OnscreenImage
-from src.leveleditor.menu import KeyBinds
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.menu import KeyBinds
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.DocObject import DocObject
 
 import math
 

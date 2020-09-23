@@ -3,10 +3,10 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from direct.showbase.DirectObject import DirectObject
 
 from src.leveleditor import MaterialPool
-from src.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.mapobject.Solid import Solid
-from src.leveleditor.mapobject.SolidFace import SolidFace
+from bsp.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.mapobject.Solid import Solid
+from bsp.leveleditor.mapobject.SolidFace import SolidFace
 
 class ActiveMaterialPanel(QtWidgets.QDockWidget, DirectObject):
 

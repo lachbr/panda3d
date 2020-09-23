@@ -4,7 +4,7 @@
 
 from panda3d.core import LVecBase3f, LVecBase2f, LVecBase4f, CKeyValues
 
-from src.leveleditor.fgdtools import FgdEntityProperty
+from bsp.leveleditor.fgdtools import FgdEntityProperty
 from src.leveleditor import LEUtils
 
 MetaDataExclusions = [

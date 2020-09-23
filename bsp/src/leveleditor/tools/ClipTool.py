@@ -4,15 +4,15 @@ from panda3d.core import Point3, Vec3, ClipPlaneAttrib, NodePath, PlaneNode, \
 
 from .BaseTool import BaseTool
 from .ToolOptions import ToolOptions
-from src.leveleditor.geometry.Polygon import Polygon
-from src.leveleditor.geometry.GeomView import GeomView
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
-from src.leveleditor.actions.Clip import Clip
-from src.leveleditor.math.Plane import Plane
+from bsp.leveleditor.geometry.Polygon import Polygon
+from bsp.leveleditor.geometry.GeomView import GeomView
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
+from bsp.leveleditor.actions.Clip import Clip
+from bsp.leveleditor.math.Plane import Plane
 from src.leveleditor import LEGlobals
-from src.leveleditor.IDGenerator import IDGenerator
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.menu import KeyBinds
+from bsp.leveleditor.IDGenerator import IDGenerator
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.menu import KeyBinds
 
 from PyQt5 import QtWidgets
 

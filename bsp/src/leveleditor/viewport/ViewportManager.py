@@ -1,6 +1,6 @@
 from panda3d.core import Point2, WindowProperties
 
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.DocObject import DocObject
 
 from bsp.bspbase import ScreenshotHandler
 

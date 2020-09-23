@@ -5,18 +5,18 @@ from PyQt5 import QtWidgets, QtCore
 
 from .BaseTool import BaseTool
 from .ToolOptions import ToolOptions
-from src.leveleditor.geometry.Box import Box
-from src.leveleditor.geometry.GeomView import GeomView
-from src.leveleditor.grid.GridSettings import GridSettings
-from src.leveleditor.mapobject.Entity import Entity
+from bsp.leveleditor.geometry.Box import Box
+from bsp.leveleditor.geometry.GeomView import GeomView
+from bsp.leveleditor.grid.GridSettings import GridSettings
+from bsp.leveleditor.mapobject.Entity import Entity
 from src.leveleditor import LEUtils, LEGlobals
-from src.leveleditor.actions.Create import Create
-from src.leveleditor.actions.Select import Deselect
-from src.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
-from src.leveleditor.selection.SelectionType import SelectionType
-from src.leveleditor.actions.Select import Select
-from src.leveleditor.actions.ActionGroup import ActionGroup
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.actions.Create import Create
+from bsp.leveleditor.actions.Select import Deselect
+from bsp.leveleditor.actions.ChangeSelectionMode import ChangeSelectionMode
+from bsp.leveleditor.selection.SelectionType import SelectionType
+from bsp.leveleditor.actions.Select import Select
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 import random
 

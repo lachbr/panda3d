@@ -1,6 +1,6 @@
 from panda3d.core import Point3
 
-from src.leveleditor.math.Plane import Plane
+from bsp.leveleditor.math.Plane import Plane
 
 from .BaseBrush import BaseBrush
 

@@ -3,17 +3,17 @@ from panda3d.core import Geom, GeomNode, GeomVertexFormat, GeomLines, GeomVertex
 from panda3d.core import TextNode
 
 from .BaseTool import BaseTool, ToolUsage
-from src.leveleditor.viewport.Viewport2D import Viewport2D
-from src.leveleditor.viewport.ViewportType import *
+from bsp.leveleditor.viewport.Viewport2D import Viewport2D
+from bsp.leveleditor.viewport.ViewportType import *
 from bsp.bspbase import BSPUtils
 from src.leveleditor import RenderModes
-from src.leveleditor.geometry.Handles import Handles, HandleType
-from src.leveleditor.geometry.Box import Box
-from src.leveleditor.geometry.Rect import Rect
-from src.leveleditor.geometry.GeomView import GeomView
+from bsp.leveleditor.geometry.Handles import Handles, HandleType
+from bsp.leveleditor.geometry.Box import Box
+from bsp.leveleditor.geometry.Rect import Rect
+from bsp.leveleditor.geometry.GeomView import GeomView
 from src.leveleditor import LEGlobals
-from src.leveleditor.menu import KeyBinds
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.menu import KeyBinds
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 from enum import IntEnum
 import py_linq

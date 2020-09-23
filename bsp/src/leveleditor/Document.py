@@ -10,19 +10,19 @@ from direct.showbase.EventManager import EventManager
 
 from src.coginvasion.globals import ShaderGlobals
 
-from src.leveleditor.mapobject.World import World
-from src.leveleditor.mapobject.Entity import Entity
-from src.leveleditor.mapobject import MapObjectFactory
-from src.leveleditor.IDGenerator import IDGenerator
-from src.leveleditor.viewport.QuadSplitter import QuadSplitter
-from src.leveleditor.viewport.Viewport2D import Viewport2D
-from src.leveleditor.viewport.Viewport3D import Viewport3D
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D, VIEWPORT_2D_FRONT, VIEWPORT_2D_SIDE, VIEWPORT_2D_TOP
-from src.leveleditor.selection.SelectionManager import SelectionManager
-from src.leveleditor.viewport.ViewportManager import ViewportManager
-from src.leveleditor.actions.ActionManager import ActionManager
-from src.leveleditor.tools.ToolManager import ToolManager
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.mapobject.World import World
+from bsp.leveleditor.mapobject.Entity import Entity
+from bsp.leveleditor.mapobject import MapObjectFactory
+from bsp.leveleditor.IDGenerator import IDGenerator
+from bsp.leveleditor.viewport.QuadSplitter import QuadSplitter
+from bsp.leveleditor.viewport.Viewport2D import Viewport2D
+from bsp.leveleditor.viewport.Viewport3D import Viewport3D
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D, VIEWPORT_2D_FRONT, VIEWPORT_2D_SIDE, VIEWPORT_2D_TOP
+from bsp.leveleditor.selection.SelectionManager import SelectionManager
+from bsp.leveleditor.viewport.ViewportManager import ViewportManager
+from bsp.leveleditor.actions.ActionManager import ActionManager
+from bsp.leveleditor.tools.ToolManager import ToolManager
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
 from PyQt5 import QtWidgets
 

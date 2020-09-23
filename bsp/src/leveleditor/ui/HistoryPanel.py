@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.DocObject import DocObject
 
 class HistoryPanel(QtWidgets.QDockWidget, DocObject):
 

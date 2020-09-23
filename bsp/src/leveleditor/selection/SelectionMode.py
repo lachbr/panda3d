@@ -1,11 +1,11 @@
 from panda3d.core import CollisionBox, CollisionNode, BitMask32, CollisionHandlerQueue, TransformState, BitMask32
 
-from src.leveleditor.DocObject import DocObject
+from bsp.leveleditor.DocObject import DocObject
 from .SelectionType import SelectionType, SelectionModeTransform
 
-from src.leveleditor.menu.KeyBind import KeyBind
-from src.leveleditor.math.Line import Line
-from src.leveleditor.actions.Select import Select, Deselect
+from bsp.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.math.Line import Line
+from bsp.leveleditor.actions.Select import Select, Deselect
 from src.leveleditor import LEUtils, LEGlobals
 
 class SelectionMode(DocObject):

@@ -2,10 +2,10 @@ from panda3d.core import Filename
 
 from .Ui_FaceEditSheet import Ui_FaceEditSheet
 from src.leveleditor import MaterialPool
-from src.leveleditor.math.PointCloud import PointCloud
-from src.leveleditor.Align import Align
-from src.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
-from src.leveleditor.actions.ActionGroup import ActionGroup
+from bsp.leveleditor.math.PointCloud import PointCloud
+from bsp.leveleditor.Align import Align
+from bsp.leveleditor.actions.EditFaceMaterial import EditFaceMaterial
+from bsp.leveleditor.actions.ActionGroup import ActionGroup
 
 from PyQt5 import QtWidgets, QtCore
 

@@ -4,12 +4,12 @@ from panda3d.core import CollisionHandlerQueue, GeomNode
 from .BoxTool import BoxTool, ResizeHandle, BoxAction
 from src.leveleditor import LEGlobals
 from src.leveleditor import LEUtils
-from src.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
-from src.leveleditor.actions.Select import Select, Deselect
-from src.leveleditor.menu.KeyBind import KeyBind
+from bsp.leveleditor.viewport.ViewportType import VIEWPORT_3D_MASK, VIEWPORT_2D_MASK
+from bsp.leveleditor.actions.Select import Select, Deselect
+from bsp.leveleditor.menu.KeyBind import KeyBind
 
-from src.leveleditor.geometry.Box import Box
-from src.leveleditor.geometry.GeomView import GeomView
+from bsp.leveleditor.geometry.Box import Box
+from bsp.leveleditor.geometry.GeomView import GeomView
 
 class SelectTool(BoxTool):
 

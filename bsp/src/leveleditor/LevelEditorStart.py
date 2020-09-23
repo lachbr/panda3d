@@ -22,7 +22,7 @@ loadPrcFileData('', 'model-path ./hl2/materials')
 loadPrcFileData('', 'model-path ./tf/materials')
 loadPrcFileData('', 'window-type none')
 
-from src.leveleditor.LevelEditor import LevelEditor
+from bsp.leveleditor.LevelEditor import LevelEditor
 base = LevelEditor()
 
 ConfigVariableDouble('decompressor-step-time').setValue(0.01)
