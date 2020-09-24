@@ -1,12 +1,12 @@
 #define BUILD_DIRECTORY $[HAVE_INTERROGATE]
 
-#define LOCAL_LIBS p3cppParser p3interrogatedb p3dconfig p3dtoolutil p3dtoolbase p3pystub
+#define LOCAL_LIBS p3cppParser p3interrogatedb p3dconfig p3dtoolutil p3dtoolbase
 #define USE_PACKAGES openssl
 
 #begin bin_target
   #define TARGET interrogate
 
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx   
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
   #define SOURCES \
      functionRemap.h \
      functionWriter.h \
