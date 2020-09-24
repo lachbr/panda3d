@@ -7,8 +7,7 @@
     p3progbase p3pstatserver
   #define OTHER_LIBS \
     p3pstatclient:c p3linmath:c p3putil:c p3net:c p3express:c pandaexpress:m panda:m \
-    p3dtoolutil:c p3dtoolbase:c p3prc:c p3dconfig:c p3dtoolconfig:m p3dtool:m \
-    p3pystub
+    p3dtoolutil:c p3dtoolbase:c p3prc:c p3dconfig:c p3dtoolconfig:m p3dtool:m
 
   #define SOURCES \
     winStats.cxx \
@@ -30,4 +29,3 @@
   #define WIN_SYS_LIBS Imm32.lib winmm.lib kernel32.lib oldnames.lib user32.lib gdi32.lib
 
 #end bin_target
-
