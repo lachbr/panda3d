@@ -7,7 +7,7 @@
     p3audio p3grutil p3text p3tform p3linmath p3event p3putil p3gobj \
     p3mathutil
 
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx 
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
 
   #define SOURCES  \
     config_pgui.h \
@@ -28,7 +28,7 @@
     pgTop.I pgTop.h \
     pgVirtualFrame.I pgVirtualFrame.h \
     pgWaitBar.I pgWaitBar.h
-    
+
   #define INCLUDED_SOURCES  \
     config_pgui.cxx \
     pgButton.cxx \
@@ -67,7 +67,7 @@
     pgTop.I pgTop.h \
     pgVirtualFrame.I pgVirtualFrame.h \
     pgWaitBar.I pgWaitBar.h
-    
+
 
   #define IGATESCAN all
 
@@ -76,8 +76,6 @@
 
 #begin test_bin_target
   #define TARGET test_pgentry
-
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define LOCAL_LIBS \
     p3framework p3putil p3collide p3pgraph p3chan p3text \

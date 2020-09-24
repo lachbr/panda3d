@@ -1,14 +1,13 @@
 #define BUILD_DIRECTORY $[BUILD_IPHONE]
 
 #define OTHER_LIBS p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
-                   p3dtoolutil:c p3dtoolbase:c p3dtool:m p3prc:c 
+                   p3dtoolutil:c p3dtoolbase:c p3dtool:m p3prc:c
 
 #define OSX_SYS_FRAMEWORKS Foundation QuartzCore UIKit OpenGLES
 
 #begin bin_target
   #define TARGET iphone_pview
 
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
   #define LOCAL_LIBS \
     p3iphonedisplay \
     p3framework p3putil p3collide p3pgraph p3chan p3text \

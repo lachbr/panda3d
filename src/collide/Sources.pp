@@ -114,7 +114,6 @@
   #define TARGET test_collide
   #define LOCAL_LIBS \
     p3collide
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_collide.cxx

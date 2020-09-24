@@ -5,8 +5,8 @@
   #define TARGET p3linmath
   #define LOCAL_LIBS \
     p3express p3pandabase
-    
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx    
+
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
 
   #define SOURCES \
      aa_luse.h \
@@ -27,15 +27,15 @@
      lvecBase2_ext.h lvecBase3_ext.h lvecBase4_ext.h \
      lpoint2_ext.h lpoint3_ext.h lpoint4_ext.h \
      lvector2_ext.h lvector3_ext.h lvector4_ext.h \
-     mathNumbers.h mathNumbers.I 
-    
+     mathNumbers.h mathNumbers.I
+
   #define INCLUDED_SOURCES \
      compose_matrix.cxx config_linmath.cxx configVariableColor.cxx \
      coordinateSystem.cxx lmatrix.cxx \
      lorientation.cxx lpoint2.cxx  \
      lpoint3.cxx lpoint4.cxx lquaternion.cxx lrotation.cxx  \
      luse.cxx lvecBase2.cxx lvecBase3.cxx lvecBase4.cxx  \
-     lvector2.cxx lvector3.cxx lvector4.cxx mathNumbers.cxx 
+     lvector2.cxx lvector3.cxx lvector4.cxx mathNumbers.cxx
 
   #define INSTALL_HEADERS \
     aa_luse.h \
@@ -61,7 +61,7 @@
     lvecBase3_src.I lvecBase3_src.h lvecBase4.h lvecBase4_src.I \
     lvecBase4_src.h lvector2.h lvector2_src.I lvector2_src.h \
     lvector3.h lvector3_src.I lvector3_src.h lvector4.h lvector4_src.I \
-    lvector4_src.h mathNumbers.h mathNumbers.I 
+    lvector4_src.h mathNumbers.h mathNumbers.I
 
   #define IGATESCAN all
 
@@ -71,10 +71,8 @@
   #define TARGET test_math
   #define LOCAL_LIBS \
     p3linmath
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_math.cxx
 
 #end test_bin_target
-
