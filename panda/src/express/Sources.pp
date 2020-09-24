@@ -5,7 +5,7 @@
 #begin lib_target
   #define TARGET p3express
   #define USE_PACKAGES zlib openssl tar
-  
+
   #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx $[TARGET]_ext_composite.cxx
 
   #define SOURCES \
@@ -232,7 +232,7 @@
 
   #define TARGET make_ca_bundle
   #define LOCAL_LIBS $[LOCAL_LIBS] p3express
-  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3pystub
+  #define OTHER_LIBS p3dtoolutil:c p3dtool:m
 
   #define SOURCES \
     make_ca_bundle.cxx
@@ -243,7 +243,7 @@
 #begin test_bin_target
   #define TARGET test_types
   #define LOCAL_LIBS $[LOCAL_LIBS] p3express
-  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3prc:c p3dtoolconfig:m p3pystub
+  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3prc:c p3dtoolconfig:m
 
   #define SOURCES \
     test_types.cxx
@@ -258,7 +258,7 @@
     test_ordered_vector.cxx
 
   #define LOCAL_LIBS $[LOCAL_LIBS] p3putil
-  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3prc:c p3dtoolconfig:m p3pystub
+  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3prc:c p3dtoolconfig:m
 
 #end test_bin_target
 
@@ -268,7 +268,7 @@
   #define TARGET test_zstream
   #define USE_PACKAGES zlib
   #define LOCAL_LIBS $[LOCAL_LIBS] p3express
-  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3prc:c p3dtoolconfig:m p3pystub
+  #define OTHER_LIBS p3dtoolutil:c p3dtool:m p3prc:c p3dtoolconfig:m
 
   #define SOURCES \
     test_zstream.cxx

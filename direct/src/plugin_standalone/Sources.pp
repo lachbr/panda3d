@@ -14,7 +14,7 @@
     p3prc:c p3dtoolutil:c p3dtoolbase:c p3dtool:m \
     p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
     p3pandabase:c p3downloader:c p3express:c pandaexpress:m \
-    p3pystub p3tinyxml
+    p3tinyxml
 
   #define OSX_SYS_FRAMEWORKS Foundation AppKit Carbon
 
@@ -42,7 +42,7 @@
     p3prc:c p3dtoolutil:c p3dtoolbase:c p3dtool:m \
     p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
     p3pandabase:c p3downloader:c p3express:c pandaexpress:m \
-    p3pystub p3tinyxml
+    p3tinyxml
 
   #define OSX_SYS_FRAMEWORKS Foundation AppKit Carbon
 
@@ -71,7 +71,7 @@
     p3prc:c p3dtoolutil:c p3dtoolbase:c p3dtool:m \
     p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
     p3pandabase:c p3downloader:c p3express:c pandaexpress:m \
-    p3pystub p3tinyxml
+    p3tinyxml
 
   #define OSX_SYS_FRAMEWORKS Foundation AppKit Carbon
 
@@ -96,7 +96,7 @@
     p3prc:c p3dtoolutil:c p3dtoolbase:c p3dtool:m \
     p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
     p3pandabase:c p3downloader:c p3express:c pandaexpress:m \
-    p3pystub p3tinyxml \
+    p3tinyxml \
     $[if $[OSX_PLATFORM],p3subprocbuffer]
 
   #define OSX_SYS_FRAMEWORKS Foundation AppKit Carbon
@@ -128,7 +128,7 @@
     p3prc:c p3dtoolutil:c p3dtoolbase:c p3dtool:m \
     p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
     p3pandabase:c p3downloader:c p3express:c pandaexpress:m \
-    p3pystub p3tinyxml
+    p3tinyxml
 
   #define SOURCES \
     panda3dBase.cxx panda3dBase.h panda3dBase.I \

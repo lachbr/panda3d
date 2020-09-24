@@ -2,9 +2,9 @@
                    p3dtoolutil:c p3dtoolbase:c p3dtool:m p3prc:c
 #define LOCAL_LIBS \
     p3event p3gsgbase p3gobj p3putil p3linmath \
-    p3downloader p3express p3pandabase p3pstatclient 
+    p3downloader p3express p3pandabase p3pstatclient
 #define USE_PACKAGES python
- 
+
 #begin lib_target
   #define TARGET p3pgraph
 
@@ -14,7 +14,7 @@
 
   #define SOURCES \
     accumulatedAttribs.I accumulatedAttribs.h \
-    alphaTestAttrib.I alphaTestAttrib.h \  
+    alphaTestAttrib.I alphaTestAttrib.h \
     antialiasAttrib.I antialiasAttrib.h \
     attribNodeRegistry.I attribNodeRegistry.h \
     audioVolumeAttrib.I audioVolumeAttrib.h \
@@ -124,7 +124,7 @@
     $[TARGET]_ext_composite.cxx
   #define INCLUDED_SOURCES \
     accumulatedAttribs.cxx \
-    alphaTestAttrib.cxx \  
+    alphaTestAttrib.cxx \
     antialiasAttrib.cxx \
     attribNodeRegistry.cxx \
     audioVolumeAttrib.cxx \
@@ -226,7 +226,7 @@
 
   #define INSTALL_HEADERS \
     accumulatedAttribs.I accumulatedAttribs.h \
-    alphaTestAttrib.I alphaTestAttrib.h \  
+    alphaTestAttrib.I alphaTestAttrib.h \
     antialiasAttrib.I antialiasAttrib.h \
     attribNodeRegistry.I attribNodeRegistry.h \
     audioVolumeAttrib.I audioVolumeAttrib.h \
@@ -346,6 +346,5 @@
     test_pgraph.cxx
 
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pgraph
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
 #end test_bin_target

@@ -5,9 +5,9 @@
 
 #begin lib_target
   #define TARGET p3putil
- 
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx   
-  
+
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
+
   #define SOURCES \
     animInterface.h animInterface.I \
     autoTextureScale.h \
@@ -73,8 +73,8 @@
     vector_typedWritable.h \
     vector_ushort.h vector_writable.h \
     writableConfigurable.h \
-    writableParam.I writableParam.h 
-    
+    writableParam.I writableParam.h
+
  #define INCLUDED_SOURCES \
     animInterface.cxx \
     autoTextureScale.cxx \
@@ -120,7 +120,7 @@
     uniqueIdAllocator.cxx \
     vector_typedWritable.cxx \
     vector_ushort.cxx vector_writable.cxx \
-    writableConfigurable.cxx writableParam.cxx 
+    writableConfigurable.cxx writableParam.cxx
 
   #define INSTALL_HEADERS \
     animInterface.h animInterface.I \
@@ -233,7 +233,6 @@
     test_glob.cxx
 
   #define LOCAL_LIBS $[LOCAL_LIBS] p3putil
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
 #end test_bin_target
 
@@ -244,6 +243,5 @@
     test_linestream.cxx
 
   #define LOCAL_LIBS $[LOCAL_LIBS] p3putil
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
 #end test_bin_target

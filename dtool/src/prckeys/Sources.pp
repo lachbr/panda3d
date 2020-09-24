@@ -1,4 +1,4 @@
-#define LOCAL_LIBS p3dtoolutil p3dtoolbase p3prc p3dconfig p3interrogatedb p3pystub
+#define LOCAL_LIBS p3dtoolutil p3dtoolbase p3prc p3dconfig p3interrogatedb
 
 #begin bin_target
   #define BUILD_TARGET $[HAVE_OPENSSL]
@@ -17,10 +17,10 @@
 // #begin bin_target
 //   #define BUILD_TARGET $[HAVE_OPENSSL]
 //   #define USE_PACKAGES openssl
-// 
+//
 //   #define TARGET panda-sign1
-// 
+//
 //   #define SOURCES \
 //     panda_sign1.cxx
-// 
+//
 // #end bin_target

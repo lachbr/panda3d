@@ -4,9 +4,9 @@
 
 #begin lib_target
   #define TARGET p3event
-  
+
   #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
-  
+
   #define SOURCES \
     asyncTask.h asyncTask.I \
     asyncTaskChain.h asyncTaskChain.I \
@@ -24,8 +24,8 @@
     event.I event.h eventHandler.h eventHandler.I \
     eventParameter.I eventParameter.h \
     eventQueue.I eventQueue.h eventReceiver.h \
-    pt_Event.h throw_event.I throw_event.h 
-    
+    pt_Event.h throw_event.I throw_event.h
+
   #define INCLUDED_SOURCES \
     asyncTask.cxx \
     asyncTaskChain.cxx \
@@ -38,7 +38,7 @@
     genericAsyncTask.cxx \
     pointerEvent.cxx \
     pointerEventList.cxx \
-    config_event.cxx event.cxx eventHandler.cxx \ 
+    config_event.cxx event.cxx eventHandler.cxx \
     eventParameter.cxx eventQueue.cxx eventReceiver.cxx \
     pt_Event.cxx
 
@@ -58,7 +58,7 @@
     event.I event.h eventHandler.h eventHandler.I \
     eventParameter.I eventParameter.h \
     eventQueue.I eventQueue.h eventReceiver.h \
-    pt_Event.h throw_event.I throw_event.h 
+    pt_Event.h throw_event.I throw_event.h
 
   #define IGATESCAN all
 
@@ -69,7 +69,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3mathutil
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_task.cxx

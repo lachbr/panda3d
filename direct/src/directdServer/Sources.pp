@@ -12,7 +12,6 @@
 #begin bin_target
   #define TARGET p3directdServer
   #define LOCAL_LIBS p3directd
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     directdServer.cxx directdServer.h
@@ -22,7 +21,6 @@
 #begin test_bin_target
   #define TARGET directdClient
   #define LOCAL_LIBS p3directd
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     directdClient.cxx directdClient.h

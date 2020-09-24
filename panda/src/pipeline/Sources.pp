@@ -7,7 +7,7 @@
 #begin lib_target
   #define TARGET p3pipeline
   #define USE_PACKAGES threads
-  
+
   #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
 
   #define SOURCES \
@@ -201,7 +201,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_threaddata.cxx
@@ -214,7 +214,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_diners.cxx
@@ -227,7 +227,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_mutex.cxx
@@ -240,7 +240,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_concurrency.cxx
@@ -253,7 +253,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_delete.cxx
@@ -266,7 +266,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_atomic.cxx
@@ -280,7 +280,7 @@
   #define LOCAL_LIBS $[LOCAL_LIBS] p3pipeline
   #define OTHER_LIBS \
    p3interrogatedb:c p3dconfig:c p3dtoolbase:c p3prc:c \
-   p3dtoolutil:c p3dtool:m p3dtoolconfig:m p3pystub
+   p3dtoolutil:c p3dtool:m p3dtoolconfig:m
 
   #define SOURCES \
     test_setjmp.cxx

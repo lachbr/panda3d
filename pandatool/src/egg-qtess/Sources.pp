@@ -17,11 +17,11 @@
     $[if $[HAVE_AUDIO],p3audio:c] \
     panda:m \
     p3pandabase:c p3express:c pandaexpress:m \
-    p3interrogatedb:c p3dtoolutil:c p3dtoolbase:c p3prc:c p3dconfig:c p3dtoolconfig:m p3dtool:m p3pystub
+    p3interrogatedb:c p3dtoolutil:c p3dtoolbase:c p3prc:c p3dconfig:c p3dtoolconfig:m p3dtool:m
   #define UNIX_SYS_LIBS m
 
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx     
-  
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx
+
   #define SOURCES \
      config_egg_qtess.h \
      eggQtess.h \
@@ -31,7 +31,7 @@
      qtessInputFile.I qtessInputFile.h \
      qtessSurface.I qtessSurface.h \
      subdivSegment.I subdivSegment.h
-  
+
   #define INCLUDED_SOURCES \
      config_egg_qtess.cxx \
      eggQtess.cxx \
@@ -43,4 +43,3 @@
      subdivSegment.cxx
 
 #end bin_target
-

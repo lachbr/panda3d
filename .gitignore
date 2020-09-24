@@ -1,3 +1,6 @@
+# ppremake
+*.dep
+
 # makepanda directories
 /built*/
 /targetroot/

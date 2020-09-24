@@ -8,8 +8,7 @@
     p3interrogatedb:c p3prc:c p3dconfig:c p3dtoolconfig:m \
     p3dtoolutil:c p3dtoolbase:c p3dtool:m \
     $[if $[WANT_NATIVE_NET],p3nativenet:c] \
-    $[if $[and $[HAVE_NET],$[WANT_NATIVE_NET]],p3net:c p3downloader:c] \
-    p3pystub
+    $[if $[and $[HAVE_NET],$[WANT_NATIVE_NET]],p3net:c p3downloader:c]
 
 #begin bin_target
   #define TARGET obj2egg

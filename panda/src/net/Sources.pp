@@ -37,7 +37,7 @@
      datagramSinkNet.cxx \
      queuedConnectionListener.cxx  \
      queuedConnectionManager.cxx queuedConnectionReader.cxx  \
-     recentConnectionReader.cxx 
+     recentConnectionReader.cxx
 
   #define INSTALL_HEADERS \
     config_net.h connection.h connectionListener.h connectionManager.h \
@@ -60,7 +60,6 @@
 #begin test_bin_target
   #define TARGET test_datagram
   #define LOCAL_LIBS p3net
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_datagram.cxx
@@ -70,7 +69,6 @@
 #begin test_bin_target
   #define TARGET test_spam_client
   #define LOCAL_LIBS p3net p3putil
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     datagram_ui.cxx datagram_ui.h test_spam_client.cxx
@@ -80,7 +78,6 @@
 #begin test_bin_target
   #define TARGET test_spam_server
   #define LOCAL_LIBS p3net p3putil
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     datagram_ui.cxx datagram_ui.h test_spam_server.cxx
@@ -90,7 +87,6 @@
 #begin test_bin_target
   #define TARGET test_tcp_client
   #define LOCAL_LIBS p3net
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     datagram_ui.cxx datagram_ui.h test_tcp_client.cxx
@@ -100,7 +96,6 @@
 #begin test_bin_target
   #define TARGET test_tcp_server
   #define LOCAL_LIBS p3net
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     datagram_ui.cxx datagram_ui.h test_tcp_server.cxx
@@ -110,7 +105,6 @@
 #begin test_bin_target
   #define TARGET test_raw_server
   #define LOCAL_LIBS p3net
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_raw_server.cxx
@@ -120,7 +114,6 @@
 #begin test_bin_target
   #define TARGET test_udp
   #define LOCAL_LIBS p3net
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     datagram_ui.cxx datagram_ui.h test_udp.cxx
@@ -130,7 +123,6 @@
 #begin test_bin_target
   #define TARGET fake_http_server
   #define LOCAL_LIBS p3net
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     fake_http_server.cxx

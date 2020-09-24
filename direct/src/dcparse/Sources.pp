@@ -7,8 +7,7 @@
   p3prc:c p3pstatclient:c p3pandabase:c p3linmath:c p3putil:c \
   p3pipeline:c p3downloader:c \
   $[if $[HAVE_NET],p3net:c] $[if $[WANT_NATIVE_NET],p3nativenet:c] \
-  panda:m \
-  p3pystub
+  panda:m
 
 #define C++FLAGS -DWITHIN_PANDA
 
@@ -20,4 +19,3 @@
     dcparse.cxx
   #define WIN_SYS_LIBS shell32.lib
 #end bin_target
-

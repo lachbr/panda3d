@@ -5,7 +5,7 @@
 #begin lib_target
   #define TARGET p3audio
   #define LOCAL_LIBS p3putil p3event p3movies p3linmath
-  
+
   #define COMBINED_SOURCES $[TARGET]_composite1.cxx
 
   #define SOURCES \
@@ -16,7 +16,7 @@
     audioSound.h audioSound.I\
     nullAudioManager.h \
     nullAudioSound.h
-    
+
   #define INCLUDED_SOURCES \
     config_audio.cxx \
     filterProperties.cxx \
@@ -42,8 +42,6 @@
   #define TARGET test_audio
   #define LOCAL_LIBS \
     p3audio
-  #define OTHER_LIBS \
-    $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_audio.cxx

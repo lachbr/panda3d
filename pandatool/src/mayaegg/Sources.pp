@@ -9,7 +9,7 @@
     p3egg:c pandaegg:m \
     p3linmath:c p3putil:c panda:m \
     p3express:c pandaexpress:m \
-    p3dtoolutil:c p3dtoolbase:c p3prc:c p3dconfig:c p3dtoolconfig:m p3dtool:m p3pystub \
+    p3dtoolutil:c p3dtoolbase:c p3prc:c p3dconfig:c p3dtoolconfig:m p3dtool:m \
     p3pipeline:c p3interrogatedb:c p3gobj:c
 
   #define UNIX_SYS_LIBS \
@@ -25,4 +25,3 @@
     mayaToEggConverter.cxx mayaToEggConverter.h
 
 #end ss_lib_target
-

@@ -8,7 +8,7 @@
   #define USE_PACKAGES fftw
   #define UNIX_SYS_LIBS m
 
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx 
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
 
   #define SOURCES  \
     boundingHexahedron.I boundingHexahedron.h boundingLine.I  \
@@ -107,7 +107,6 @@
   #define TARGET test_mathutil
   #define LOCAL_LIBS \
     p3mathutil p3pipeline
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_mathutil.cxx
@@ -119,10 +118,8 @@
   #define TARGET test_tri
   #define LOCAL_LIBS \
     p3mathutil p3pipeline
-  #define OTHER_LIBS $[OTHER_LIBS] p3pystub
 
   #define SOURCES \
     test_tri.cxx
 
 #end test_bin_target
-

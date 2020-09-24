@@ -1,13 +1,13 @@
 #define OTHER_LIBS p3interrogatedb:c p3dconfig:c p3dtoolconfig:m \
-                   p3dtoolutil:c p3dtoolbase:c p3dtool:m p3prc:c 
+                   p3dtoolutil:c p3dtoolbase:c p3dtool:m p3prc:c
 
 #begin lib_target
   #define LOCAL_LIBS \
     p3net p3putil p3express
 
   #define TARGET p3pstatclient
-  
-  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx   
+
+  #define COMBINED_SOURCES $[TARGET]_composite1.cxx $[TARGET]_composite2.cxx
 
   #define SOURCES \
      config_pstats.h pStatClient.I pStatClient.h \
@@ -49,9 +49,7 @@
 
 #begin test_bin_target
   #define LOCAL_LIBS \
-    p3pstatclient 
-  #define OTHER_LIBS \
-    $[OTHER_LIBS] p3pystub
+    p3pstatclient
 
   #define TARGET test_client
 
@@ -59,4 +57,3 @@
     test_client.cxx
 
 #end test_bin_target
-
